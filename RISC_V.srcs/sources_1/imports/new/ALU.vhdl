@@ -1,8 +1,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-use work.RISCV_package.all;
 use IEEE.numeric_std.all;
-use work.mi_package.all;
+use work.RISCV_package.all;
 
 entity ALU is
     port(

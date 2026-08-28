@@ -2,7 +2,6 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use ieee.numeric_std.all;
 use work.RISCV_package.all;
-use work.mi_package.all;
 
 entity btu is
     Port(a : in slv(XLEN - 1 downto 0);

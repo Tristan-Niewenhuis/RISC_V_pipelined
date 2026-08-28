@@ -2,7 +2,6 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 use work.RISCV_package.all;
-use work.mi_package.all;
 
 entity Sequencer is
     Port(clk, reset : in sl;

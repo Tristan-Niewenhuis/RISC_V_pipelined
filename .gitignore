@@ -1,0 +1,80 @@
+# ============================================================
+# Vivado generated files
+# ============================================================
+
+# Vivado project generated directories
+*.runs/
+*.gen/
+*.cache/
+*.hw/
+*.ip_user_files/
+*.sim/
+
+# Generated project files
+*.jou
+*.log
+*.str
+*.pb
+*.wdb
+*.wcfg
+
+# Vivado backup/recovery files
+*.backup
+*.dmp
+*.rpt
+
+# ============================================================
+# Generated synthesis / implementation output
+# ============================================================
+
+*.bit
+*.bin
+*.ltx
+*.mmi
+*.xsa
+*.elf
+
+# ============================================================
+# Vivado generated IP output
+# ============================================================
+
+# Ignore generated IP products
+*.ip_user_files/
+**/ipstatic/
+**/synth/
+**/sim/
+**/example_design/
+**/instantiation_template.vho
+**/instantiation_template.v
+**/component.xml
+
+# ============================================================
+# Generated constraints / reports
+# ============================================================
+
+*.rpt
+*.xml
+
+# ============================================================
+# OS / editor junk
+# ============================================================
+
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# ============================================================
+# Temporary files
+# ============================================================
+
+*.tmp
+*.temp
+
+# ============================================================
+# Vivado generated Tcl / backup files
+# ============================================================
+
+*.tcl.bak
+*.tcl.orig

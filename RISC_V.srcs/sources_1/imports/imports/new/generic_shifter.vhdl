@@ -2,7 +2,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.numeric_std.ALL;
 use IEEE.math_real.ALL;
-use work.mi_package.all;
+use work.RISCV_package.all;
 
 entity generic_shifter is
     Generic(shamt_bits : natural := 2);

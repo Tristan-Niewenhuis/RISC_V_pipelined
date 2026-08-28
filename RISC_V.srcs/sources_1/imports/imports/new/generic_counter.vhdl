@@ -2,7 +2,6 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.numeric_std.all;
-use work.mi_package.all;
 
 entity generic_counter is
     generic(bits : integer := 4);

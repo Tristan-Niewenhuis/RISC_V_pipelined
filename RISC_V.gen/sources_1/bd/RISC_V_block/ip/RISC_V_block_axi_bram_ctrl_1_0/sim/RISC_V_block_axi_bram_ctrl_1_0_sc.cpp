@@ -65,8 +65,8 @@ RISC_V_block_axi_bram_ctrl_1_0_sc::RISC_V_block_axi_bram_ctrl_1_0_sc(const sc_co
     model_param_props.addLong("C_BRAM_ADDR_WIDTH", "13");
     model_param_props.addLong("C_S_AXI_ADDR_WIDTH", "15");
     model_param_props.addLong("C_S_AXI_DATA_WIDTH", "32");
-    model_param_props.addLong("C_S_AXI_ID_WIDTH", "2");
-    model_param_props.addLong("C_S_AXI_SUPPORTS_NARROW_BURST", "1");
+    model_param_props.addLong("C_S_AXI_ID_WIDTH", "1");
+    model_param_props.addLong("C_S_AXI_SUPPORTS_NARROW_BURST", "0");
     model_param_props.addLong("C_SINGLE_PORT_BRAM", "1");
     model_param_props.addLong("C_READ_LATENCY", "1");
     model_param_props.addLong("C_RD_CMD_OPTIMIZATION", "0");

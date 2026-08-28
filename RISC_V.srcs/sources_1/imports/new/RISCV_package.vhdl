@@ -3,7 +3,6 @@ use IEEE.std_logic_1164.ALL;
 use ieee.numeric_std.all;
 use ieee.math_real.log2;
 use ieee.math_real.ceil;
-use work.mi_package.all;
 
 package RISCV_package is
   constant XLEN_BITS : integer := 5;
@@ -11,6 +10,9 @@ package RISCV_package is
   constant REGS_ADDR_BITS : integer := 5;
   constant MEM_ADDR_BITS : integer := 32;
   constant PRE_FETCH_SIZE : integer := 4;
+
+  subtype sl is std_logic;
+  subtype slv is std_logic_vector;
 
   -- Function to create a vector from a bit
   function to_boolean(x : sl) return boolean;

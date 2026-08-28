@@ -1,5 +1,6 @@
 # compile vhdl design source files
 vhdl xil_defaultlib  \
+"../../../../RISC_V.srcs/sources_1/imports/imports/new/mi_package.vhdl" \
 "../../../../RISC_V.srcs/sources_1/imports/new/RISCV_package.vhdl" \
 "../../../../RISC_V.srcs/sources_1/imports/imports/new/generic_shifter.vhdl" \
 "../../../../RISC_V.srcs/sources_1/imports/new/ALU.vhdl" \
@@ -7,7 +8,6 @@ vhdl xil_defaultlib  \
 "../../../../RISC_V.srcs/sources_1/imports/new/Fetch.vhdl" \
 "../../../../RISC_V.srcs/sources_1/imports/new/Instruction_Decoder.vhdl" \
 "../../../../RISC_V.srcs/sources_1/imports/new/Load_Store.vhdl" \
-"../../../../RISC_V.srcs/sources_1/imports/imports/new/mi_package.vhdl" \
 "../../../../RISC_V.srcs/sources_1/imports/imports/new/generic_register.vhd" \
 "../../../../RISC_V.srcs/sources_1/imports/imports/new/generic_register_file.vhd" \
 "../../../../RISC_V.srcs/sources_1/imports/imports/new/generic_counter.vhdl" \
@@ -22,6 +22,7 @@ vhdl xil_defaultlib  \
 "../../../../RISC_V.ip_user_files/bd/RISC_V_block/ip/RISC_V_block_axi_gpio_1_0/sim/RISC_V_block_axi_gpio_1_0.vhd" \
 "../../../../RISC_V.ip_user_files/bd/RISC_V_block/ip/RISC_V_block_proc_sys_reset_0_0/sim/RISC_V_block_proc_sys_reset_0_0.vhd" \
 "../../../../RISC_V.ip_user_files/bd/RISC_V_block/sim/RISC_V_block.vhd" \
+"../../../../RISC_V.ip_user_files/bd/RISC_V_block/ip/RISC_V_block_smartconnect_0_0/bd_0/ip/ip_1/sim/bd_7a1f_psr_aclk_0.vhd" \
 "../../../../RISC_V.gen/sources_1/bd/RISC_V_block/hdl/RISC_V_block_wrapper.vhd" \
 "../../../../RISC_V.srcs/sim_1/imports/new/RISC_V_tb.vhdl" \
 

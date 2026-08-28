@@ -6,6 +6,7 @@ vhdl xil_defaultlib  \
 "../../../bd/RISC_V_block/ip/RISC_V_block_axi_gpio_1_0/sim/RISC_V_block_axi_gpio_1_0.vhd" \
 "../../../bd/RISC_V_block/ip/RISC_V_block_proc_sys_reset_0_0/sim/RISC_V_block_proc_sys_reset_0_0.vhd" \
 "../../../bd/RISC_V_block/sim/RISC_V_block.vhd" \
+"../../../bd/RISC_V_block/ip/RISC_V_block_smartconnect_0_0/bd_0/ip/ip_1/sim/bd_7a1f_psr_aclk_0.vhd" \
 
 # Do not sort compile order
 nosort
