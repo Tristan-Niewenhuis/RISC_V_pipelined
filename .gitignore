@@ -78,3 +78,7 @@ Thumbs.db
 
 *.tcl.bak
 *.tcl.orig
+
+.sigasi/generated/
+sigasi-doc/
+nlviewcommon.logfile
