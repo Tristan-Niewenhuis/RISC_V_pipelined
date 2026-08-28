@@ -1,0 +1,309 @@
+-- (c) Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+-- (c) Copyright 2022-2026 Advanced Micro Devices, Inc. All rights reserved.
+-- 
+-- This file contains confidential and proprietary information
+-- of AMD and is protected under U.S. and international copyright
+-- and other intellectual property laws.
+-- 
+-- DISCLAIMER
+-- This disclaimer is not a license and does not grant any
+-- rights to the materials distributed herewith. Except as
+-- otherwise provided in a valid license issued to you by
+-- AMD, and to the maximum extent permitted by applicable
+-- law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
+-- WITH ALL FAULTS, AND AMD HEREBY DISCLAIMS ALL WARRANTIES
+-- AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
+-- BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
+-- INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
+-- (2) AMD shall not be liable (whether in contract or tort,
+-- including negligence, or under any other theory of
+-- liability) for any loss or damage of any kind or nature
+-- related to, arising under or in connection with these
+-- materials, including for any direct, or any indirect,
+-- special, incidental, or consequential loss or damage
+-- (including loss of data, profits, goodwill, or any type of
+-- loss or damage suffered as a result of any action brought
+-- by a third party) even if such damage or loss was
+-- reasonably foreseeable or AMD had been advised of the
+-- possibility of the same.
+-- 
+-- CRITICAL APPLICATIONS
+-- AMD products are not designed or intended to be fail-
+-- safe, or for use in any application requiring fail-safe
+-- performance, such as life-support or safety devices or
+-- systems, Class III medical devices, nuclear facilities,
+-- applications related to the deployment of airbags, or any
+-- other applications that could lead to death, personal
+-- injury, or severe property or environmental damage
+-- (individually and collectively, "Critical
+-- Applications"). Customer assumes the sole risk and
+-- liability of any use of AMD products in Critical
+-- Applications, subject only to applicable laws and
+-- regulations governing limitations on product liability.
+-- 
+-- THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
+-- PART OF THIS FILE AT ALL TIMES.
+-- 
+-- DO NOT MODIFY THIS FILE.
+
+-- IP VLNV: xilinx.com:module_ref:RISC_V:1.0
+-- IP Revision: 1
+
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+USE ieee.numeric_std.ALL;
+
+ENTITY RISC_V_block_RISC_V_0_0 IS
+  PORT (
+    clk : IN STD_LOGIC;
+    reset : IN STD_LOGIC;
+    f_M_AXI_ARID : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
+    f_M_AXI_ARADDR : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+    f_M_AXI_ARLEN : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
+    f_M_AXI_ARSIZE : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+    f_M_AXI_ARBURST : OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
+    f_M_AXI_ARLOCK : OUT STD_LOGIC;
+    f_M_AXI_ARCACHE : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+    f_M_AXI_ARPROT : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+    f_M_AXI_ARQOS : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+    f_M_AXI_ARVALID : OUT STD_LOGIC;
+    f_M_AXI_ARREADY : IN STD_LOGIC;
+    f_M_AXI_RID : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+    f_M_AXI_RDATA : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+    f_M_AXI_RRESP : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
+    f_M_AXI_RLAST : IN STD_LOGIC;
+    f_M_AXI_RVALID : IN STD_LOGIC;
+    f_M_AXI_RREADY : OUT STD_LOGIC;
+    ls_M_AXI_ARID : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
+    ls_M_AXI_ARADDR : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+    ls_M_AXI_ARLEN : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
+    ls_M_AXI_ARSIZE : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+    ls_M_AXI_ARBURST : OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
+    ls_M_AXI_ARLOCK : OUT STD_LOGIC;
+    ls_M_AXI_ARCACHE : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+    ls_M_AXI_ARPROT : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+    ls_M_AXI_ARQOS : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+    ls_M_AXI_ARVALID : OUT STD_LOGIC;
+    ls_M_AXI_ARREADY : IN STD_LOGIC;
+    ls_M_AXI_RID : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+    ls_M_AXI_RDATA : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+    ls_M_AXI_RRESP : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
+    ls_M_AXI_RLAST : IN STD_LOGIC;
+    ls_M_AXI_RVALID : IN STD_LOGIC;
+    ls_M_AXI_RREADY : OUT STD_LOGIC;
+    ls_M_AXI_AWID : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
+    ls_M_AXI_AWADDR : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+    ls_M_AXI_AWLEN : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
+    ls_M_AXI_AWSIZE : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+    ls_M_AXI_AWBURST : OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
+    ls_M_AXI_AWLOCK : OUT STD_LOGIC;
+    ls_M_AXI_AWCACHE : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+    ls_M_AXI_AWPROT : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+    ls_M_AXI_AWQOS : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+    ls_M_AXI_AWVALID : OUT STD_LOGIC;
+    ls_M_AXI_AWREADY : IN STD_LOGIC;
+    ls_M_AXI_WDATA : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+    ls_M_AXI_WSTRB : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+    ls_M_AXI_WLAST : OUT STD_LOGIC;
+    ls_M_AXI_WVALID : OUT STD_LOGIC;
+    ls_M_AXI_WREADY : IN STD_LOGIC;
+    ls_M_AXI_BID : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+    ls_M_AXI_BRESP : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
+    ls_M_AXI_BVALID : IN STD_LOGIC;
+    ls_M_AXI_BREADY : OUT STD_LOGIC
+  );
+END RISC_V_block_RISC_V_0_0;
+
+ARCHITECTURE RISC_V_block_RISC_V_0_0_arch OF RISC_V_block_RISC_V_0_0 IS
+  ATTRIBUTE DowngradeIPIdentifiedWarnings : STRING;
+  ATTRIBUTE DowngradeIPIdentifiedWarnings OF RISC_V_block_RISC_V_0_0_arch: ARCHITECTURE IS "yes";
+  COMPONENT RISC_V IS
+    PORT (
+      clk : IN STD_LOGIC;
+      reset : IN STD_LOGIC;
+      f_M_AXI_ARID : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
+      f_M_AXI_ARADDR : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+      f_M_AXI_ARLEN : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
+      f_M_AXI_ARSIZE : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+      f_M_AXI_ARBURST : OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
+      f_M_AXI_ARLOCK : OUT STD_LOGIC;
+      f_M_AXI_ARCACHE : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+      f_M_AXI_ARPROT : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+      f_M_AXI_ARQOS : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+      f_M_AXI_ARVALID : OUT STD_LOGIC;
+      f_M_AXI_ARREADY : IN STD_LOGIC;
+      f_M_AXI_RID : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+      f_M_AXI_RDATA : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+      f_M_AXI_RRESP : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
+      f_M_AXI_RLAST : IN STD_LOGIC;
+      f_M_AXI_RVALID : IN STD_LOGIC;
+      f_M_AXI_RREADY : OUT STD_LOGIC;
+      ls_M_AXI_ARID : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
+      ls_M_AXI_ARADDR : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+      ls_M_AXI_ARLEN : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
+      ls_M_AXI_ARSIZE : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+      ls_M_AXI_ARBURST : OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
+      ls_M_AXI_ARLOCK : OUT STD_LOGIC;
+      ls_M_AXI_ARCACHE : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+      ls_M_AXI_ARPROT : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+      ls_M_AXI_ARQOS : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+      ls_M_AXI_ARVALID : OUT STD_LOGIC;
+      ls_M_AXI_ARREADY : IN STD_LOGIC;
+      ls_M_AXI_RID : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+      ls_M_AXI_RDATA : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+      ls_M_AXI_RRESP : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
+      ls_M_AXI_RLAST : IN STD_LOGIC;
+      ls_M_AXI_RVALID : IN STD_LOGIC;
+      ls_M_AXI_RREADY : OUT STD_LOGIC;
+      ls_M_AXI_AWID : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
+      ls_M_AXI_AWADDR : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+      ls_M_AXI_AWLEN : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
+      ls_M_AXI_AWSIZE : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+      ls_M_AXI_AWBURST : OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
+      ls_M_AXI_AWLOCK : OUT STD_LOGIC;
+      ls_M_AXI_AWCACHE : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+      ls_M_AXI_AWPROT : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+      ls_M_AXI_AWQOS : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+      ls_M_AXI_AWVALID : OUT STD_LOGIC;
+      ls_M_AXI_AWREADY : IN STD_LOGIC;
+      ls_M_AXI_WDATA : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+      ls_M_AXI_WSTRB : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+      ls_M_AXI_WLAST : OUT STD_LOGIC;
+      ls_M_AXI_WVALID : OUT STD_LOGIC;
+      ls_M_AXI_WREADY : IN STD_LOGIC;
+      ls_M_AXI_BID : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+      ls_M_AXI_BRESP : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
+      ls_M_AXI_BVALID : IN STD_LOGIC;
+      ls_M_AXI_BREADY : OUT STD_LOGIC
+    );
+  END COMPONENT RISC_V;
+  ATTRIBUTE X_INTERFACE_INFO : STRING;
+  ATTRIBUTE X_INTERFACE_MODE : STRING;
+  ATTRIBUTE X_INTERFACE_PARAMETER : STRING;
+  ATTRIBUTE X_INTERFACE_INFO OF clk: SIGNAL IS "xilinx.com:signal:clock:1.0 clk CLK";
+  ATTRIBUTE X_INTERFACE_MODE OF clk: SIGNAL IS "slave clk";
+  ATTRIBUTE X_INTERFACE_PARAMETER OF clk: SIGNAL IS "XIL_INTERFACENAME clk, ASSOCIATED_BUSIF f_M_AXI:ls_M_AXI, ASSOCIATED_RESET reset, FREQ_HZ 60000000, FREQ_TOLERANCE_HZ 0, PHASE 0.0, CLK_DOMAIN /clk_wiz_0_clk_out1, INSERT_VIP 0";
+  ATTRIBUTE X_INTERFACE_INFO OF f_M_AXI_ARADDR: SIGNAL IS "xilinx.com:interface:aximm:1.0 f_M_AXI ARADDR";
+  ATTRIBUTE X_INTERFACE_INFO OF f_M_AXI_ARBURST: SIGNAL IS "xilinx.com:interface:aximm:1.0 f_M_AXI ARBURST";
+  ATTRIBUTE X_INTERFACE_INFO OF f_M_AXI_ARCACHE: SIGNAL IS "xilinx.com:interface:aximm:1.0 f_M_AXI ARCACHE";
+  ATTRIBUTE X_INTERFACE_INFO OF f_M_AXI_ARID: SIGNAL IS "xilinx.com:interface:aximm:1.0 f_M_AXI ARID";
+  ATTRIBUTE X_INTERFACE_MODE OF f_M_AXI_ARID: SIGNAL IS "master f_M_AXI";
+  ATTRIBUTE X_INTERFACE_PARAMETER OF f_M_AXI_ARID: SIGNAL IS "XIL_INTERFACENAME f_M_AXI, DATA_WIDTH 32, PROTOCOL AXI4, FREQ_HZ 60000000, ID_WIDTH 1, ADDR_WIDTH 32, AWUSER_WIDTH 0, ARUSER_WIDTH 0, WUSER_WIDTH 0, RUSER_WIDTH 0, BUSER_WIDTH 0, READ_WRITE_MODE READ_ONLY, HAS_BURST 1, HAS_LOCK 1, HAS_PROT 1, HAS_CACHE 1, HAS_QOS 1, HAS_REGION 0, HAS_WSTRB 0, HAS_BRESP 0, HAS_RRESP 1, SUPPORTS_NARROW_BURST 1, NUM_READ_OUTSTANDING 2, NUM_WRITE_OUTSTANDING 2, MAX_BURST_LENGTH 256, PHASE 0.0, CLK_DOMAIN /clk_wiz_0_clk_out1, NUM_READ_THREADS 1, NUM_WRITE_THREADS 1, " & 
+"RUSER_BITS_PER_BYTE 0, WUSER_BITS_PER_BYTE 0, INSERT_VIP 0";
+  ATTRIBUTE X_INTERFACE_INFO OF f_M_AXI_ARLEN: SIGNAL IS "xilinx.com:interface:aximm:1.0 f_M_AXI ARLEN";
+  ATTRIBUTE X_INTERFACE_INFO OF f_M_AXI_ARLOCK: SIGNAL IS "xilinx.com:interface:aximm:1.0 f_M_AXI ARLOCK";
+  ATTRIBUTE X_INTERFACE_INFO OF f_M_AXI_ARPROT: SIGNAL IS "xilinx.com:interface:aximm:1.0 f_M_AXI ARPROT";
+  ATTRIBUTE X_INTERFACE_INFO OF f_M_AXI_ARQOS: SIGNAL IS "xilinx.com:interface:aximm:1.0 f_M_AXI ARQOS";
+  ATTRIBUTE X_INTERFACE_INFO OF f_M_AXI_ARREADY: SIGNAL IS "xilinx.com:interface:aximm:1.0 f_M_AXI ARREADY";
+  ATTRIBUTE X_INTERFACE_INFO OF f_M_AXI_ARSIZE: SIGNAL IS "xilinx.com:interface:aximm:1.0 f_M_AXI ARSIZE";
+  ATTRIBUTE X_INTERFACE_INFO OF f_M_AXI_ARVALID: SIGNAL IS "xilinx.com:interface:aximm:1.0 f_M_AXI ARVALID";
+  ATTRIBUTE X_INTERFACE_INFO OF f_M_AXI_RDATA: SIGNAL IS "xilinx.com:interface:aximm:1.0 f_M_AXI RDATA";
+  ATTRIBUTE X_INTERFACE_INFO OF f_M_AXI_RID: SIGNAL IS "xilinx.com:interface:aximm:1.0 f_M_AXI RID";
+  ATTRIBUTE X_INTERFACE_INFO OF f_M_AXI_RLAST: SIGNAL IS "xilinx.com:interface:aximm:1.0 f_M_AXI RLAST";
+  ATTRIBUTE X_INTERFACE_INFO OF f_M_AXI_RREADY: SIGNAL IS "xilinx.com:interface:aximm:1.0 f_M_AXI RREADY";
+  ATTRIBUTE X_INTERFACE_INFO OF f_M_AXI_RRESP: SIGNAL IS "xilinx.com:interface:aximm:1.0 f_M_AXI RRESP";
+  ATTRIBUTE X_INTERFACE_INFO OF f_M_AXI_RVALID: SIGNAL IS "xilinx.com:interface:aximm:1.0 f_M_AXI RVALID";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_ARADDR: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI ARADDR";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_ARBURST: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI ARBURST";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_ARCACHE: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI ARCACHE";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_ARID: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI ARID";
+  ATTRIBUTE X_INTERFACE_MODE OF ls_M_AXI_ARID: SIGNAL IS "master ls_M_AXI";
+  ATTRIBUTE X_INTERFACE_PARAMETER OF ls_M_AXI_ARID: SIGNAL IS "XIL_INTERFACENAME ls_M_AXI, DATA_WIDTH 32, PROTOCOL AXI4, FREQ_HZ 60000000, ID_WIDTH 1, ADDR_WIDTH 32, AWUSER_WIDTH 0, ARUSER_WIDTH 0, WUSER_WIDTH 0, RUSER_WIDTH 0, BUSER_WIDTH 0, READ_WRITE_MODE READ_WRITE, HAS_BURST 1, HAS_LOCK 1, HAS_PROT 1, HAS_CACHE 1, HAS_QOS 1, HAS_REGION 0, HAS_WSTRB 1, HAS_BRESP 1, HAS_RRESP 1, SUPPORTS_NARROW_BURST 1, NUM_READ_OUTSTANDING 2, NUM_WRITE_OUTSTANDING 2, MAX_BURST_LENGTH 256, PHASE 0.0, CLK_DOMAIN /clk_wiz_0_clk_out1, NUM_READ_THREADS 1, NUM_WRITE_THREADS 1" & 
+", RUSER_BITS_PER_BYTE 0, WUSER_BITS_PER_BYTE 0, INSERT_VIP 0";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_ARLEN: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI ARLEN";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_ARLOCK: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI ARLOCK";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_ARPROT: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI ARPROT";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_ARQOS: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI ARQOS";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_ARREADY: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI ARREADY";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_ARSIZE: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI ARSIZE";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_ARVALID: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI ARVALID";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_AWADDR: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI AWADDR";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_AWBURST: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI AWBURST";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_AWCACHE: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI AWCACHE";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_AWID: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI AWID";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_AWLEN: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI AWLEN";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_AWLOCK: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI AWLOCK";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_AWPROT: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI AWPROT";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_AWQOS: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI AWQOS";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_AWREADY: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI AWREADY";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_AWSIZE: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI AWSIZE";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_AWVALID: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI AWVALID";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_BID: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI BID";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_BREADY: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI BREADY";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_BRESP: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI BRESP";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_BVALID: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI BVALID";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_RDATA: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI RDATA";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_RID: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI RID";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_RLAST: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI RLAST";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_RREADY: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI RREADY";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_RRESP: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI RRESP";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_RVALID: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI RVALID";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_WDATA: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI WDATA";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_WLAST: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI WLAST";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_WREADY: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI WREADY";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_WSTRB: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI WSTRB";
+  ATTRIBUTE X_INTERFACE_INFO OF ls_M_AXI_WVALID: SIGNAL IS "xilinx.com:interface:aximm:1.0 ls_M_AXI WVALID";
+  ATTRIBUTE X_INTERFACE_INFO OF reset: SIGNAL IS "xilinx.com:signal:reset:1.0 reset RST";
+  ATTRIBUTE X_INTERFACE_MODE OF reset: SIGNAL IS "slave reset";
+  ATTRIBUTE X_INTERFACE_PARAMETER OF reset: SIGNAL IS "XIL_INTERFACENAME reset, POLARITY ACTIVE_LOW, INSERT_VIP 0";
+BEGIN
+  U0 : RISC_V
+    PORT MAP (
+      clk => clk,
+      reset => reset,
+      f_M_AXI_ARID => f_M_AXI_ARID,
+      f_M_AXI_ARADDR => f_M_AXI_ARADDR,
+      f_M_AXI_ARLEN => f_M_AXI_ARLEN,
+      f_M_AXI_ARSIZE => f_M_AXI_ARSIZE,
+      f_M_AXI_ARBURST => f_M_AXI_ARBURST,
+      f_M_AXI_ARLOCK => f_M_AXI_ARLOCK,
+      f_M_AXI_ARCACHE => f_M_AXI_ARCACHE,
+      f_M_AXI_ARPROT => f_M_AXI_ARPROT,
+      f_M_AXI_ARQOS => f_M_AXI_ARQOS,
+      f_M_AXI_ARVALID => f_M_AXI_ARVALID,
+      f_M_AXI_ARREADY => f_M_AXI_ARREADY,
+      f_M_AXI_RID => f_M_AXI_RID,
+      f_M_AXI_RDATA => f_M_AXI_RDATA,
+      f_M_AXI_RRESP => f_M_AXI_RRESP,
+      f_M_AXI_RLAST => f_M_AXI_RLAST,
+      f_M_AXI_RVALID => f_M_AXI_RVALID,
+      f_M_AXI_RREADY => f_M_AXI_RREADY,
+      ls_M_AXI_ARID => ls_M_AXI_ARID,
+      ls_M_AXI_ARADDR => ls_M_AXI_ARADDR,
+      ls_M_AXI_ARLEN => ls_M_AXI_ARLEN,
+      ls_M_AXI_ARSIZE => ls_M_AXI_ARSIZE,
+      ls_M_AXI_ARBURST => ls_M_AXI_ARBURST,
+      ls_M_AXI_ARLOCK => ls_M_AXI_ARLOCK,
+      ls_M_AXI_ARCACHE => ls_M_AXI_ARCACHE,
+      ls_M_AXI_ARPROT => ls_M_AXI_ARPROT,
+      ls_M_AXI_ARQOS => ls_M_AXI_ARQOS,
+      ls_M_AXI_ARVALID => ls_M_AXI_ARVALID,
+      ls_M_AXI_ARREADY => ls_M_AXI_ARREADY,
+      ls_M_AXI_RID => ls_M_AXI_RID,
+      ls_M_AXI_RDATA => ls_M_AXI_RDATA,
+      ls_M_AXI_RRESP => ls_M_AXI_RRESP,
+      ls_M_AXI_RLAST => ls_M_AXI_RLAST,
+      ls_M_AXI_RVALID => ls_M_AXI_RVALID,
+      ls_M_AXI_RREADY => ls_M_AXI_RREADY,
+      ls_M_AXI_AWID => ls_M_AXI_AWID,
+      ls_M_AXI_AWADDR => ls_M_AXI_AWADDR,
+      ls_M_AXI_AWLEN => ls_M_AXI_AWLEN,
+      ls_M_AXI_AWSIZE => ls_M_AXI_AWSIZE,
+      ls_M_AXI_AWBURST => ls_M_AXI_AWBURST,
+      ls_M_AXI_AWLOCK => ls_M_AXI_AWLOCK,
+      ls_M_AXI_AWCACHE => ls_M_AXI_AWCACHE,
+      ls_M_AXI_AWPROT => ls_M_AXI_AWPROT,
+      ls_M_AXI_AWQOS => ls_M_AXI_AWQOS,
+      ls_M_AXI_AWVALID => ls_M_AXI_AWVALID,
+      ls_M_AXI_AWREADY => ls_M_AXI_AWREADY,
+      ls_M_AXI_WDATA => ls_M_AXI_WDATA,
+      ls_M_AXI_WSTRB => ls_M_AXI_WSTRB,
+      ls_M_AXI_WLAST => ls_M_AXI_WLAST,
+      ls_M_AXI_WVALID => ls_M_AXI_WVALID,
+      ls_M_AXI_WREADY => ls_M_AXI_WREADY,
+      ls_M_AXI_BID => ls_M_AXI_BID,
+      ls_M_AXI_BRESP => ls_M_AXI_BRESP,
+      ls_M_AXI_BVALID => ls_M_AXI_BVALID,
+      ls_M_AXI_BREADY => ls_M_AXI_BREADY
+    );
+END RISC_V_block_RISC_V_0_0_arch;

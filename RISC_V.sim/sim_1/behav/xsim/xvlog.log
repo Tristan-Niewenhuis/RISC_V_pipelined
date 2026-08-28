@@ -1,0 +1,14 @@
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/RISC_V_research/RISC_V/RISC_V.ip_user_files/bd/RISC_V_block/ip/RISC_V_block_axi_bram_ctrl_0_bram_0/sim/RISC_V_block_axi_bram_ctrl_0_bram_0.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module RISC_V_block_axi_bram_ctrl_0_bram_0
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/RISC_V_research/RISC_V/RISC_V.ip_user_files/bd/RISC_V_block/ip/RISC_V_block_axi_bram_ctrl_1_bram_0/sim/RISC_V_block_axi_bram_ctrl_1_bram_0.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module RISC_V_block_axi_bram_ctrl_1_bram_0
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/RISC_V_research/RISC_V/RISC_V.ip_user_files/bd/RISC_V_block/ip/RISC_V_block_axi_interconnect_0_imp_xbar_0/sim/RISC_V_block_axi_interconnect_0_imp_xbar_0.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module RISC_V_block_axi_interconnect_0_imp_xbar_0
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/RISC_V_research/RISC_V/RISC_V.ip_user_files/bd/RISC_V_block/ip/RISC_V_block_clk_wiz_0_0/RISC_V_block_clk_wiz_0_0_clk_wiz.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module RISC_V_block_clk_wiz_0_0_clk_wiz
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/RISC_V_research/RISC_V/RISC_V.ip_user_files/bd/RISC_V_block/ip/RISC_V_block_clk_wiz_0_0/RISC_V_block_clk_wiz_0_0.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module RISC_V_block_clk_wiz_0_0
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/RISC_V_research/RISC_V/RISC_V.ip_user_files/bd/RISC_V_block/ip/RISC_V_block_axi_interconnect_0_imp_auto_pc_0/sim/RISC_V_block_axi_interconnect_0_imp_auto_pc_0.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module RISC_V_block_axi_interconnect_0_imp_auto_pc_0
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/RISC_V_research/RISC_V/RISC_V.ip_user_files/bd/RISC_V_block/ip/RISC_V_block_axi_interconnect_0_imp_auto_pc_1/sim/RISC_V_block_axi_interconnect_0_imp_auto_pc_1.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module RISC_V_block_axi_interconnect_0_imp_auto_pc_1

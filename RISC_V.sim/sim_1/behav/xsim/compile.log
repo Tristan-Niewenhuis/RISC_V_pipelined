@@ -1,0 +1,27 @@
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/RISC_V_research/RISC_V/RISC_V.ip_user_files/bd/RISC_V_block/ip/RISC_V_block_axi_bram_ctrl_0_bram_0/sim/RISC_V_block_axi_bram_ctrl_0_bram_0.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module RISC_V_block_axi_bram_ctrl_0_bram_0
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/RISC_V_research/RISC_V/RISC_V.ip_user_files/bd/RISC_V_block/ip/RISC_V_block_axi_bram_ctrl_1_bram_0/sim/RISC_V_block_axi_bram_ctrl_1_bram_0.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module RISC_V_block_axi_bram_ctrl_1_bram_0
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/RISC_V_research/RISC_V/RISC_V.ip_user_files/bd/RISC_V_block/ip/RISC_V_block_axi_interconnect_0_imp_xbar_0/sim/RISC_V_block_axi_interconnect_0_imp_xbar_0.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module RISC_V_block_axi_interconnect_0_imp_xbar_0
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/RISC_V_research/RISC_V/RISC_V.ip_user_files/bd/RISC_V_block/ip/RISC_V_block_clk_wiz_0_0/RISC_V_block_clk_wiz_0_0_clk_wiz.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module RISC_V_block_clk_wiz_0_0_clk_wiz
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/RISC_V_research/RISC_V/RISC_V.ip_user_files/bd/RISC_V_block/ip/RISC_V_block_clk_wiz_0_0/RISC_V_block_clk_wiz_0_0.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module RISC_V_block_clk_wiz_0_0
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/RISC_V_research/RISC_V/RISC_V.ip_user_files/bd/RISC_V_block/ip/RISC_V_block_axi_interconnect_0_imp_auto_pc_0/sim/RISC_V_block_axi_interconnect_0_imp_auto_pc_0.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module RISC_V_block_axi_interconnect_0_imp_auto_pc_0
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/RISC_V_research/RISC_V/RISC_V.ip_user_files/bd/RISC_V_block/ip/RISC_V_block_axi_interconnect_0_imp_auto_pc_1/sim/RISC_V_block_axi_interconnect_0_imp_auto_pc_1.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module RISC_V_block_axi_interconnect_0_imp_auto_pc_1
+INFO: [VRFC 10-163] Analyzing VHDL file "C:/RISC_V_research/RISC_V/RISC_V.ip_user_files/bd/RISC_V_block/sim/RISC_V_block.vhd" into library xil_defaultlib
+INFO: [VRFC 10-3107] analyzing entity 'm00_couplers_imp_1FYWC4H'
+INFO: [VRFC 10-3107] analyzing entity 'm01_couplers_imp_1BU0OTD'
+INFO: [VRFC 10-3107] analyzing entity 'm02_couplers_imp_15DHFQ9'
+INFO: [VRFC 10-3107] analyzing entity 'm03_couplers_imp_104MPEP'
+INFO: [VRFC 10-3107] analyzing entity 's00_couplers_imp_1A2ZIK2'
+INFO: [VRFC 10-3107] analyzing entity 's01_couplers_imp_1D6FS6Q'
+INFO: [VRFC 10-3107] analyzing entity 'RISC_V_block_axi_interconnect_0_0'
+INFO: [VRFC 10-3107] analyzing entity 'RISC_V_block'
+INFO: [VRFC 10-163] Analyzing VHDL file "C:/RISC_V_research/RISC_V/RISC_V.gen/sources_1/bd/RISC_V_block/hdl/RISC_V_block_wrapper.vhd" into library xil_defaultlib
+INFO: [VRFC 10-3107] analyzing entity 'RISC_V_block_wrapper'
+INFO: [VRFC 10-163] Analyzing VHDL file "C:/RISC_V_research/RISC_V/RISC_V.srcs/sim_1/imports/new/RISC_V_tb.vhdl" into library xil_defaultlib
+INFO: [VRFC 10-3107] analyzing entity 'RISC_V_tb'

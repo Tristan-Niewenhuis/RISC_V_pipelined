@@ -1,0 +1,45 @@
+{
+   "ActiveEmotionalView":"Default View",
+   "Default View_ScaleFactor":"0.839024",
+   "Default View_TopLeft":"-58,-2",
+   "ExpandedHierarchyInLayout":"",
+   "guistr":"# # String gsaved with Nlview 7.8.0 2024-04-26 e1825d835c VDI=44 GEI=38 GUI=JA:24.0
+#  -string -flagsOSRD
+preplace port dip_switches_16bits -pg 1 -lvl 7 -x 1650 -y 380 -defaultsOSRD
+preplace port led_16bits -pg 1 -lvl 7 -x 1650 -y 520 -defaultsOSRD
+preplace port port-id_sys_clock -pg 1 -lvl 0 -x 0 -y 320 -defaultsOSRD
+preplace port port-id_reset -pg 1 -lvl 0 -x 0 -y 40 -defaultsOSRD
+preplace inst clk_wiz_0 -pg 1 -lvl 1 -x 110 -y 310 -defaultsOSRD
+preplace inst proc_sys_reset_0 -pg 1 -lvl 2 -x 390 -y 100 -defaultsOSRD
+preplace inst axi_interconnect_0 -pg 1 -lvl 4 -x 950 -y 350 -defaultsOSRD
+preplace inst axi_bram_ctrl_0 -pg 1 -lvl 5 -x 1260 -y 100 -defaultsOSRD
+preplace inst axi_bram_ctrl_1 -pg 1 -lvl 5 -x 1260 -y 240 -defaultsOSRD
+preplace inst axi_gpio_0 -pg 1 -lvl 5 -x 1260 -y 380 -defaultsOSRD
+preplace inst axi_gpio_1 -pg 1 -lvl 5 -x 1260 -y 520 -defaultsOSRD
+preplace inst ilconstant_0 -pg 1 -lvl 1 -x 110 -y 100 -defaultsOSRD
+preplace inst ilconstant_1 -pg 1 -lvl 1 -x 110 -y 200 -defaultsOSRD
+preplace inst axi_bram_ctrl_0_bram -pg 1 -lvl 6 -x 1510 -y 100 -defaultsOSRD
+preplace inst axi_bram_ctrl_1_bram -pg 1 -lvl 6 -x 1510 -y 240 -defaultsOSRD
+preplace inst RISC_V_0 -pg 1 -lvl 3 -x 680 -y 210 -defaultsOSRD
+preplace netloc clk_wiz_0_clk_out1 1 1 4 210 200 560 280 800 130 1110
+preplace netloc proc_sys_reset_0_peripheral_aresetn 1 2 3 570 140 790 140 1120
+preplace netloc clk_wiz_0_locked 1 1 1 220 140n
+preplace netloc sys_clock_1 1 0 1 NJ 320
+preplace netloc reset_1 1 0 2 20 40 220J
+preplace netloc ilconstant_0_dout 1 1 1 NJ 100
+preplace netloc ilconstant_1_dout 1 1 1 200J 120n
+preplace netloc axi_bram_ctrl_0_BRAM_PORTA 1 5 1 N 100
+preplace netloc axi_bram_ctrl_1_BRAM_PORTA 1 5 1 N 240
+preplace netloc axi_gpio_0_GPIO 1 5 2 NJ 380 NJ
+preplace netloc axi_gpio_1_GPIO 1 5 2 NJ 520 NJ
+preplace netloc RISC_V_0_f_M_AXI 1 3 1 N 200
+preplace netloc axi_interconnect_0_M00_AXI 1 4 1 1100 80n
+preplace netloc axi_interconnect_0_M01_AXI 1 4 1 1130 220n
+preplace netloc axi_interconnect_0_M02_AXI 1 4 1 N 360
+preplace netloc axi_interconnect_0_M03_AXI 1 4 1 1100 380n
+preplace netloc RISC_V_0_ls_M_AXI 1 3 1 N 220
+levelinfo -pg 1 0 110 390 680 950 1260 1510 1650
+pagesize -pg 1 -db -bbox -sgen -110 0 1850 600
+"
+}
+

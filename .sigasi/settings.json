@@ -1,0 +1,12 @@
+{
+    "vhdl.rules.89.severity": "INFO",
+    "vhdl.rules.68.severity": "INFO",
+    "vhdl.rules.55.severity": "INFO",
+    "vhdl.rules.67.severity": "INFO",
+    "vhdl.rules.144.severity": "INFO",
+    "vhdl.rules.232.severity": "INFO",
+    "vhdl.formatting.preserveNewlines": false,
+    "vhdl.formatting.alignCode": false,
+    "vhdl.formatting.keywordsCase": "IGNORE",
+    "vhdl.formatting.trailingCommentsAlignmentColumn": 40
+}

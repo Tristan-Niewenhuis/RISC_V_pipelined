@@ -1,0 +1,16 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2026.1 (win64) Build 6511674 Tue Jun 16 11:02:23 MDT 2026
+| Date         : Wed Aug 26 20:46:52 2026
+| Host         : DESKTOP-P2Q0K54 running 64-bit major release  (build 9200)
+| Command      : upgrade_ip
+| Device       : xc7a100tcsg324-1
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Upgrade Log for IP 'RISC_V_block_RISC_V_0_0'
+
+1. Summary
+----------
+
+SUCCESS in the update of RISC_V_block_RISC_V_0_0 (xilinx.com:module_ref:RISC_V:1.0 (Rev. 1)) to current project options.
+

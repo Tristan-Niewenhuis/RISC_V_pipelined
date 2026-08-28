@@ -1,0 +1,11 @@
+{
+    "name": "RISC_V",
+    "targets": {
+        "rtl": {
+            "libraryMapping": {
+                "RISC_V.srcs/sources_1/imports": "work"
+                //"RISC_V.srcs/sim_1": "work"
+            }
+        }
+    }
+}

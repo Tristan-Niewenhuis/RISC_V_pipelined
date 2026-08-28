@@ -1,0 +1,614 @@
+{
+  "version": 7,
+  "name": "RISC_V",
+  "projectBaseDir": "file:///c:/RISC_V_research/RISC_V",
+  "compilationGroupModel": {
+    "groups": [
+      {
+        "language": "VHDL",
+        "currentWorkingDirectory": {
+          "platformUri": "platform:/resource/RISC_V/Design/",
+          "fileUri": "file:///c:/RISC_V_research/RISC_V/"
+        },
+        "resources": [
+          "platform:/resource/RISC_V/Targets/rtl/work/generic_counter.vhdl",
+          "platform:/resource/RISC_V/Targets/rtl/work/generic_register.vhd",
+          "platform:/resource/RISC_V/Targets/rtl/work/generic_register_file.vhd",
+          "platform:/resource/RISC_V/Targets/rtl/work/generic_shifter.vhdl",
+          "platform:/resource/RISC_V/Targets/rtl/work/mi_package.vhdl",
+          "platform:/resource/RISC_V/Targets/rtl/work/generic_FIFO.vhdl",
+          "platform:/resource/RISC_V/Targets/rtl/work/ALU.vhdl",
+          "platform:/resource/RISC_V/Targets/rtl/work/Fetch.vhdl",
+          "platform:/resource/RISC_V/Targets/rtl/work/Instruction_Decoder.vhdl",
+          "platform:/resource/RISC_V/Targets/rtl/work/Load_Store.vhdl",
+          "platform:/resource/RISC_V/Targets/rtl/work/RISCV_package.vhdl",
+          "platform:/resource/RISC_V/Targets/rtl/work/RISC_V.vhdl",
+          "platform:/resource/RISC_V/Targets/rtl/work/Sequencer.vhdl",
+          "platform:/resource/RISC_V/Targets/rtl/work/btu.vhdl",
+          "platform:/resource/RISC_V/Targets/rtl/work/datapath.vhdl"
+        ],
+        "includePaths": [],
+        "includeFallbackToLocalDirectory": false,
+        "additionalEnvVars": {},
+        "initialDefines": [],
+        "continueFrom": null,
+        "inferOrder": true,
+        "allowUndefine": false,
+        "allowUndefineAll": false,
+        "conditionalVariables": {},
+        "targetContext": {
+          "root": {
+            "project": "RISC_V",
+            "version": "default",
+            "target": "rtl"
+          },
+          "actual": {
+            "project": "RISC_V",
+            "version": "default",
+            "target": "rtl"
+          }
+        }
+      }
+    ],
+    "resourceTargetContexts": {
+      "platform:/resource/RISC_V/Targets/rtl/work/generic_counter.vhdl": {
+        "root": {
+          "project": "RISC_V",
+          "version": "default",
+          "target": "rtl"
+        },
+        "actual": {
+          "project": "RISC_V",
+          "version": "default",
+          "target": "rtl"
+        }
+      },
+      "platform:/resource/RISC_V/Targets/rtl/work/generic_register.vhd": {
+        "root": {
+          "project": "RISC_V",
+          "version": "default",
+          "target": "rtl"
+        },
+        "actual": {
+          "project": "RISC_V",
+          "version": "default",
+          "target": "rtl"
+        }
+      },
+      "platform:/resource/RISC_V/Targets/rtl/work/generic_register_file.vhd": {
+        "root": {
+          "project": "RISC_V",
+          "version": "default",
+          "target": "rtl"
+        },
+        "actual": {
+          "project": "RISC_V",
+          "version": "default",
+          "target": "rtl"
+        }
+      },
+      "platform:/resource/RISC_V/Targets/rtl/work/generic_shifter.vhdl": {
+        "root": {
+          "project": "RISC_V",
+          "version": "default",
+          "target": "rtl"
+        },
+        "actual": {
+          "project": "RISC_V",
+          "version": "default",
+          "target": "rtl"
+        }
+      },
+      "platform:/resource/RISC_V/Targets/rtl/work/mi_package.vhdl": {
+        "root": {
+          "project": "RISC_V",
+          "version": "default",
+          "target": "rtl"
+        },
+        "actual": {
+          "project": "RISC_V",
+          "version": "default",
+          "target": "rtl"
+        }
+      },
+      "platform:/resource/RISC_V/Targets/rtl/work/generic_FIFO.vhdl": {
+        "root": {
+          "project": "RISC_V",
+          "version": "default",
+          "target": "rtl"
+        },
+        "actual": {
+          "project": "RISC_V",
+          "version": "default",
+          "target": "rtl"
+        }
+      },
+      "platform:/resource/RISC_V/Targets/rtl/work/ALU.vhdl": {
+        "root": {
+          "project": "RISC_V",
+          "version": "default",
+          "target": "rtl"
+        },
+        "actual": {
+          "project": "RISC_V",
+          "version": "default",
+          "target": "rtl"
+        }
+      },
+      "platform:/resource/RISC_V/Targets/rtl/work/Fetch.vhdl": {
+        "root": {
+          "project": "RISC_V",
+          "version": "default",
+          "target": "rtl"
+        },
+        "actual": {
+          "project": "RISC_V",
+          "version": "default",
+          "target": "rtl"
+        }
+      },
+      "platform:/resource/RISC_V/Targets/rtl/work/Instruction_Decoder.vhdl": {
+        "root": {
+          "project": "RISC_V",
+          "version": "default",
+          "target": "rtl"
+        },
+        "actual": {
+          "project": "RISC_V",
+          "version": "default",
+          "target": "rtl"
+        }
+      },
+      "platform:/resource/RISC_V/Targets/rtl/work/Load_Store.vhdl": {
+        "root": {
+          "project": "RISC_V",
+          "version": "default",
+          "target": "rtl"
+        },
+        "actual": {
+          "project": "RISC_V",
+          "version": "default",
+          "target": "rtl"
+        }
+      },
+      "platform:/resource/RISC_V/Targets/rtl/work/RISCV_package.vhdl": {
+        "root": {
+          "project": "RISC_V",
+          "version": "default",
+          "target": "rtl"
+        },
+        "actual": {
+          "project": "RISC_V",
+          "version": "default",
+          "target": "rtl"
+        }
+      },
+      "platform:/resource/RISC_V/Targets/rtl/work/RISC_V.vhdl": {
+        "root": {
+          "project": "RISC_V",
+          "version": "default",
+          "target": "rtl"
+        },
+        "actual": {
+          "project": "RISC_V",
+          "version": "default",
+          "target": "rtl"
+        }
+      },
+      "platform:/resource/RISC_V/Targets/rtl/work/Sequencer.vhdl": {
+        "root": {
+          "project": "RISC_V",
+          "version": "default",
+          "target": "rtl"
+        },
+        "actual": {
+          "project": "RISC_V",
+          "version": "default",
+          "target": "rtl"
+        }
+      },
+      "platform:/resource/RISC_V/Targets/rtl/work/btu.vhdl": {
+        "root": {
+          "project": "RISC_V",
+          "version": "default",
+          "target": "rtl"
+        },
+        "actual": {
+          "project": "RISC_V",
+          "version": "default",
+          "target": "rtl"
+        }
+      },
+      "platform:/resource/RISC_V/Targets/rtl/work/datapath.vhdl": {
+        "root": {
+          "project": "RISC_V",
+          "version": "default",
+          "target": "rtl"
+        },
+        "actual": {
+          "project": "RISC_V",
+          "version": "default",
+          "target": "rtl"
+        }
+      }
+    }
+  },
+  "linkedResources": [
+    {
+      "source": "platform:/resource/RISC_V",
+      "target": "virtual:/virtual",
+      "type": 2
+    },
+    {
+      "source": "platform:/resource/RISC_V/VHDL%20Standard%20Libraries%5B2019%5D",
+      "target": "virtual:/virtual",
+      "type": 2
+    },
+    {
+      "source": "platform:/resource/RISC_V/VHDL%20Standard%20Libraries%5B2019%5D/STD",
+      "target": "sigasiresource:/vhdl/2019/STD",
+      "type": 2
+    },
+    {
+      "source": "platform:/resource/RISC_V/VHDL%20Standard%20Libraries%5B2019%5D/IEEE",
+      "target": "sigasiresource:/vhdl/2019/IEEE",
+      "type": 2
+    },
+    {
+      "source": "platform:/resource/RISC_V/VHDL%20Standard%20Libraries%5B2019%5D/IEEE%20Synopsys",
+      "target": "sigasiresource:/vhdl/2019/IEEE%20Synopsys",
+      "type": 2
+    },
+    {
+      "source": "platform:/resource/RISC_V/Design",
+      "target": "file:///c:/RISC_V_research/RISC_V",
+      "type": 2
+    },
+    {
+      "source": "platform:/resource/RISC_V/Targets",
+      "target": "virtual:/virtual",
+      "type": 2
+    },
+    {
+      "source": "platform:/resource/RISC_V/Targets/rtl",
+      "target": "virtual:/virtual",
+      "type": 2
+    },
+    {
+      "source": "platform:/resource/RISC_V/Targets/rtl/work",
+      "target": "virtual:/virtual",
+      "type": 2
+    },
+    {
+      "source": "platform:/resource/RISC_V/Targets/rtl/work/generic_counter.vhdl",
+      "target": "file:///c:/RISC_V_research/RISC_V/RISC_V.srcs/sources_1/imports/imports/new/generic_counter.vhdl",
+      "type": 1
+    },
+    {
+      "source": "platform:/resource/RISC_V/Targets/rtl/work/generic_register.vhd",
+      "target": "file:///c:/RISC_V_research/RISC_V/RISC_V.srcs/sources_1/imports/imports/new/generic_register.vhd",
+      "type": 1
+    },
+    {
+      "source": "platform:/resource/RISC_V/Targets/rtl/work/generic_register_file.vhd",
+      "target": "file:///c:/RISC_V_research/RISC_V/RISC_V.srcs/sources_1/imports/imports/new/generic_register_file.vhd",
+      "type": 1
+    },
+    {
+      "source": "platform:/resource/RISC_V/Targets/rtl/work/generic_shifter.vhdl",
+      "target": "file:///c:/RISC_V_research/RISC_V/RISC_V.srcs/sources_1/imports/imports/new/generic_shifter.vhdl",
+      "type": 1
+    },
+    {
+      "source": "platform:/resource/RISC_V/Targets/rtl/work/mi_package.vhdl",
+      "target": "file:///c:/RISC_V_research/RISC_V/RISC_V.srcs/sources_1/imports/imports/new/mi_package.vhdl",
+      "type": 1
+    },
+    {
+      "source": "platform:/resource/RISC_V/Targets/rtl/work/generic_FIFO.vhdl",
+      "target": "file:///c:/RISC_V_research/RISC_V/RISC_V.srcs/sources_1/imports/imports/packages/generic_FIFO.vhdl",
+      "type": 1
+    },
+    {
+      "source": "platform:/resource/RISC_V/Targets/rtl/work/ALU.vhdl",
+      "target": "file:///c:/RISC_V_research/RISC_V/RISC_V.srcs/sources_1/imports/new/ALU.vhdl",
+      "type": 1
+    },
+    {
+      "source": "platform:/resource/RISC_V/Targets/rtl/work/Fetch.vhdl",
+      "target": "file:///c:/RISC_V_research/RISC_V/RISC_V.srcs/sources_1/imports/new/Fetch.vhdl",
+      "type": 1
+    },
+    {
+      "source": "platform:/resource/RISC_V/Targets/rtl/work/Instruction_Decoder.vhdl",
+      "target": "file:///c:/RISC_V_research/RISC_V/RISC_V.srcs/sources_1/imports/new/Instruction_Decoder.vhdl",
+      "type": 1
+    },
+    {
+      "source": "platform:/resource/RISC_V/Targets/rtl/work/Load_Store.vhdl",
+      "target": "file:///c:/RISC_V_research/RISC_V/RISC_V.srcs/sources_1/imports/new/Load_Store.vhdl",
+      "type": 1
+    },
+    {
+      "source": "platform:/resource/RISC_V/Targets/rtl/work/RISCV_package.vhdl",
+      "target": "file:///c:/RISC_V_research/RISC_V/RISC_V.srcs/sources_1/imports/new/RISCV_package.vhdl",
+      "type": 1
+    },
+    {
+      "source": "platform:/resource/RISC_V/Targets/rtl/work/RISC_V.vhdl",
+      "target": "file:///c:/RISC_V_research/RISC_V/RISC_V.srcs/sources_1/imports/new/RISC_V.vhdl",
+      "type": 1
+    },
+    {
+      "source": "platform:/resource/RISC_V/Targets/rtl/work/Sequencer.vhdl",
+      "target": "file:///c:/RISC_V_research/RISC_V/RISC_V.srcs/sources_1/imports/new/Sequencer.vhdl",
+      "type": 1
+    },
+    {
+      "source": "platform:/resource/RISC_V/Targets/rtl/work/btu.vhdl",
+      "target": "file:///c:/RISC_V_research/RISC_V/RISC_V.srcs/sources_1/imports/new/btu.vhdl",
+      "type": 1
+    },
+    {
+      "source": "platform:/resource/RISC_V/Targets/rtl/work/datapath.vhdl",
+      "target": "file:///c:/RISC_V_research/RISC_V/RISC_V.srcs/sources_1/imports/new/datapath.vhdl",
+      "type": 1
+    }
+  ],
+  "resourceInformation": {
+    "platform:/resource/RISC_V/Targets/rtl/Common%20Libraries": {
+      "library": "not mapped",
+      "version": null,
+      "isLibraryFile": false
+    },
+    "platform:/resource/RISC_V/Targets/rtl/work": {
+      "library": "work",
+      "version": null,
+      "isLibraryFile": false
+    },
+    "platform:/resource/RISC_V/Targets/rtl/work/generic_counter.vhdl": {
+      "library": null,
+      "version": "VHDL 2019",
+      "isLibraryFile": false
+    },
+    "platform:/resource/RISC_V/Targets/rtl/work/generic_register.vhd": {
+      "library": null,
+      "version": "VHDL 2019",
+      "isLibraryFile": false
+    },
+    "platform:/resource/RISC_V/Targets/rtl/work/generic_register_file.vhd": {
+      "library": null,
+      "version": "VHDL 2019",
+      "isLibraryFile": false
+    },
+    "platform:/resource/RISC_V/Targets/rtl/work/generic_shifter.vhdl": {
+      "library": null,
+      "version": "VHDL 2019",
+      "isLibraryFile": false
+    },
+    "platform:/resource/RISC_V/Targets/rtl/work/mi_package.vhdl": {
+      "library": null,
+      "version": "VHDL 2019",
+      "isLibraryFile": false
+    },
+    "platform:/resource/RISC_V/Targets/rtl/work/generic_FIFO.vhdl": {
+      "library": null,
+      "version": "VHDL 2019",
+      "isLibraryFile": false
+    },
+    "platform:/resource/RISC_V/Targets/rtl/work/ALU.vhdl": {
+      "library": null,
+      "version": "VHDL 2019",
+      "isLibraryFile": false
+    },
+    "platform:/resource/RISC_V/Targets/rtl/work/Fetch.vhdl": {
+      "library": null,
+      "version": "VHDL 2019",
+      "isLibraryFile": false
+    },
+    "platform:/resource/RISC_V/Targets/rtl/work/Instruction_Decoder.vhdl": {
+      "library": null,
+      "version": "VHDL 2019",
+      "isLibraryFile": false
+    },
+    "platform:/resource/RISC_V/Targets/rtl/work/Load_Store.vhdl": {
+      "library": null,
+      "version": "VHDL 2019",
+      "isLibraryFile": false
+    },
+    "platform:/resource/RISC_V/Targets/rtl/work/RISCV_package.vhdl": {
+      "library": null,
+      "version": "VHDL 2019",
+      "isLibraryFile": false
+    },
+    "platform:/resource/RISC_V/Targets/rtl/work/RISC_V.vhdl": {
+      "library": null,
+      "version": "VHDL 2019",
+      "isLibraryFile": false
+    },
+    "platform:/resource/RISC_V/Targets/rtl/work/Sequencer.vhdl": {
+      "library": null,
+      "version": "VHDL 2019",
+      "isLibraryFile": false
+    },
+    "platform:/resource/RISC_V/Targets/rtl/work/btu.vhdl": {
+      "library": null,
+      "version": "VHDL 2019",
+      "isLibraryFile": false
+    },
+    "platform:/resource/RISC_V/Targets/rtl/work/datapath.vhdl": {
+      "library": null,
+      "version": "VHDL 2019",
+      "isLibraryFile": false
+    },
+    "platform:/resource/RISC_V/VHDL%20Standard%20Libraries%5B2019%5D/STD": {
+      "library": "std",
+      "version": "VHDL 2019",
+      "isLibraryFile": true
+    },
+    "platform:/resource/RISC_V/VHDL%20Standard%20Libraries%5B2019%5D/IEEE": {
+      "library": "ieee",
+      "version": "VHDL 2019",
+      "isLibraryFile": true
+    },
+    "platform:/resource/RISC_V/VHDL%20Standard%20Libraries%5B2019%5D/IEEE%20Synopsys": {
+      "library": "ieee",
+      "version": "VHDL 2019",
+      "isLibraryFile": true
+    },
+    "platform:/resource/RISC_V": {
+      "library": null,
+      "version": "VHDL 2019",
+      "isLibraryFile": false
+    }
+  },
+  "dependencyInformation": {},
+  "virtualFolderContents": {
+    "platform:/resource": [
+      {
+        "source": "platform:/resource/RISC_V",
+        "target": "virtual:/virtual",
+        "type": 2
+      }
+    ],
+    "platform:/resource/RISC_V": [
+      {
+        "source": "platform:/resource/RISC_V/VHDL%20Standard%20Libraries%5B2019%5D",
+        "target": "virtual:/virtual",
+        "type": 2
+      },
+      {
+        "source": "platform:/resource/RISC_V/Design",
+        "target": "file:///c:/RISC_V_research/RISC_V",
+        "type": 2
+      },
+      {
+        "source": "platform:/resource/RISC_V/Targets",
+        "target": "virtual:/virtual",
+        "type": 2
+      }
+    ],
+    "platform:/resource/RISC_V/VHDL%20Standard%20Libraries%5B2019%5D": [
+      {
+        "source": "platform:/resource/RISC_V/VHDL%20Standard%20Libraries%5B2019%5D/STD",
+        "target": "sigasiresource:/vhdl/2019/STD",
+        "type": 2
+      },
+      {
+        "source": "platform:/resource/RISC_V/VHDL%20Standard%20Libraries%5B2019%5D/IEEE",
+        "target": "sigasiresource:/vhdl/2019/IEEE",
+        "type": 2
+      },
+      {
+        "source": "platform:/resource/RISC_V/VHDL%20Standard%20Libraries%5B2019%5D/IEEE%20Synopsys",
+        "target": "sigasiresource:/vhdl/2019/IEEE%20Synopsys",
+        "type": 2
+      }
+    ],
+    "platform:/resource/RISC_V/Targets": [
+      {
+        "source": "platform:/resource/RISC_V/Targets/rtl",
+        "target": "virtual:/virtual",
+        "type": 2
+      }
+    ],
+    "platform:/resource/RISC_V/Targets/rtl": [
+      {
+        "source": "platform:/resource/RISC_V/Targets/rtl/work",
+        "target": "virtual:/virtual",
+        "type": 2
+      }
+    ],
+    "platform:/resource/RISC_V/Targets/rtl/work": [
+      {
+        "source": "platform:/resource/RISC_V/Targets/rtl/work/generic_counter.vhdl",
+        "target": "file:///c:/RISC_V_research/RISC_V/RISC_V.srcs/sources_1/imports/imports/new/generic_counter.vhdl",
+        "type": 1
+      },
+      {
+        "source": "platform:/resource/RISC_V/Targets/rtl/work/generic_register.vhd",
+        "target": "file:///c:/RISC_V_research/RISC_V/RISC_V.srcs/sources_1/imports/imports/new/generic_register.vhd",
+        "type": 1
+      },
+      {
+        "source": "platform:/resource/RISC_V/Targets/rtl/work/generic_register_file.vhd",
+        "target": "file:///c:/RISC_V_research/RISC_V/RISC_V.srcs/sources_1/imports/imports/new/generic_register_file.vhd",
+        "type": 1
+      },
+      {
+        "source": "platform:/resource/RISC_V/Targets/rtl/work/generic_shifter.vhdl",
+        "target": "file:///c:/RISC_V_research/RISC_V/RISC_V.srcs/sources_1/imports/imports/new/generic_shifter.vhdl",
+        "type": 1
+      },
+      {
+        "source": "platform:/resource/RISC_V/Targets/rtl/work/mi_package.vhdl",
+        "target": "file:///c:/RISC_V_research/RISC_V/RISC_V.srcs/sources_1/imports/imports/new/mi_package.vhdl",
+        "type": 1
+      },
+      {
+        "source": "platform:/resource/RISC_V/Targets/rtl/work/generic_FIFO.vhdl",
+        "target": "file:///c:/RISC_V_research/RISC_V/RISC_V.srcs/sources_1/imports/imports/packages/generic_FIFO.vhdl",
+        "type": 1
+      },
+      {
+        "source": "platform:/resource/RISC_V/Targets/rtl/work/ALU.vhdl",
+        "target": "file:///c:/RISC_V_research/RISC_V/RISC_V.srcs/sources_1/imports/new/ALU.vhdl",
+        "type": 1
+      },
+      {
+        "source": "platform:/resource/RISC_V/Targets/rtl/work/Fetch.vhdl",
+        "target": "file:///c:/RISC_V_research/RISC_V/RISC_V.srcs/sources_1/imports/new/Fetch.vhdl",
+        "type": 1
+      },
+      {
+        "source": "platform:/resource/RISC_V/Targets/rtl/work/Instruction_Decoder.vhdl",
+        "target": "file:///c:/RISC_V_research/RISC_V/RISC_V.srcs/sources_1/imports/new/Instruction_Decoder.vhdl",
+        "type": 1
+      },
+      {
+        "source": "platform:/resource/RISC_V/Targets/rtl/work/Load_Store.vhdl",
+        "target": "file:///c:/RISC_V_research/RISC_V/RISC_V.srcs/sources_1/imports/new/Load_Store.vhdl",
+        "type": 1
+      },
+      {
+        "source": "platform:/resource/RISC_V/Targets/rtl/work/RISCV_package.vhdl",
+        "target": "file:///c:/RISC_V_research/RISC_V/RISC_V.srcs/sources_1/imports/new/RISCV_package.vhdl",
+        "type": 1
+      },
+      {
+        "source": "platform:/resource/RISC_V/Targets/rtl/work/RISC_V.vhdl",
+        "target": "file:///c:/RISC_V_research/RISC_V/RISC_V.srcs/sources_1/imports/new/RISC_V.vhdl",
+        "type": 1
+      },
+      {
+        "source": "platform:/resource/RISC_V/Targets/rtl/work/Sequencer.vhdl",
+        "target": "file:///c:/RISC_V_research/RISC_V/RISC_V.srcs/sources_1/imports/new/Sequencer.vhdl",
+        "type": 1
+      },
+      {
+        "source": "platform:/resource/RISC_V/Targets/rtl/work/btu.vhdl",
+        "target": "file:///c:/RISC_V_research/RISC_V/RISC_V.srcs/sources_1/imports/new/btu.vhdl",
+        "type": 1
+      },
+      {
+        "source": "platform:/resource/RISC_V/Targets/rtl/work/datapath.vhdl",
+        "target": "file:///c:/RISC_V_research/RISC_V/RISC_V.srcs/sources_1/imports/new/datapath.vhdl",
+        "type": 1
+      }
+    ]
+  },
+  "targets": {
+    "rtl": {
+      "directoryPath": "c:\\RISC_V_research\\RISC_V",
+      "libraryMapping": {
+        "RISC_V.srcs\\sources_1\\imports": [
+          "work"
+        ]
+      },
+      "declaredDependencies": [],
+      "kind": "MANUAL"
+    }
+  },
+  "configurableIncludes": {},
+  "cachedVersionMapping": null
+}

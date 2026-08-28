@@ -1,0 +1,104 @@
+{
+  "version": 3,
+  "compilationGroups": [
+    {
+      "language": "VHDL",
+      "library": "work",
+      "resources": [
+        {
+          "path": "c:\\RISC_V_research\\RISC_V\\RISC_V.srcs\\sources_1\\imports\\imports\\new\\generic_counter.vhdl",
+          "hdlVersion": "VHDL 2019",
+          "kind": "COMPILE_FILE"
+        },
+        {
+          "path": "c:\\RISC_V_research\\RISC_V\\RISC_V.srcs\\sources_1\\imports\\imports\\new\\generic_register.vhd",
+          "hdlVersion": "VHDL 2019",
+          "kind": "COMPILE_FILE"
+        },
+        {
+          "path": "c:\\RISC_V_research\\RISC_V\\RISC_V.srcs\\sources_1\\imports\\imports\\new\\generic_register_file.vhd",
+          "hdlVersion": "VHDL 2019",
+          "kind": "COMPILE_FILE"
+        },
+        {
+          "path": "c:\\RISC_V_research\\RISC_V\\RISC_V.srcs\\sources_1\\imports\\imports\\new\\generic_shifter.vhdl",
+          "hdlVersion": "VHDL 2019",
+          "kind": "COMPILE_FILE"
+        },
+        {
+          "path": "c:\\RISC_V_research\\RISC_V\\RISC_V.srcs\\sources_1\\imports\\imports\\new\\mi_package.vhdl",
+          "hdlVersion": "VHDL 2019",
+          "kind": "COMPILE_FILE"
+        },
+        {
+          "path": "c:\\RISC_V_research\\RISC_V\\RISC_V.srcs\\sources_1\\imports\\imports\\packages\\generic_FIFO.vhdl",
+          "hdlVersion": "VHDL 2019",
+          "kind": "COMPILE_FILE"
+        },
+        {
+          "path": "c:\\RISC_V_research\\RISC_V\\RISC_V.srcs\\sources_1\\imports\\new\\ALU.vhdl",
+          "hdlVersion": "VHDL 2019",
+          "kind": "COMPILE_FILE"
+        },
+        {
+          "path": "c:\\RISC_V_research\\RISC_V\\RISC_V.srcs\\sources_1\\imports\\new\\Fetch.vhdl",
+          "hdlVersion": "VHDL 2019",
+          "kind": "COMPILE_FILE"
+        },
+        {
+          "path": "c:\\RISC_V_research\\RISC_V\\RISC_V.srcs\\sources_1\\imports\\new\\Instruction_Decoder.vhdl",
+          "hdlVersion": "VHDL 2019",
+          "kind": "COMPILE_FILE"
+        },
+        {
+          "path": "c:\\RISC_V_research\\RISC_V\\RISC_V.srcs\\sources_1\\imports\\new\\Load_Store.vhdl",
+          "hdlVersion": "VHDL 2019",
+          "kind": "COMPILE_FILE"
+        },
+        {
+          "path": "c:\\RISC_V_research\\RISC_V\\RISC_V.srcs\\sources_1\\imports\\new\\RISCV_package.vhdl",
+          "hdlVersion": "VHDL 2019",
+          "kind": "COMPILE_FILE"
+        },
+        {
+          "path": "c:\\RISC_V_research\\RISC_V\\RISC_V.srcs\\sources_1\\imports\\new\\RISC_V.vhdl",
+          "hdlVersion": "VHDL 2019",
+          "kind": "COMPILE_FILE"
+        },
+        {
+          "path": "c:\\RISC_V_research\\RISC_V\\RISC_V.srcs\\sources_1\\imports\\new\\Sequencer.vhdl",
+          "hdlVersion": "VHDL 2019",
+          "kind": "COMPILE_FILE"
+        },
+        {
+          "path": "c:\\RISC_V_research\\RISC_V\\RISC_V.srcs\\sources_1\\imports\\new\\btu.vhdl",
+          "hdlVersion": "VHDL 2019",
+          "kind": "COMPILE_FILE"
+        },
+        {
+          "path": "c:\\RISC_V_research\\RISC_V\\RISC_V.srcs\\sources_1\\imports\\new\\datapath.vhdl",
+          "hdlVersion": "VHDL 2019",
+          "kind": "COMPILE_FILE"
+        }
+      ],
+      "overrideDirectives": {},
+      "undefineMacroNames": [],
+      "includePaths": [],
+      "includeFallbackToLocalDirectory": false,
+      "additionalEnvironmentVariables": {},
+      "libraryResourcesConfig": null,
+      "currentWorkingDirectory": "c:\\RISC_V_research\\RISC_V",
+      "inferOrder": true,
+      "inferLibrary": false,
+      "allowUndefineInitialDefine": false,
+      "allowUndefineAllInitialDefine": false,
+      "conditionalVariables": {},
+      "target": {
+        "project": "RISC_V",
+        "version": "default",
+        "target": "rtl"
+      },
+      "shouldBeValidated": true
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+vhdl xil_defaultlib  \
+"../../../bd/RISC_V_block/ip/RISC_V_block_RISC_V_0_0/sim/RISC_V_block_RISC_V_0_0.vhd" \
+"../../../bd/RISC_V_block/ip/RISC_V_block_axi_bram_ctrl_0_0/sim/RISC_V_block_axi_bram_ctrl_0_0.vhd" \
+"../../../bd/RISC_V_block/ip/RISC_V_block_axi_bram_ctrl_1_0/sim/RISC_V_block_axi_bram_ctrl_1_0.vhd" \
+"../../../bd/RISC_V_block/ip/RISC_V_block_axi_gpio_0_0/sim/RISC_V_block_axi_gpio_0_0.vhd" \
+"../../../bd/RISC_V_block/ip/RISC_V_block_axi_gpio_1_0/sim/RISC_V_block_axi_gpio_1_0.vhd" \
+"../../../bd/RISC_V_block/ip/RISC_V_block_proc_sys_reset_0_0/sim/RISC_V_block_proc_sys_reset_0_0.vhd" \
+"../../../bd/RISC_V_block/sim/RISC_V_block.vhd" \
+
+# Do not sort compile order
+nosort

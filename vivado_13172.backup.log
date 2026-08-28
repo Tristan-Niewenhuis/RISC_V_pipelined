@@ -1,0 +1,67 @@
+INFO: [Common 17-3922] A valid Vivado Design Suite BASIC license has been detected. Your current license is active and will expire on 15-aug-2027.
+#-----------------------------------------------------------
+# Vivado v2026.1 (64-bit)
+# SW Build 6511674 on Tue Jun 16 11:02:23 MDT 2026
+# IP Build 6504888 on Tue Jun 09 09:05:25 MDT 2026
+# SharedData Build 6501428 on Mon Jun 08 17:34:18 MDT 2026
+# Start of session at: Tue Aug 25 19:57:57 2026
+# Process ID         : 13172
+# Current directory  : C:/RISC_V
+# Command line       : vivado.exe -gui_launcher_event rodinguilauncherevent7100 C:\RISC_V\RISC_V.xpr
+# Log file           : C:/RISC_V/vivado.log
+# Journal file       : C:/RISC_V\vivado.jou
+# Running On         : DESKTOP-P2Q0K54
+# Platform           : Windows 11
+# Operating System   : 26200
+# Processor Detail   : AMD Ryzen 5 5600X 6-Core Processor             
+# CPU Frequency      : 3693 MHz
+# CPU Physical cores : 6
+# CPU Logical cores  : 12
+# Host memory        : 17080 MB
+# Swap memory        : 11811 MB
+# Total Virtual      : 28891 MB
+# Available Virtual  : 13216 MB
+#-----------------------------------------------------------
+start_gui
+open_project C:/RISC_V/RISC_V.xpr
+INFO: [Project 1-313] Project file moved from 'C:/Users/trist/OneDrive/Desktop/git/RISC_V' since last save.
+INFO: [filemgmt 56-1] Board Part Repository Path: Directory not found as 'C:/../../../AppData/Roaming/Xilinx/Vivado/2026.1/xhub/board_store/xilinx_board_store'; using path 'C:/Users/trist/AppData/Roaming/Xilinx/Vivado/2026.1/xhub/board_store/xilinx_board_store' instead.
+Scanning sources...
+Finished scanning sources
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1704] No user IP repositories specified
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'C:/AMDDesignTools/2026.1/Vivado/data/ip'.
+open_project: Time (s): cpu = 00:00:16 ; elapsed = 00:00:10 . Memory (MB): peak = 1715.145 ; gain = 335.305
+open_bd_design {C:/RISC_V/RISC_V.srcs/sources_1/bd/RISC_V_block/RISC_V_block.bd}
+Reading block design file <C:/RISC_V/RISC_V.srcs/sources_1/bd/RISC_V_block/RISC_V_block.bd>...
+Adding component instance block -- xilinx.com:module_ref:RISC_V:1.0 - RISC_V_0
+Adding component instance block -- xilinx.com:ip:axi_bram_ctrl:4.1 - axi_bram_ctrl_0
+Adding component instance block -- xilinx.com:ip:blk_mem_gen:8.4 - axi_bram_ctrl_0_bram
+Adding component instance block -- xilinx.com:ip:axi_bram_ctrl:4.1 - axi_bram_ctrl_1
+Adding component instance block -- xilinx.com:ip:blk_mem_gen:8.4 - axi_bram_ctrl_1_bram
+Adding component instance block -- xilinx.com:ip:axi_gpio:2.0 - axi_gpio_0
+Adding component instance block -- xilinx.com:ip:axi_gpio:2.0 - axi_gpio_1
+Adding component instance block -- xilinx.com:ip:axi_interconnect:2.1 - axi_interconnect_0
+Adding component instance block -- xilinx.com:ip:axi_crossbar:2.1 - xbar
+Adding component instance block -- xilinx.com:ip:axi_protocol_converter:2.1 - auto_pc
+Adding component instance block -- xilinx.com:ip:axi_protocol_converter:2.1 - auto_pc
+Adding component instance block -- xilinx.com:ip:clk_wiz:6.0 - clk_wiz_0
+Adding component instance block -- xilinx.com:inline_hdl:ilconstant:1.0 - ilconstant_0
+Adding component instance block -- xilinx.com:inline_hdl:ilconstant:1.0 - ilconstant_1
+Adding component instance block -- xilinx.com:ip:proc_sys_reset:5.0 - proc_sys_reset_0
+Successfully read diagram <RISC_V_block> from block design file <C:/RISC_V/RISC_V.srcs/sources_1/bd/RISC_V_block/RISC_V_block.bd>
+open_bd_design: Time (s): cpu = 00:00:07 ; elapsed = 00:00:06 . Memory (MB): peak = 1868.820 ; gain = 130.066
+update_compile_order -fileset sources_1
+make_wrapper -files [get_files C:/RISC_V/RISC_V.srcs/sources_1/bd/RISC_V_block/RISC_V_block.bd] -top
+INFO: [BD 41-1662] The design 'RISC_V_block.bd' is already validated. Therefore parameter propagation will not be re-run.
+Wrote  : <C:/RISC_V/RISC_V.srcs/sources_1/bd/RISC_V_block/ui/bd_54da91ac.ui> 
+WARNING: [BD 41-2384] Width mismatch when connecting pin: '/axi_interconnect_0/xbar/s_axi_arid'(2) to pin: '/axi_interconnect_0/s00_couplers/M_AXI_arid'(1) - Only lower order bits will be connected.
+WARNING: [BD 41-2384] Width mismatch when connecting pin: '/axi_interconnect_0/xbar/s_axi_awid'(2) to pin: '/axi_interconnect_0/s01_couplers/M_AXI_awid'(1) - Only lower order bits will be connected.
+WARNING: [BD 41-2384] Width mismatch when connecting pin: '/axi_interconnect_0/xbar/s_axi_arid'(2) to pin: '/axi_interconnect_0/s01_couplers/M_AXI_arid'(1) - Only lower order bits will be connected.
+WARNING: [BD 41-2384] Width mismatch when connecting pin: '/RISC_V_0/f_M_AXI_RID'(1) to pin: '/axi_interconnect_0/S00_AXI_rid'(2) - Only lower order bits will be connected.
+WARNING: [BD 41-2384] Width mismatch when connecting pin: '/RISC_V_0/ls_M_AXI_BID'(1) to pin: '/axi_interconnect_0/S01_AXI_bid'(2) - Only lower order bits will be connected.
+WARNING: [BD 41-2384] Width mismatch when connecting pin: '/RISC_V_0/ls_M_AXI_RID'(1) to pin: '/axi_interconnect_0/S01_AXI_rid'(2) - Only lower order bits will be connected.
+WARNING: [BD 41-2384] Width mismatch when connecting pin: '/axi_bram_ctrl_0_bram/addra'(32) to pin: '/axi_bram_ctrl_0/bram_addr_a'(15) - Only lower order bits will be connected.
+WARNING: [BD 41-2384] Width mismatch when connecting pin: '/axi_bram_ctrl_1_bram/addra'(32) to pin: '/axi_bram_ctrl_1/bram_addr_a'(15) - Only lower order bits will be connected.
+ERROR: [Common 17-1293] The path 'c:/RISC_V/RISC_V.gen/sources_1/bd/RISC_V_block/synth' already exists, is a directory, but is not writable.
+exit
