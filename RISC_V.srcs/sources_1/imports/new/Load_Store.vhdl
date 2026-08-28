@@ -2,7 +2,6 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.RISCV_package.all;
-use work.mi_package.all;
 
 entity Load_Store is
 	generic(

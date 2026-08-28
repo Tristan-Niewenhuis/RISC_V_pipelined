@@ -1201,12 +1201,12 @@
         "ports": [
           "clk_wiz_0/clk_out1",
           "proc_sys_reset_0/slowest_sync_clk",
-          "RISC_V_0/clk",
           "axi_bram_ctrl_0/s_axi_aclk",
           "axi_bram_ctrl_1/s_axi_aclk",
           "axi_gpio_0/s_axi_aclk",
           "axi_gpio_1/s_axi_aclk",
-          "smartconnect_0/aclk"
+          "smartconnect_0/aclk",
+          "RISC_V_0/clk"
         ]
       },
       "clk_wiz_0_locked": {
