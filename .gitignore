@@ -16,7 +16,6 @@
 *.str
 *.pb
 *.wdb
-*.wcfg
 
 # Vivado backup/recovery files
 *.backup

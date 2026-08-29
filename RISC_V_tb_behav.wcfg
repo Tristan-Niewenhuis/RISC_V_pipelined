@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="RISC_V_tb_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="RISC_V_tb" />
+            <top_module name="axi_bram_ctrl_funcs" />
+            <top_module name="glbl" />
+            <top_module name="ipif_pkg" />
+            <top_module name="mi_package" />
+            <top_module name="riscv_package" />
+            <top_module name="vcomponents" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="20,736.666 ns"></ZoomStartTime>
+      <ZoomEndTime time="26,981.667 ns"></ZoomEndTime>
+      <Cursor1Time time="23,456.666 ns"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="276"></NameColumnWidth>
+      <ValueColumnWidth column_width="106"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="7" />
+   <wave_markers>
+      <marker time="23973333" label="" />
+   </wave_markers>
+   <wvobject fp_name="/RISC_V_tb/sys_clock" type="logic">
+      <obj_property name="ElementShortName">sys_clock</obj_property>
+      <obj_property name="ObjectShortName">sys_clock</obj_property>
+   </wvobject>
+   <wvobject fp_name="/RISC_V_tb/resetn" type="logic">
+      <obj_property name="ElementShortName">resetn</obj_property>
+      <obj_property name="ObjectShortName">resetn</obj_property>
+   </wvobject>
+   <wvobject fp_name="/RISC_V_tb/led_16bits_tri_o" type="array">
+      <obj_property name="ElementShortName">led_16bits_tri_o[15:0]</obj_property>
+      <obj_property name="ObjectShortName">led_16bits_tri_o[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/RISC_V_tb/dip_switches_16bits_tri_i" type="array">
+      <obj_property name="ElementShortName">dip_switches_16bits_tri_i[15:0]</obj_property>
+      <obj_property name="ObjectShortName">dip_switches_16bits_tri_i[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="group244" type="group">
+      <obj_property name="label">DUT</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/reset" type="logic">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="vbus87" type="vbus">
+         <obj_property name="label">fetch axi</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/f_M_AXI_ARID" type="array">
+            <obj_property name="ElementShortName">f_M_AXI_ARID[0:0]</obj_property>
+            <obj_property name="ObjectShortName">f_M_AXI_ARID[0:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/f_M_AXI_ARADDR" type="array">
+            <obj_property name="ElementShortName">f_M_AXI_ARADDR[31:0]</obj_property>
+            <obj_property name="ObjectShortName">f_M_AXI_ARADDR[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/f_M_AXI_ARLEN" type="array">
+            <obj_property name="ElementShortName">f_M_AXI_ARLEN[7:0]</obj_property>
+            <obj_property name="ObjectShortName">f_M_AXI_ARLEN[7:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/f_M_AXI_ARSIZE" type="array">
+            <obj_property name="ElementShortName">f_M_AXI_ARSIZE[2:0]</obj_property>
+            <obj_property name="ObjectShortName">f_M_AXI_ARSIZE[2:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/f_M_AXI_ARBURST" type="array">
+            <obj_property name="ElementShortName">f_M_AXI_ARBURST[1:0]</obj_property>
+            <obj_property name="ObjectShortName">f_M_AXI_ARBURST[1:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/f_M_AXI_ARLOCK" type="logic">
+            <obj_property name="ElementShortName">f_M_AXI_ARLOCK</obj_property>
+            <obj_property name="ObjectShortName">f_M_AXI_ARLOCK</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/f_M_AXI_ARCACHE" type="array">
+            <obj_property name="ElementShortName">f_M_AXI_ARCACHE[3:0]</obj_property>
+            <obj_property name="ObjectShortName">f_M_AXI_ARCACHE[3:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/f_M_AXI_ARPROT" type="array">
+            <obj_property name="ElementShortName">f_M_AXI_ARPROT[2:0]</obj_property>
+            <obj_property name="ObjectShortName">f_M_AXI_ARPROT[2:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/f_M_AXI_ARQOS" type="array">
+            <obj_property name="ElementShortName">f_M_AXI_ARQOS[3:0]</obj_property>
+            <obj_property name="ObjectShortName">f_M_AXI_ARQOS[3:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/f_M_AXI_ARVALID" type="logic">
+            <obj_property name="ElementShortName">f_M_AXI_ARVALID</obj_property>
+            <obj_property name="ObjectShortName">f_M_AXI_ARVALID</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/f_M_AXI_ARREADY" type="logic">
+            <obj_property name="ElementShortName">f_M_AXI_ARREADY</obj_property>
+            <obj_property name="ObjectShortName">f_M_AXI_ARREADY</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/f_M_AXI_RID" type="array">
+            <obj_property name="ElementShortName">f_M_AXI_RID[0:0]</obj_property>
+            <obj_property name="ObjectShortName">f_M_AXI_RID[0:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/f_M_AXI_RDATA" type="array">
+            <obj_property name="ElementShortName">f_M_AXI_RDATA[31:0]</obj_property>
+            <obj_property name="ObjectShortName">f_M_AXI_RDATA[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/f_M_AXI_RRESP" type="array">
+            <obj_property name="ElementShortName">f_M_AXI_RRESP[1:0]</obj_property>
+            <obj_property name="ObjectShortName">f_M_AXI_RRESP[1:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/f_M_AXI_RLAST" type="logic">
+            <obj_property name="ElementShortName">f_M_AXI_RLAST</obj_property>
+            <obj_property name="ObjectShortName">f_M_AXI_RLAST</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/f_M_AXI_RVALID" type="logic">
+            <obj_property name="ElementShortName">f_M_AXI_RVALID</obj_property>
+            <obj_property name="ObjectShortName">f_M_AXI_RVALID</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/f_M_AXI_RREADY" type="logic">
+            <obj_property name="ElementShortName">f_M_AXI_RREADY</obj_property>
+            <obj_property name="ObjectShortName">f_M_AXI_RREADY</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="vbus88" type="vbus">
+         <obj_property name="label">load store axi</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_ARID" type="array">
+            <obj_property name="ElementShortName">ls_M_AXI_ARID[0:0]</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_ARID[0:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_ARADDR" type="array">
+            <obj_property name="ElementShortName">ls_M_AXI_ARADDR[31:0]</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_ARADDR[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_ARLEN" type="array">
+            <obj_property name="ElementShortName">ls_M_AXI_ARLEN[7:0]</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_ARLEN[7:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_ARSIZE" type="array">
+            <obj_property name="ElementShortName">ls_M_AXI_ARSIZE[2:0]</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_ARSIZE[2:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_ARBURST" type="array">
+            <obj_property name="ElementShortName">ls_M_AXI_ARBURST[1:0]</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_ARBURST[1:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_ARLOCK" type="logic">
+            <obj_property name="ElementShortName">ls_M_AXI_ARLOCK</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_ARLOCK</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_ARCACHE" type="array">
+            <obj_property name="ElementShortName">ls_M_AXI_ARCACHE[3:0]</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_ARCACHE[3:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_ARPROT" type="array">
+            <obj_property name="ElementShortName">ls_M_AXI_ARPROT[2:0]</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_ARPROT[2:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_ARQOS" type="array">
+            <obj_property name="ElementShortName">ls_M_AXI_ARQOS[3:0]</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_ARQOS[3:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_ARVALID" type="logic">
+            <obj_property name="ElementShortName">ls_M_AXI_ARVALID</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_ARVALID</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_ARREADY" type="logic">
+            <obj_property name="ElementShortName">ls_M_AXI_ARREADY</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_ARREADY</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_RID" type="array">
+            <obj_property name="ElementShortName">ls_M_AXI_RID[0:0]</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_RID[0:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_RDATA" type="array">
+            <obj_property name="ElementShortName">ls_M_AXI_RDATA[31:0]</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_RDATA[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_RRESP" type="array">
+            <obj_property name="ElementShortName">ls_M_AXI_RRESP[1:0]</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_RRESP[1:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_RLAST" type="logic">
+            <obj_property name="ElementShortName">ls_M_AXI_RLAST</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_RLAST</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_RVALID" type="logic">
+            <obj_property name="ElementShortName">ls_M_AXI_RVALID</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_RVALID</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_RREADY" type="logic">
+            <obj_property name="ElementShortName">ls_M_AXI_RREADY</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_RREADY</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_AWID" type="array">
+            <obj_property name="ElementShortName">ls_M_AXI_AWID[0:0]</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_AWID[0:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_AWADDR" type="array">
+            <obj_property name="ElementShortName">ls_M_AXI_AWADDR[31:0]</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_AWADDR[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_AWLEN" type="array">
+            <obj_property name="ElementShortName">ls_M_AXI_AWLEN[7:0]</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_AWLEN[7:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_AWSIZE" type="array">
+            <obj_property name="ElementShortName">ls_M_AXI_AWSIZE[2:0]</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_AWSIZE[2:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_AWBURST" type="array">
+            <obj_property name="ElementShortName">ls_M_AXI_AWBURST[1:0]</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_AWBURST[1:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_AWLOCK" type="logic">
+            <obj_property name="ElementShortName">ls_M_AXI_AWLOCK</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_AWLOCK</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_AWCACHE" type="array">
+            <obj_property name="ElementShortName">ls_M_AXI_AWCACHE[3:0]</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_AWCACHE[3:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_AWPROT" type="array">
+            <obj_property name="ElementShortName">ls_M_AXI_AWPROT[2:0]</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_AWPROT[2:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_AWQOS" type="array">
+            <obj_property name="ElementShortName">ls_M_AXI_AWQOS[3:0]</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_AWQOS[3:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_AWVALID" type="logic">
+            <obj_property name="ElementShortName">ls_M_AXI_AWVALID</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_AWVALID</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_AWREADY" type="logic">
+            <obj_property name="ElementShortName">ls_M_AXI_AWREADY</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_AWREADY</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_WDATA" type="array">
+            <obj_property name="ElementShortName">ls_M_AXI_WDATA[31:0]</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_WDATA[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_WSTRB" type="array">
+            <obj_property name="ElementShortName">ls_M_AXI_WSTRB[3:0]</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_WSTRB[3:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_WLAST" type="logic">
+            <obj_property name="ElementShortName">ls_M_AXI_WLAST</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_WLAST</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_WVALID" type="logic">
+            <obj_property name="ElementShortName">ls_M_AXI_WVALID</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_WVALID</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_WREADY" type="logic">
+            <obj_property name="ElementShortName">ls_M_AXI_WREADY</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_WREADY</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_BID" type="array">
+            <obj_property name="ElementShortName">ls_M_AXI_BID[0:0]</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_BID[0:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_BRESP" type="array">
+            <obj_property name="ElementShortName">ls_M_AXI_BRESP[1:0]</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_BRESP[1:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_BVALID" type="logic">
+            <obj_property name="ElementShortName">ls_M_AXI_BVALID</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_BVALID</obj_property>
+         </wvobject>
+         <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_M_AXI_BREADY" type="logic">
+            <obj_property name="ElementShortName">ls_M_AXI_BREADY</obj_property>
+            <obj_property name="ObjectShortName">ls_M_AXI_BREADY</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/control_word" type="array">
+         <obj_property name="ElementShortName">control_word</obj_property>
+         <obj_property name="ObjectShortName">control_word</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/branch_cond" type="logic">
+         <obj_property name="ElementShortName">branch_cond</obj_property>
+         <obj_property name="ObjectShortName">branch_cond</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/exeception" type="logic">
+         <obj_property name="ElementShortName">exeception</obj_property>
+         <obj_property name="ObjectShortName">exeception</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/PC_inc" type="logic">
+         <obj_property name="ElementShortName">PC_inc</obj_property>
+         <obj_property name="ObjectShortName">PC_inc</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/fetch_done" type="logic">
+         <obj_property name="ElementShortName">fetch_done</obj_property>
+         <obj_property name="ObjectShortName">fetch_done</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/start_fetch" type="logic">
+         <obj_property name="ElementShortName">start_fetch</obj_property>
+         <obj_property name="ObjectShortName">start_fetch</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/execute" type="logic">
+         <obj_property name="ElementShortName">execute</obj_property>
+         <obj_property name="ObjectShortName">execute</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/fetch_error" type="logic">
+         <obj_property name="ElementShortName">fetch_error</obj_property>
+         <obj_property name="ObjectShortName">fetch_error</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_error" type="logic">
+         <obj_property name="ElementShortName">ls_error</obj_property>
+         <obj_property name="ObjectShortName">ls_error</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/load_done" type="logic">
+         <obj_property name="ElementShortName">load_done</obj_property>
+         <obj_property name="ObjectShortName">load_done</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/store_done" type="logic">
+         <obj_property name="ElementShortName">store_done</obj_property>
+         <obj_property name="ObjectShortName">store_done</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/start_load" type="logic">
+         <obj_property name="ElementShortName">start_load</obj_property>
+         <obj_property name="ObjectShortName">start_load</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/start_store" type="logic">
+         <obj_property name="ElementShortName">start_store</obj_property>
+         <obj_property name="ObjectShortName">start_store</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/load_inst" type="logic">
+         <obj_property name="ElementShortName">load_inst</obj_property>
+         <obj_property name="ObjectShortName">load_inst</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/store_inst" type="logic">
+         <obj_property name="ElementShortName">store_inst</obj_property>
+         <obj_property name="ObjectShortName">store_inst</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/not_reset" type="logic">
+         <obj_property name="ElementShortName">not_reset</obj_property>
+         <obj_property name="ObjectShortName">not_reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/pc" type="array">
+         <obj_property name="ElementShortName">pc[31:0]</obj_property>
+         <obj_property name="ObjectShortName">pc[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/ls_address" type="array">
+         <obj_property name="ElementShortName">ls_address[31:0]</obj_property>
+         <obj_property name="ObjectShortName">ls_address[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/instruction" type="array">
+         <obj_property name="ElementShortName">instruction[31:0]</obj_property>
+         <obj_property name="ObjectShortName">instruction[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/load_data" type="array">
+         <obj_property name="ElementShortName">load_data[31:0]</obj_property>
+         <obj_property name="ObjectShortName">load_data[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/store_data" type="array">
+         <obj_property name="ElementShortName">store_data[31:0]</obj_property>
+         <obj_property name="ObjectShortName">store_data[31:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/clk_wiz_0_locked" type="logic">
+      <obj_property name="ElementShortName">clk_wiz_0_locked</obj_property>
+      <obj_property name="ObjectShortName">clk_wiz_0_locked</obj_property>
+   </wvobject>
+   <wvobject fp_name="group122" type="group">
+      <obj_property name="label">datapath</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/datapath/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/datapath/reset" type="logic">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/datapath/control_word" type="array">
+         <obj_property name="ElementShortName">control_word</obj_property>
+         <obj_property name="ObjectShortName">control_word</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/datapath/load_inst" type="logic">
+         <obj_property name="ElementShortName">load_inst</obj_property>
+         <obj_property name="ObjectShortName">load_inst</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/datapath/load_data" type="array">
+         <obj_property name="ElementShortName">load_data[31:0]</obj_property>
+         <obj_property name="ObjectShortName">load_data[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/datapath/branch_cond" type="logic">
+         <obj_property name="ElementShortName">branch_cond</obj_property>
+         <obj_property name="ObjectShortName">branch_cond</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/datapath/pc_out" type="array">
+         <obj_property name="ElementShortName">pc_out[31:0]</obj_property>
+         <obj_property name="ObjectShortName">pc_out[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/datapath/ls_address" type="array">
+         <obj_property name="ElementShortName">ls_address[31:0]</obj_property>
+         <obj_property name="ObjectShortName">ls_address[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/datapath/store_data" type="array">
+         <obj_property name="ElementShortName">store_data[31:0]</obj_property>
+         <obj_property name="ObjectShortName">store_data[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/datapath/post_d_bus" type="array">
+         <obj_property name="ElementShortName">post_d_bus[31:0]</obj_property>
+         <obj_property name="ObjectShortName">post_d_bus[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/datapath/d_bus" type="array">
+         <obj_property name="ElementShortName">d_bus[31:0]</obj_property>
+         <obj_property name="ObjectShortName">d_bus[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/datapath/a_pre_bus" type="array">
+         <obj_property name="ElementShortName">a_pre_bus[31:0]</obj_property>
+         <obj_property name="ObjectShortName">a_pre_bus[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/datapath/b_pre_bus" type="array">
+         <obj_property name="ElementShortName">b_pre_bus[31:0]</obj_property>
+         <obj_property name="ObjectShortName">b_pre_bus[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/datapath/a_bus" type="array">
+         <obj_property name="ElementShortName">a_bus[31:0]</obj_property>
+         <obj_property name="ObjectShortName">a_bus[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/datapath/b_bus" type="array">
+         <obj_property name="ElementShortName">b_bus[31:0]</obj_property>
+         <obj_property name="ObjectShortName">b_bus[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/datapath/pc" type="array">
+         <obj_property name="ElementShortName">pc[31:0]</obj_property>
+         <obj_property name="ObjectShortName">pc[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/datapath/alu_out" type="array">
+         <obj_property name="ElementShortName">alu_out[31:0]</obj_property>
+         <obj_property name="ObjectShortName">alu_out[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/datapath/pc_in" type="array">
+         <obj_property name="ElementShortName">pc_in[29:0]</obj_property>
+         <obj_property name="ObjectShortName">pc_in[29:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/datapath/BTU_out" type="logic">
+         <obj_property name="ElementShortName">BTU_out</obj_property>
+         <obj_property name="ObjectShortName">BTU_out</obj_property>
+      </wvobject>
+      <wvobject fp_name="/RISC_V_tb/uut/RISC_V_block_i/RISC_V_0/U0/datapath/pc_latch" type="logic">
+         <obj_property name="ElementShortName">pc_latch</obj_property>
+         <obj_property name="ObjectShortName">pc_latch</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>
