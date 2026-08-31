@@ -33,6 +33,9 @@ begin
             port map(clk => clk, reset => reset, enable => decoded(i), d => d_in, q => array_reg(i));
     end generate regs;
     array_reg(0) <= (others => '0'); --x0 = 0
-    a_out <= array_reg(to_integer(unsigned(a_addr)));
-    b_out <= array_reg(to_integer(unsigned(b_addr)));
+
+    a_out <= d_in when ((a_addr = d_addr) and write_en = '1') else
+             array_reg(to_integer(unsigned(a_addr)));
+    b_out <= d_in when ((b_addr = d_addr) and write_en = '1') else
+             array_reg(to_integer(unsigned(b_addr)));
 end Behavioral;

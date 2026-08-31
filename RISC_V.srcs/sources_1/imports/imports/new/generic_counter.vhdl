@@ -6,9 +6,11 @@ use work.RISCV_package.all;
 
 entity generic_counter is
     generic(bits : integer := 4);
-    Port(clk, reset, latch, enable : in sl;
-         d : in slv(bits - 1 downto 0);
-         q : out slv(bits - 1 downto 0));
+    Port(
+        clk, reset, latch, enable : in sl;
+        d : in slv(bits - 1 downto 0);
+        q : out slv(bits - 1 downto 0)
+    );
 end generic_counter;
 
 architecture Behavioral of generic_counter is

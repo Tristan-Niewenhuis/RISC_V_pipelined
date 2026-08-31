@@ -82,7 +82,7 @@ architecture Behavioral of RISC_V is
   signal load_done, store_done, start_load, start_store : sl;
   signal load_inst, store_inst : sl;
   signal not_reset : sl;
-  signal pc, ls_address : slv(XLEN - 1 downto 0);
+  signal fetch_address, ls_address : slv(XLEN - 1 downto 0);
   signal instruction : slv(31 downto 0);
   signal load_data, store_data : slv(XLEN - 1 downto 0);
 begin
@@ -90,12 +90,11 @@ begin
   datapath : entity work.Datapath(Behavioral)
     port map(clk => clk,
              reset => reset,
-             load_inst => load_inst,
              load_data => load_data,
              control_word => control_word,
              branch_cond => branch_cond,
              ls_address => ls_address,
-             pc_out => pc,
+             fetch_address => fetch_address,
              store_data => store_data);
 
   ID : entity work.Instruction_Decoder(Behavioral)
@@ -105,7 +104,6 @@ begin
              inst => instruction,
              control_word => control_word,
              exeception => exeception,
-             load_inst => load_inst,
              store_inst => store_inst);
 
   Sequencer : entity work.Sequencer(Behavioral)
@@ -137,7 +135,7 @@ begin
     )
     PORT MAP(
       Start_read => start_fetch,
-      Read_address => pc,
+      Read_address => fetch_address,
       Read_Done => fetch_done,
       Read_Data => instruction,
       Error => fetch_error,

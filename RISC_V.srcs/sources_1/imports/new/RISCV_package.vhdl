@@ -27,21 +27,98 @@ package RISCV_package is
   function clog2(X : integer) return integer;
 
   type slv_array_32 is array (natural range <>) of slv(31 downto 0);
-  type control_word is record
+
+  type control_word_if_id is record
     Asel : slv(4 downto 0);
     Bsel : slv(4 downto 0);
     Dsel : slv(4 downto 0);
     Dlen : sl;
     PCAsel : sl;
     IMMBsel : sl;
-    PCDsel : sl;
-    PCie : sl;
-    PCle : sl; --might not needed
+    PCle : sl;
     isBR : sl;
     BRcond : slv(2 downto 0);
     ALUFunc : slv(3 downto 0);
     IMM : slv(31 downto 0);
-  end record control_word;
+    is_load : sl;
+    is_store : sl;
+    PCDsel : sl;
+    LoadDsel : sl;
+  end record control_word_if_id;
+
+  constant CONTROL_WORD_IF_ID_ZERO : control_word_if_id := (
+    Asel => (others => '0'),
+    Bsel => (others => '0'),
+    Dsel => (others => '0'),
+    Dlen => '0',
+    PCAsel => '0',
+    IMMBsel => '0',
+    PCle => '0',
+    isBR => '0',
+    BRcond => (others => '0'),
+    ALUFunc => (others => '0'),
+    IMM => (others => '0'),
+    is_load => '0',
+    is_store => '0',
+    PCDsel => '0',
+    LoadDsel => '0'
+  );
+
+  type control_word_id_ex is record
+    PCAsel : sl;
+    IMMBsel : sl;
+    PCle : sl;
+    isBR : sl;
+    BRcond : slv(2 downto 0);
+    ALUFunc : slv(3 downto 0);
+    IMM : slv(31 downto 0);
+    is_load : sl;
+    is_store : sl;
+    PCDsel : sl;
+    LoadDsel : sl;
+  end record control_word_id_ex;
+
+  constant CONTROL_WORD_ID_EX_ZERO : control_word_id_ex := (
+    PCAsel => '0',
+    IMMBsel => '0',
+    PCle => '0',
+    isBR => '0',
+    BRcond => (others => '0'),
+    ALUFunc => (others => '0'),
+    IMM => (others => '0'),
+    is_load => '0',
+    is_store => '0',
+    PCDsel => '0',
+    LoadDsel => '0'
+  );
+
+  type control_word_ex_mem is record
+    is_load : sl;
+    is_store : sl;
+    PCDsel : sl;
+    LoadDsel : sl;
+  end record control_word_ex_mem;
+
+  constant CONTROL_WORD_EX_MEM_ZERO : control_word_ex_mem := (
+    is_load => '0',
+    is_store => '0',
+    PCDsel => '0',
+    LoadDsel => '0'
+  );
+
+  type control_word_mem_wb is record
+    PCDsel : sl;
+    LoadDsel : sl;
+  end record control_word_mem_wb;
+
+  constant CONTROL_WORD_MEM_WB_ZERO : control_word_mem_wb := (
+    PCDsel => '0',
+    LoadDsel => '0'
+  );
+
+  function if_id_to_id_ex(if_id : control_word_if_id) return control_word_id_ex;
+  function id_ex_to_ex_mem(id_ex : control_word_id_ex) return control_word_ex_mem;
+  function ex_mem_to_mem_wb(ex_mem : control_word_ex_mem) return control_word_mem_wb;
 
   function decode(signal sel : slv; signal enable : sl) return slv;
   function vector_and(signal to_and : slv) return sl;
@@ -78,6 +155,41 @@ package body RISCV_package is
   begin
     return integer(ceil(log2(real(X))));
   end function clog2;
+
+  function if_id_to_id_ex(if_id : control_word_if_id) return control_word_id_ex is
+    variable id_ex : control_word_id_ex;
+  begin
+    id_ex.PCAsel := if_id.PCAsel;
+    id_ex.IMMBsel := if_id.IMMBsel;
+    id_ex.PCle := if_id.PCle;
+    id_ex.isBR := if_id.isBR;
+    id_ex.BRcond := if_id.BRcond;
+    id_ex.ALUFunc := if_id.ALUFunc;
+    id_ex.IMM := if_id.IMM;
+    id_ex.is_load := if_id.is_load;
+    id_ex.is_store := if_id.is_store;
+    id_ex.PCDsel := if_id.PCDsel;
+    id_ex.LoadDsel := if_id.LoadDsel;
+    return id_ex;
+  end function;
+
+  function id_ex_to_ex_mem(id_ex : control_word_id_ex) return control_word_ex_mem is
+    variable ex_mem : control_word_ex_mem;
+  begin
+    ex_mem.is_load := id_ex.is_load;
+    ex_mem.is_store := id_ex.is_store;
+    ex_mem.PCDsel := id_ex.PCDsel;
+    ex_mem.LoadDsel := id_ex.LoadDsel;
+    return ex_mem;
+  end function;
+
+  function ex_mem_to_mem_wb(ex_mem : control_word_ex_mem) return control_word_mem_wb is
+    variable mem_wb : control_word_mem_wb;
+  begin
+    mem_wb.PCDsel := ex_mem.PCDsel;
+    mem_wb.LoadDsel := ex_mem.LoadDsel;
+    return mem_wb;
+  end function;
 
   function decode(signal sel : slv; signal enable : sl) return slv is
     variable decoded : slv((2 ** sel'length) - 1 downto 0);

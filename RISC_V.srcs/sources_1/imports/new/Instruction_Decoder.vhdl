@@ -4,12 +4,12 @@ use IEEE.NUMERIC_STD.ALL;
 use work.RISCV_package.all;
 
 entity Instruction_Decoder is
-    Port(execute, PCie, branch_cond : in sl;
-         inst : in slv(31 downto 0);
-         control_word : out control_word;
-         exeception : out sl;
-         store_inst : out sl;
-         load_inst : out sl);
+    Port(
+        branch_cond : in sl;
+        inst : in slv(31 downto 0);
+        control_word_out : out control_word_if_id;
+        exeception : out sl
+    );
 end Instruction_Decoder;
 
 architecture Behavioral of Instruction_Decoder is
@@ -19,7 +19,9 @@ architecture Behavioral of Instruction_Decoder is
     signal force_add : sl;
     signal is_LOAD, is_LUI, is_AUIPC, is_JALR, is_ADDI : sl;
     signal is_R, is_I, is_S, is_B, is_U, is_J, is_system, is_MRET, is_WFI, is_illegal : sl;
+
 begin
+    ----combinational logic----
     --throw expection when inst(1 downto 0) != 0
     bottom_11 <= '1' when inst(1 downto 0) = "00" else '0';
 
@@ -72,21 +74,19 @@ begin
     --all the functions that need a add
     force_add <= (not is_R and not is_I) or is_JALR or is_LOAD or is_ADDI;
 
-    control_word.Asel <= "00000" when is_LUI = '1' else inst(19 downto 15);
-    control_word.Bsel <= inst(24 downto 20);
-    control_word.Dsel <= inst(11 downto 7);
-    control_word.Dlen <= execute and (is_R or is_I or is_U or is_J);
-    control_word.PCAsel <= is_AUIPC or is_J or is_B;
-    control_word.IMMBsel <= is_S or is_I or is_U or is_J or is_B;
-    control_word.PCDsel <= is_J or is_JALR;
-    control_word.PCie <= PCie;
-    control_word.PCle <= execute and (is_J or is_JALR);
-    control_word.isBR <= execute and (is_B);
-    control_word.BRcond <= inst(14 downto 12);
-    control_word.ALUFunc <= "0000" when force_add = '1' else inst(14 downto 12) & (inst(30));
-    control_word.IMM <= immediate;
-
-    exeception <= is_illegal or bottom_11 or instruction_address_misaligned;
-    store_inst <= is_S;
-    load_inst <= is_LOAD;
+    control_word_out.Asel <= "00000" when is_LUI = '1' else inst(19 downto 15);
+    control_word_out.Bsel <= inst(24 downto 20);
+    control_word_out.Dsel <= inst(11 downto 7);
+    control_word_out.Dlen <= is_R or is_I or is_U or is_J;
+    control_word_out.PCAsel <= is_AUIPC or is_J or is_B;
+    control_word_out.IMMBsel <= is_S or is_I or is_U or is_J or is_B;
+    control_word_out.PCle <= is_J or is_JALR;
+    control_word_out.isBR <= is_B;
+    control_word_out.BRcond <= inst(14 downto 12);
+    control_word_out.ALUFunc <= "0000" when force_add = '1' else inst(14 downto 12) & (inst(30));
+    control_word_out.IMM <= immediate;
+    control_word_out.is_load <= is_LOAD;
+    control_word_out.is_store <= is_S;
+    control_word_out.PCDsel <= is_J or is_JALR;
+    control_word_out.LoadDsel <= is_LOAD;
 end Behavioral;
