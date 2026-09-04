@@ -19,6 +19,7 @@ architecture Behavioral of Instruction_Decoder is
     signal force_add : sl;
     signal is_LOAD, is_LUI, is_AUIPC, is_JALR, is_ADDI : sl;
     signal is_R, is_I, is_S, is_B, is_U, is_J, is_system, is_MRET, is_WFI, is_illegal : sl;
+    signal inst_type : slv(5 downto 0);
 
 begin
     ----combinational logic----
@@ -49,9 +50,11 @@ begin
         '1' when "01101" | "00101",
         '0' when others;
     is_J <= '1' when inst(6 downto 2) = "11011" else '0';
+    is_system <= '1' when inst(6 downto 2) = "11100" else '0';
 
     --encode these into a 3 bit control word
-    with slv'(is_R & is_I & is_S & is_B & is_U & is_J) select type_control_sig <=
+    inst_type <= is_R & is_I & is_S & is_B & is_U & is_J;
+    with inst_type select type_control_sig <=
         "000" when "100000", --R
         "001" when "010000", --I
         "010" when "001000", --S
@@ -75,18 +78,20 @@ begin
     force_add <= (not is_R and not is_I) or is_JALR or is_LOAD or is_ADDI;
 
     control_word_out.Asel <= "00000" when is_LUI = '1' else inst(19 downto 15);
+    control_word_out.Aused <= not (is_J or is_AUIPC or is_LUI or is_system);
     control_word_out.Bsel <= inst(24 downto 20);
-    control_word_out.Dsel <= inst(11 downto 7);
-    control_word_out.Dlen <= is_R or is_I or is_U or is_J;
+    control_word_out.Bused <= is_B or is_S or is_R;
     control_word_out.PCAsel <= is_AUIPC or is_J or is_B;
     control_word_out.IMMBsel <= is_S or is_I or is_U or is_J or is_B;
     control_word_out.PCle <= is_J or is_JALR;
     control_word_out.isBR <= is_B;
-    control_word_out.BRcond <= inst(14 downto 12);
     control_word_out.ALUFunc <= "0000" when force_add = '1' else inst(14 downto 12) & (inst(30));
     control_word_out.IMM <= immediate;
     control_word_out.is_load <= is_LOAD;
     control_word_out.is_store <= is_S;
+    control_word_out.BRcond_LStype <= inst(14 downto 12);
+    control_word_out.Dsel <= inst(11 downto 7);
+    control_word_out.Dlen <= is_R or is_I or is_U or is_J;
     control_word_out.PCDsel <= is_J or is_JALR;
     control_word_out.LoadDsel <= is_LOAD;
 end Behavioral;

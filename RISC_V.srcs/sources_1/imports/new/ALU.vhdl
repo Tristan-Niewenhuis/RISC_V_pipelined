@@ -22,7 +22,7 @@ begin
     --add/subtract
     post_b <= b when func(0) = '0' else
               slv(-signed(b));
-    add_sub_out <= slv(unsigned(a) + unsigned(post_b));
+    add_sub_out <= slv(signed(a) + signed(post_b));
 
     --shift
     shift_func <= func(3) & func(0);

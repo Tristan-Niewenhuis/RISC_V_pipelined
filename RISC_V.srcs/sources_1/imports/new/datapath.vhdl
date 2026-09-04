@@ -18,6 +18,7 @@ entity Datapath is
         ls_addr_valid : out sl;
         ls_addr_ready : in sl;
         load_store_ctrl : out sl;
+        ls_type : out slv(2 downto 0);
         ls_address : out slv(XLEN - 1 downto 0);
         store_data : out slv(XLEN - 1 downto 0);
         ls_done_valid : in sl;
@@ -27,19 +28,31 @@ entity Datapath is
 end Datapath;
 
 architecture Behavioral of Datapath is
-    signal d_in, a_out, b_out, a_bus, b_bus, pc, alu_out, a_id_ex, b_id_ex, alu_out_ex_mem, store_data_ex_mem, load_data_mem_wb, alu_out_mem_wb : slv(XLEN - 1 downto 0);
-    signal pc_if_id, pc_id_ex, pc_d : slv(29 downto 0);
-    signal BTU_out, pc_latch, pc_incr, if_id_en, id_ex_en, ex_mem_en, mem_wb_en : sl;
+    signal d_in, a_out, b_out, a_bus, b_bus, pc, alu_out, id_ex_a, id_ex_b, ex_mem_alu_out, ex_mem_store_data, mem_wb_load_data, mem_wb_alu_out : slv(XLEN - 1 downto 0);
+    signal if_id_pc, id_ex_pc, pc_d : slv(29 downto 0);
+    signal BTU_out, pc_latch, pc_incr : sl;
+
+    signal fetch_addr_valid_i, fetch_inst_ready_i, ls_addr_valid_i, ls_done_ready_i : sl;
+
     signal cw_decoded : control_word_if_id;
-    signal if_id : control_word_if_id;
-    signal id_ex : control_word_id_ex;
-    signal ex_mem : control_word_ex_mem;
-    signal mem_wb : control_word_mem_wb;
+    signal if_id_cw : control_word_if_id;
+    signal id_ex_cw : control_word_id_ex;
+    signal ex_mem_cw : control_word_ex_mem;
+    signal mem_wb_cw : control_word_mem_wb;
+
+    signal fetch_hazard, ls_hazard : sl;
+    signal if_id_stall, id_ex_stall, ex_mem_stall, mem_wb_stall : sl;
+    signal if_id_nop, id_ex_nop, ex_mem_nop, mem_wb_nop : sl;
+    signal id_ex_a_hazard, id_ex_b_hazard, ex_mem_a_hazard, ex_mem_b_hazard, raw_hazard : sl;
+    signal branch_hazard, branch_correct, branch_take : sl;
 begin
 
-    pc_d <= slv(unsigned(pc_id_ex) + unsigned(id_ex.IMM(31 downto 2))); --unsigned or signed add, doesn't matter. same logic under the hood
-    pc_latch <= id_ex.PCle or BTU_out;
-    pc_incr <= fetch_inst_valid and fetch_inst_ready;
+    branch_correct <= '1' when pc_d = if_id_pc else '0';
+    branch_take <= id_ex_cw.PCle or BTU_out;
+
+    pc_d <= slv(signed(id_ex_pc) + signed(id_ex_cw.IMM(31 downto 2))); --unsigned or signed add, doesn't matter. same logic under the hood
+    pc_latch <= branch_take and not branch_correct;
+    pc_incr <= if_id_stall;
     Program_Counter : entity work.generic_counter(Behavioral)
         generic map(bits => XLEN - 2)
         port map(clk => clk,
@@ -50,10 +63,14 @@ begin
                  q => pc(31 downto 2));
     pc(1 downto 0) <= "00"; --hard set last 2 bits of pc to 00
 
-    fetch_addr_valid <= '1';
+    fetch_addr_valid_i <= '1';
+    fetch_addr_valid <= fetch_addr_valid_i;
     fetch_address <= pc;
 
-    fetch_inst_ready <= not stall;
+    fetch_inst_ready_i <= not ls_hazard;
+    fetch_inst_ready <= fetch_inst_ready_i;
+
+    fetch_hazard <= (fetch_addr_valid_i and not fetch_addr_ready) or (fetch_inst_ready_i and not fetch_inst_valid);
 
     Instruction_Decoder : entity work.Instruction_Decoder(Behavioral)
         port map(
@@ -66,118 +83,165 @@ begin
     IF_ID_proc : process(clk) is
     begin
         if rising_edge(clk) then
-            if reset = '1' then
-                pc_if_id <= (others => '0');
-                if_id <= CONTROL_WORD_IF_ID_ZERO;
+            if (reset = '1' or if_id_nop = '1') then
+                if_id_pc <= (others => '0');
+                if_id_cw <= CONTROL_WORD_IF_ID_NOP;
             else
-                if (if_id_en = '1') then
-                    pc_if_id <= pc(31 downto 2);
+                if (if_id_stall = '0') then
+                    if_id_pc <= pc(31 downto 2);
 
-                    if_id <= cw_decoded;
+                    if_id_cw <= cw_decoded;
                 end if;
             end if;
         end if;
     end process;
 
-    d_in <= load_data_mem_wb when if_id.LoadDsel = '1' else
-            slv(unsigned(pc) + 4) when if_id.PCDsel = '1' else
-            alu_out_mem_wb;
+    d_in <= mem_wb_load_data when mem_wb_cw.LoadDsel = '1' else
+            slv(unsigned(pc) + 4) when mem_wb_cw.PCDsel = '1' else
+            mem_wb_alu_out;
 
     Regs : entity work.generic_register_file(Behavioral)
         generic map(word_len => XLEN, addr_bits => REGS_ADDR_BITS)
         port map(clk => clk,
                  reset => reset,
-                 write_en => if_id.Dlen,
-                 d_addr => if_id.Dsel,
+                 write_en => mem_wb_cw.Dlen,
+                 d_addr => mem_wb_cw.Dsel,
                  d_in => d_in,
-                 a_addr => if_id.Asel,
+                 a_addr => if_id_cw.Asel,
                  a_out => a_out,
-                 b_addr => if_id.Bsel,
+                 b_addr => if_id_cw.Bsel,
                  b_out => b_out);
 
     ID_EX_proc : process(clk) is
     begin
         if rising_edge(clk) then
-            if reset = '1' then
-                pc_id_ex <= (others => '0');
-                a_id_ex <= (others => '0');
-                b_id_ex <= (others => '0');
-                id_ex <= CONTROL_WORD_ID_EX_ZERO;
+            if (reset = '1' or id_ex_nop = '1') then
+                id_ex_pc <= (others => '0');
+                id_ex_a <= (others => '0');
+                id_ex_b <= (others => '0');
+                id_ex_cw <= CONTROL_WORD_ID_EX_NOP;
             else
-                if (id_ex_en = '1') then
-                    pc_id_ex <= pc_if_id;
-                    a_id_ex <= a_out;
-                    b_id_ex <= b_out;
+                if (id_ex_stall = '0') then
+                    id_ex_pc <= if_id_pc;
+                    id_ex_a <= a_out;
+                    id_ex_b <= b_out;
 
-                    id_ex <= if_id_to_id_ex(if_id);
+                    id_ex_cw <= if_id_to_id_ex(if_id_cw);
                 end if;
             end if;
         end if;
     end process;
 
-    a_bus <= pc_id_ex & "00" when id_ex.PCAsel = '1' else
-             a_id_ex;
-    b_bus <= id_ex.IMM when id_ex.IMMBsel = '1' else
-             b_id_ex;
+    a_bus <= id_ex_pc & "00" when id_ex_cw.PCAsel = '1' else
+             id_ex_a;
+    b_bus <= id_ex_cw.IMM when id_ex_cw.IMMBsel = '1' else
+             id_ex_b;
 
     ALU : entity work.ALU(Behavioral)
         port map(a => a_bus,
                  b => b_bus,
                  alu_out => alu_out,
-                 func => id_ex.ALUfunc);
+                 func => id_ex_cw.ALUfunc);
 
     BTU : entity work.BTU(Behavioral)
-        port map(a => a_id_ex,
-                 b => b_id_ex,
-                 cond => id_ex.BRcond,
-                 enable => id_ex.isBR,
+        port map(a => id_ex_a,
+                 b => id_ex_b,
+                 cond => id_ex_cw.BRcond_LStype,
+                 enable => id_ex_cw.isBR,
                  BTU_out => BTU_out);
 
     EX_MEM_proc : process(clk) is
     begin
         if rising_edge(clk) then
-            if reset = '1' then
-                alu_out_ex_mem <= (others => '0');
-                store_data_ex_mem <= (others => '0');
-                ex_mem <= CONTROL_WORD_EX_MEM_ZERO;
+            if (reset = '1' or ex_mem_nop = '1') then
+                ex_mem_alu_out <= (others => '0');
+                ex_mem_store_data <= (others => '0');
+                ex_mem_cw <= CONTROL_WORD_EX_MEM_NOP;
             else
-                if (ex_mem_en = '1') then
-                    alu_out_ex_mem <= alu_out;
-                    store_data_ex_mem <= b_id_ex;
+                if (ex_mem_stall = '0') then
+                    ex_mem_alu_out <= alu_out;
+                    ex_mem_store_data <= id_ex_b;
 
-                    ex_mem <= id_ex_to_ex_mem(id_ex);
+                    ex_mem_cw <= id_ex_to_ex_mem(id_ex_cw);
                 end if;
             end if;
         end if;
     end process;
 
-    ls_addr_valid <= ex_mem.is_load or ex_mem.is_store
-        ls_addr_ready
-        load_store_ctrl
-        ls_address
-        store_data
-        ls_done_valid
-        ls_done_ready
-        load_data
-    ls_address <= alu_out_ex_mem;
-    store_data <= store_data_ex_mem;
+    ls_addr_valid_i <= ex_mem_cw.is_load or ex_mem_cw.is_store;
+    ls_addr_valid <= ls_addr_valid_i;
+    load_store_ctrl <= ex_mem_cw.is_load;
+    ls_type <= ex_mem_cw.BRcond_LStype;
+    ls_address <= ex_mem_alu_out;
+    store_data <= ex_mem_store_data;
+    ls_done_ready_i <= ls_addr_valid_i;
+    ls_done_ready <= ls_done_ready_i;
+
+    ls_hazard <= (ls_addr_valid_i and not ls_addr_ready) or (ls_done_ready_i and not ls_done_valid);
 
     MEM_WB_proc : process(clk) is
     begin
         if rising_edge(clk) then
-            if reset = '1' then
-                load_data_mem_wb <= (others => '0');
-                alu_out_mem_wb <= (others => '0');
-                mem_wb <= CONTROL_WORD_MEM_WB_ZERO;
+            if (reset = '1' or mem_wb_nop = '1') then
+                mem_wb_load_data <= (others => '0');
+                mem_wb_alu_out <= (others => '0');
+                mem_wb_cw <= CONTROL_WORD_MEM_WB_NOP;
             else
-                if (mem_wb_en = '1') then
-                    load_data_mem_wb <= load_data;
-                    alu_out_mem_wb <= alu_out_ex_mem;
+                if (mem_wb_stall = '0') then
+                    mem_wb_load_data <= load_data;
+                    mem_wb_alu_out <= ex_mem_alu_out;
 
-                    mem_wb <= ex_mem_to_mem_wb(ex_mem);
+                    mem_wb_cw <= ex_mem_to_mem_wb(ex_mem_cw);
                 end if;
             end if;
         end if;
     end process;
+
+    ----control logic----
+    --RAW hazard (just stall)
+    -- @formatter:off
+    id_ex_a_hazard <= '1' when (if_id_cw.Asel = id_ex_cw.Dsel and 
+                                if_id_cw.Asel /= "00000" and 
+                                if_id_cw.Aused = '1' and 
+                                id_ex_cw.Dlen = '1') else
+                                '0';
+
+    id_ex_b_hazard <= '1' when (if_id_cw.Bsel = id_ex_cw.Dsel and 
+                                if_id_cw.Bsel /= "00000" and 
+                                if_id_cw.Bused = '1' and 
+                                id_ex_cw.Dlen = '1') else
+                                '0';
+
+    ex_mem_a_hazard <= '1' when (if_id_cw.Asel = ex_mem_cw.Dsel and 
+                                if_id_cw.Asel /= "00000" and 
+                                if_id_cw.Aused = '1' and 
+                                ex_mem_cw.Dlen = '1') else
+                                '0';
+
+    ex_mem_b_hazard <= '1' when (if_id_cw.Bsel = ex_mem_cw.Dsel and 
+                                if_id_cw.Bsel /= "00000" and 
+                                if_id_cw.Bused = '1' and 
+                                ex_mem_cw.Dlen = '1') else
+                                '0';
+
+
+    raw_hazard <= id_ex_a_hazard or id_ex_b_hazard or 
+                  ex_mem_a_hazard or ex_mem_b_hazard;
+    -- @formatter:on
+
+    --branch hazard
+    branch_hazard <= '1' when (branch_take = '1' and branch_correct = '0') else '0';
+
+    --pipeline register bubbles
+    if_id_nop <= fetch_hazard or branch_hazard;
+    id_ex_nop <= raw_hazard or branch_hazard;
+    ex_mem_nop <= '0';
+    mem_wb_nop <= ls_hazard;
+
+    --pipeline register enable
+    if_id_stall <= id_ex_stall or raw_hazard;
+    id_ex_stall <= ex_mem_stall;
+    ex_mem_stall <= ls_hazard;
+    mem_wb_stall <= '0';
 
 end Behavioral;

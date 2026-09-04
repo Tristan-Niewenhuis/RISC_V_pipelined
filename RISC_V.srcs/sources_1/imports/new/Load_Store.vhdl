@@ -18,14 +18,16 @@ entity Load_Store is
 		C_M_AXI_BUSER_WIDTH : integer := 0 -- Width of User Response Bus
 	);
 	port(
-		-- Users can add ports here. These are SUGGESTED user ports.
-		start_load, start_store : in sl; -- Initiate AXI read transaction
-		load_store_type : in slv(2 downto 0);
-		address : in slv(C_M_AXI_ADDR_WIDTH - 1 downto 0); -- address to read from
-		store_Data : in slv(C_M_AXI_DATA_WIDTH - 1 downto 0);
-		load_done, store_done : out sl; -- Asserts when transaction is complete
-		load_data_out : out slv(C_M_AXI_DATA_WIDTH - 1 downto 0); -- Data that was read (modify as needed)
-		Error : out sl; -- Asserts when ERROR is detected
+		addr_valid : in sl;
+		addr_ready : out sl;
+		access_type : in slv(2 downto 0);
+		load_store : in sl; --1 is load, 0 is store
+		address : in slv(C_M_AXI_ADDR_WIDTH - 1 downto 0);
+		done_valid : out sl;
+		done_ready : in sl;
+		store_data : in slv(C_M_AXI_DATA_WIDTH - 1 downto 0);
+		load_data_out : out slv(31 downto 0);
+		Error : out sl;
 		-- User ports ends
 		-- Global AXI ports
 		M_AXI_ACLK : in sl; -- Global Clock Signal.
@@ -83,28 +85,29 @@ end Load_Store;
 
 architecture implementation of Load_Store is
 	type state_t is (IDLE, START, WAITING, ACCEPT);
-	signal read_cur_state, read_next_state_i, read_next_state_final : state_t;
-	signal read_IDLE_next, read_START_next, read_WAITING_next, read_ACCEPT_next : state_t;
+	signal load_cur_state, load_next_state_i, load_next_state_final : state_t;
+	signal load_IDLE_next, load_START_next, load_WAITING_next, load_ACCEPT_next : state_t;
 	signal store_cur_state, store_next_state_i, store_next_state_final : state_t;
 	signal store_IDLE_next, store_START_next, store_WAITING_next, store_ACCEPT_next : state_t;
-	signal load_data, next_load_data, pre_load_data : slv(MEM_ADDR_BITS - 1 downto 0);
+	signal load_data, next_load_data, pre_load_data : slv(31 downto 0);
 	signal load_data_en : sl;
 	signal byte_mask, half_mask : slv(C_M_AXI_DATA_WIDTH / 8 - 1 downto 0);
+	signal done_valid_i : sl;
 begin
 	--Load data register
 	load_data <= next_load_data when rising_edge(M_AXI_ACLK);
 	next_load_data <= (others => '0') when M_AXI_ARESETN = '0' else M_AXI_RDATA when load_data_en = '1' else load_data;
 	------------------------------
-	-- Read Address Channel
+	-- load Address Channel
 	------------------------------
 	----------------------------------
-	--Read Data Channel
+	--load Data Channel
 	----------------------------------
 	--constant outputs
 	M_AXI_ARID <= (others => '0');
 	M_AXI_ARADDR <= address;
 	M_AXI_ARLEN <= "00000000";
-	M_AXI_ARSIZE <= '0' & load_store_type(1 downto 0);
+	M_AXI_ARSIZE <= '0' & access_type(1 downto 0);
 	M_AXI_ARBURST <= "01";
 	M_AXI_ARLOCK <= '0';
 	M_AXI_ARCACHE <= "0010";
@@ -112,27 +115,25 @@ begin
 	M_AXI_ARQOS <= "0000";
 
 	--memory
-	read_cur_state <= read_next_state_final when rising_edge(M_AXI_ACLK);
-	read_next_state_final <= IDLE when M_AXI_ARESETN = '0' else read_next_state_i;
+	load_cur_state <= load_next_state_final when rising_edge(M_AXI_ACLK);
+	load_next_state_final <= IDLE when M_AXI_ARESETN = '0' else load_next_state_i;
 	--next state
-	with read_cur_state select read_next_state_i <=
-		read_IDLE_next when IDLE,
-		read_START_next when START,
-		read_WAITING_next when WAITING,
-		read_ACCEPT_next when ACCEPT;
+	with load_cur_state select load_next_state_i <=
+		load_IDLE_next when IDLE,
+		load_START_next when START,
+		load_WAITING_next when WAITING,
+		load_ACCEPT_next when ACCEPT;
 
-	read_IDLE_next <= START when start_load = '1' else IDLE;
-	read_START_next <= WAITING when M_AXI_ARREADY = '1' else START;
-	read_WAITING_next <= ACCEPT when M_AXI_RVALID = '1' else WAITING;
-	read_ACCEPT_next <= IDLE;
+	load_IDLE_next <= START when load_store = '1' and addr_valid = '1' else IDLE;
+	load_START_next <= WAITING when M_AXI_ARREADY = '1' else START;
+	load_WAITING_next <= ACCEPT when M_AXI_RVALID = '1' else WAITING;
+	load_ACCEPT_next <= IDLE;
 
 	--internal signals
-	Load_data_en <= '1' when read_cur_state = ACCEPT else '0';
+	load_data_en <= '1' when load_cur_state = ACCEPT else '0';
 	--Bus outputs
-	M_AXI_ARVALID <= '1' when read_cur_state = START else '0';
-	M_AXI_RREADY <= '1' when read_cur_state = ACCEPT else '0';
-	--external outputs
-	load_done <= '1' when read_cur_state = ACCEPT else '0';
+	M_AXI_ARVALID <= '1' when load_cur_state = START else '0';
+	M_AXI_RREADY <= '1' when load_cur_state = ACCEPT else '0';
 
 	--format load_store_out
 	with address(1 downto 0) select pre_load_data <=
@@ -141,7 +142,7 @@ begin
 		(31 downto 16 => '0') & load_data(31 downto 16) when "10",
 		load_data when others;
 
-	with load_store_type select load_data_out <=
+	with access_type select load_data_out <=
 		(31 downto 8 => pre_load_data(7)) & pre_load_data(7 downto 0) when "000",
 		(31 downto 16 => pre_load_data(15)) & pre_load_data(15 downto 0) when "001",
 		(31 downto 8 => '0') & pre_load_data(7 downto 0) when "100",
@@ -161,7 +162,7 @@ begin
 	M_AXI_AWID <= (others => '0');
 	M_AXI_AWADDR <= address;
 	M_AXI_AWLEN <= "00000000";
-	M_AXI_AWSIZE <= '0' & load_store_type(1 downto 0);
+	M_AXI_AWSIZE <= '0' & access_type(1 downto 0);
 	M_AXI_AWBURST <= "01";
 	M_AXI_AWLOCK <= '0';
 	M_AXI_AWCACHE <= "0010";
@@ -179,7 +180,7 @@ begin
 		"0100" when "10",
 		"1000" when others; --"11"
 	half_mask <= "0011" when address(0) = '0' else "1100";
-	with load_store_type(1 downto 0) select M_AXI_WSTRB <=
+	with access_type(1 downto 0) select M_AXI_WSTRB <=
 		byte_mask when "00",
 		half_mask when "01",
 		"1111" when others;
@@ -195,7 +196,7 @@ begin
 		store_WAITING_next when WAITING,
 		store_ACCEPT_next when others; --accept
 
-	store_IDLE_next <= START when start_store = '1' else IDLE;
+	store_IDLE_next <= START when load_store = '0' and addr_valid = '1' else IDLE;
 	store_START_next <= WAITING when M_AXI_AWREADY = '1' else START;
 	store_WAITING_next <= ACCEPT when M_AXI_WREADY = '1' else WAITING;
 	store_ACCEPT_next <= IDLE when M_AXI_BVALID = '1' else ACCEPT;
@@ -205,8 +206,15 @@ begin
 	M_AXI_WVALID <= '1' when store_cur_state = WAITING else '0';
 	M_AXI_BREADY <= '1' when store_cur_state = ACCEPT else '0';
 
+	----both load and store stuff----
 	--external outputs
-	store_done <= '1' when store_cur_state = IDLE else '0';
+	addr_ready <= '1' when load_cur_state = IDLE and store_cur_state = IDLE else '0';
+	done_valid <= done_valid_i;
+
+	--TODO: not sure how this will sythesize
+	done_valid_i <= '1' when load_cur_state = ACCEPT or store_cur_state = ACCEPT else
+	                '0' when done_ready = '1' else
+	                done_valid_i;
 
 	----error
 	Error <= '1' when M_AXI_RRESP(1) = '1' or M_AXI_BRESP(1) = '1' else '0'; --both errors have RRESP bit 1 as high

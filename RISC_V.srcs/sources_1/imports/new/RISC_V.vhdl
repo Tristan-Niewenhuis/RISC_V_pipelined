@@ -76,7 +76,7 @@ entity RISC_V is
 end RISC_V;
 
 architecture Behavioral of RISC_V is
-  signal control_word : control_word;
+  signal control_word : control_word_if_id;
   signal branch_cond, exeception, PC_inc : sl;
   signal fetch_done, start_fetch, execute, fetch_error, ls_error : sl;
   signal load_done, store_done, start_load, start_store : sl;
@@ -87,38 +87,48 @@ architecture Behavioral of RISC_V is
   signal load_data, store_data : slv(XLEN - 1 downto 0);
 begin
   not_reset <= not reset;
-  datapath : entity work.Datapath(Behavioral)
-    port map(clk => clk,
-             reset => reset,
-             load_data => load_data,
-             control_word => control_word,
-             branch_cond => branch_cond,
-             ls_address => ls_address,
-             fetch_address => fetch_address,
-             store_data => store_data);
 
-  ID : entity work.Instruction_Decoder(Behavioral)
-    port map(execute => execute,
-             PCie => PC_inc,
-             branch_cond => branch_cond,
-             inst => instruction,
-             control_word => control_word,
-             exeception => exeception,
-             store_inst => store_inst);
+  datapath : entity work.Datapath
+    port map(
+      clk => clk,
+      reset => reset,
+      branch_cond => branch_cond,
+      fetch_addr_valid => open,
+      fetch_addr_ready => '1',
+      fetch_address => fetch_address,
+      fetch_inst_valid => '1',
+      fetch_inst_ready => open,
+      inst => (others => '0'),
+      ls_addr_valid => open,
+      ls_addr_ready => '1',
+      load_store_ctrl => open,
+      ls_address => ls_address,
+      store_data => store_data,
+      ls_done_valid => '1',
+      ls_done_ready => open,
+      load_data => load_data
+    );
 
-  Sequencer : entity work.Sequencer(Behavioral)
-    port map(clk => clk,
-             reset => reset,
-             load_inst => load_inst,
-             store_inst => store_inst,
-             fetch_done => fetch_done,
-             start_fetch => start_fetch,
-             load_done => load_done,
-             store_done => store_done,
-             start_load => start_load,
-             start_store => start_store,
-             ex => execute,
-             PC_inc => PC_inc);
+  -- datapath : entity work.Datapath
+  --   port map(
+  --     clk => clk,
+  --     reset => reset,
+  --     branch_cond => branch_cond,
+  --     fetch_addr_valid => fetch_addr_valid,
+  --     fetch_addr_ready => fetch_addr_ready,
+  --     fetch_address => fetch_address,
+  --     fetch_inst_valid => fetch_inst_valid,
+  --     fetch_inst_ready => fetch_inst_ready,
+  --     inst => inst,
+  --     ls_addr_valid => ls_addr_valid,
+  --     ls_addr_ready => ls_addr_ready,
+  --     load_store_ctrl => load_store_ctrl,
+  --     ls_address => ls_address,
+  --     store_data => store_data,
+  --     ls_done_valid => ls_done_valid,
+  --     ls_done_ready => ls_done_ready,
+  --     load_data => load_data
+  --   );
 
   Fetch : entity work.Fetch(implementation)
     GENERIC MAP(
@@ -134,10 +144,10 @@ begin
       C_M_AXI_BUSER_WIDTH => 0
     )
     PORT MAP(
-      Start_read => start_fetch,
-      Read_address => fetch_address,
+      read_addr_valid => start_fetch,
+      read_address => fetch_address,
       Read_Done => fetch_done,
-      Read_Data => instruction,
+      read_data => instruction,
       Error => fetch_error,
       clk => clk,
       reset => reset,

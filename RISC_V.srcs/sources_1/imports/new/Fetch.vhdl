@@ -20,14 +20,16 @@ entity Fetch is
 		C_M_AXI_BUSER_WIDTH : integer := 0 -- Width of User Response Bus
 	);
 	port(
-		-- Users can add ports here. These are SUGGESTED user ports.
-		Start_read : in sl; -- Initiate AXI read transaction
-		Read_address : in slv(C_M_AXI_ADDR_WIDTH - 1 downto 0); -- address to read from
-		Read_Done : out sl; -- Asserts when transaction is complete
-		Read_Data : out slv(C_M_AXI_DATA_WIDTH - 1 downto 0); -- Data that was read (modify as needed)
-		Error : out sl; -- Asserts when ERROR is detected
+		-- Users can add ports here.
 		clk : in sl; -- Global Clock Signal.
-		reset : in sl; -- Global Reset Singal. This Signal is Active Low
+		reset : in sl; -- Global Reset Singal. This Signal is Active High
+		read_addr_valid : in sl;
+		read_addr_ready : out sl;
+		read_address : in slv(C_M_AXI_ADDR_WIDTH - 1 downto 0);
+		read_data_valid : out sl;
+		read_data_ready : in sl;
+		read_data : out slv(C_M_AXI_DATA_WIDTH - 1 downto 0);
+		Error : out sl;
 		-- User ports ends
 		-- AXI Read Address Channel
 		M_AXI_ARID : out slv(C_M_AXI_ID_WIDTH - 1 downto 0); -- Master Interface Read Address.
@@ -54,18 +56,19 @@ entity Fetch is
 end Fetch;
 
 architecture implementation of Fetch is
-	type state_t is (IDLE, EMPTY_FIFO, START, ACCEPTING);
+	type state_t is (IDLE, START, ACCEPTING);
 	signal cur_state, next_state_i, next_state_final : state_t;
-	signal IDLE_next, EMPTY_FIFO_next, START_next, ACCEPTING_next : state_t;
+	signal IDLE_next, START_next, ACCEPTING_next : state_t;
 	signal FIFO_out : slv(2 * XLEN - 1 downto 0);
 	signal FIFO_wdata : slv(2 * XLEN - 1 downto 0);
 	signal FIFO_wen, FIFO_ren, FIFO_empty, FIFO_full : sl;
-	signal Read_Done_i, IR_en, hit : sl;
+	signal read_done, IR_en, hit : sl;
 	signal IR, next_IR : slv(XLEN - 1 downto 0);
 	signal next_transfer_count : unsigned(1 downto 0) := "00";
 	signal transfer_count : unsigned(1 downto 0) := "00";
-	signal address : slv(XLEN - 1 downto 0) := (others => '0');
+	signal address : slv(C_M_AXI_ADDR_WIDTH - 1 downto 0) := (others => '0');
 	signal ctrl : slv(1 downto 0);
+	signal FIFO_rst : sl;
 begin
 	--Instruction FIFO -- data = FIFO_out(63 downto 32) -- address = FIFO_out(31 downto 0);
 	IR <= next_IR when rising_edge(clk);
@@ -73,7 +76,7 @@ begin
 
 	FIFO : entity work.generic_FIFO(behavioral)
 		generic map(bits => 2 * XLEN, depth => PRE_FETCH_SIZE) --change depth if wanna be more betterer maybe in trial and error
-		port map(clk => clk, rst => reset,
+		port map(clk => clk, rst => reset or FIFO_rst,
 		         wdata => FIFO_wdata,
 		         wen => FIFO_wen,
 		         ren => FIFO_ren,
@@ -108,39 +111,30 @@ begin
 	--next state
 	with cur_state select next_state_i <=
 		IDLE_next when IDLE,
-		EMPTY_FIFO_next when EMPTY_FIFO,
 		START_next when START,
 		ACCEPTING_next when ACCEPTING;
 
-	ctrl <= FIFO_empty & not hit;
-	with ctrl select IDLE_next <=
-		IDLE when "00",
-		EMPTY_FIFO when "01",
-		START when others; --"1x"
-
-	--	IDLE_next <= START when (FIFO_empty = '1') else
-	--	             EMPTY_FIFO when (not (Read_address = FIFO_out(31 downto 0))) else 
-	--	             IDLE;
-	EMPTY_FIFO_next <= START when FIFO_empty = '1' else EMPTY_FIFO;
+	IDLE_next <= START when hit = '0' else IDLE;
 	START_next <= ACCEPTING when M_AXI_ARREADY = '1' else START;
 	ACCEPTING_next <= IDLE when M_AXI_RLAST = '1' else ACCEPTING;
 
 	--internal signals
 	FIFO_wen <= '1' when (cur_state = ACCEPTING and M_AXI_RVALID = '1') else '0';
-	FIFO_ren <= '1' when cur_state = EMPTY_FIFO or (Read_Done_i = '1' and Start_read = '1') else '0';
-	IR_en <= '1' when hit = '1' and Start_read = '1' else '0';
+	FIFO_ren <= '1' when (read_done = '1' and read_addr_valid = '1') else '0';
+	FIFO_rst <= '1' when (cur_state = IDLE and hit = '0') else '0';
+	IR_en <= '1' when hit = '1' and read_addr_valid = '1' else '0';
 
-	--internal latch
-	address <= (others => '0') when reset = '1' else Read_address when cur_state = IDLE else address;
+	--internal latch --TODO look at how it sythsiszes this logic
+	address <= (others => '0') when reset = '1' else read_address when cur_state = IDLE else address;
+	hit <= '1' when read_address = FIFO_out(31 downto 0) else '0';
+	read_done <= '1' when hit = '1' and FIFO_empty = '0' else '0';
 
 	--Bus outputs
 	M_AXI_ARVALID <= '1' when cur_state = START else '0';
 	M_AXI_RREADY <= '1' when cur_state = ACCEPTING else '0';
 	--external outputs
-	hit <= '1' when Read_address = FIFO_out(31 downto 0) else '0';
-	Read_Done_i <= '1' when hit = '1' and FIFO_empty = '0' else '0';
-	Read_Done <= Read_Done_i;
+
 	Error <= '1' when M_AXI_RRESP(1) = '1' else '0'; --both errors have RRESP bit 1 as high
-	Read_Data <= IR;
+	read_data <= IR;
 
 end implementation;

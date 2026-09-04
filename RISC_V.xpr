@@ -173,15 +173,6 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/imports/new/Sequencer.vhdl">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="ImportPath" Val="$PPRDIR/../../Users/trist/OneDrive/Desktop/git/Da_Big_One_with_prefetch/Da_Big_One_with_prefetch.srcs/sources_1/new/Sequencer.vhdl"/>
-          <Attr Name="ImportTime" Val="1786824552"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
       <File Path="$PSRCDIR/sources_1/imports/new/RISC_V.vhdl">
         <FileInfo>
           <Attr Name="AutoDisabled" Val="1"/>
@@ -236,6 +227,8 @@
       <Config>
         <Option Name="DesignMode" Val="RTL"/>
         <Option Name="TopModule" Val="Datapath"/>
+        <Option Name="ElabLinkDCPs" Val="0"/>
+        <Option Name="ElabIPRTLs" Val="1"/>
       </Config>
     </FileSet>
     <FileSet Name="constrs_1" Type="Constrs" RelSrcDir="$PSRCDIR/constrs_1" RelGenDir="$PGENDIR/constrs_1">
