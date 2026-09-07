@@ -5,6 +5,7 @@ use ieee.math_real.log2;
 use ieee.math_real.ceil;
 
 package RISCV_package is
+  constant DEBUG : boolean := TRUE;
   constant XLEN_BITS : integer := 5;
   constant XLEN : integer := 2 ** XLEN_BITS;
   constant REGS_ADDR_BITS : integer := 5;

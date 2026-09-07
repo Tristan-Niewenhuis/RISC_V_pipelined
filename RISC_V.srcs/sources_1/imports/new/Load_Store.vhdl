@@ -84,18 +84,14 @@ entity Load_Store is
 end Load_Store;
 
 architecture implementation of Load_Store is
-	type state_t is (IDLE, ACCEPTING);
+	type state_t is (IDLE, SEND_ADDR, ACCEPTING);
 	signal load_cur_state, load_next_state_i, load_next_state_final : state_t;
-	signal load_IDLE_next, load_ACCEPTING_next : state_t;
+	signal load_IDLE_next, load_SEND_ADDR_next, load_ACCEPTING_next : state_t;
 	signal store_cur_state, store_next_state_i, store_next_state_final : state_t;
-	signal store_IDLE_next, store_ACCEPTING_next : state_t;
-	signal load_data, next_load_data, pre_load_data : slv(31 downto 0);
-	signal load_data_en : sl;
+	signal store_IDLE_next, store_SEND_ADDR_next, store_ACCEPTING_next : state_t;
+	signal pre_load_data : slv(31 downto 0);
 	signal byte_mask, half_mask : slv(C_M_AXI_DATA_WIDTH / 8 - 1 downto 0);
 begin
-	--Load data register
-	load_data <= next_load_data when rising_edge(clk);
-	next_load_data <= (others => '0') when reset = '1' else M_AXI_RDATA when load_data_en = '1' else load_data;
 	------------------------------
 	-- load Address Channel
 	------------------------------
@@ -119,23 +115,25 @@ begin
 	--next state
 	with load_cur_state select load_next_state_i <=
 		load_IDLE_next when IDLE,
+		load_SEND_ADDR_next when SEND_ADDR,
 		load_ACCEPTING_next when ACCEPTING;
 
-	load_IDLE_next <= ACCEPTING when load_store = '1' and addr_valid = '1' else IDLE;
+	load_IDLE_next <= SEND_ADDR when load_store = '1' and addr_valid = '1' else IDLE;
+	load_SEND_ADDR_next <= IDLE when M_AXI_RVALID = '1' else
+	                       ACCEPTING when M_AXI_ARREADY = '1' else
+	                       SEND_ADDR;
 	load_ACCEPTING_next <= IDLE when M_AXI_RVALID = '1' else ACCEPTING;
 
-	--internal signals
-	load_data_en <= '1' when load_cur_state = ACCEPTING else '0';
 	--Bus outputs
-	M_AXI_ARVALID <= '1' when load_cur_state = ACCEPTING else '0';
-	M_AXI_RREADY <= '1' when load_cur_state = ACCEPTING else '0';
+	M_AXI_ARVALID <= '1' when load_cur_state = SEND_ADDR else '0';
+	M_AXI_RREADY <= '1' when (load_cur_state = SEND_ADDR or load_cur_state = ACCEPTING) else '0';
 
 	--format load_store_out
 	with address(1 downto 0) select pre_load_data <=
-		(31 downto 8 => '0') & load_data(15 downto 8) when "01",
-		(31 downto 8 => '0') & load_data(31 downto 24) when "11",
-		(31 downto 16 => '0') & load_data(31 downto 16) when "10",
-		load_data when others;
+		(31 downto 8 => '0') & M_AXI_RDATA(15 downto 8) when "01",
+		(31 downto 8 => '0') & M_AXI_RDATA(31 downto 24) when "11",
+		(31 downto 16 => '0') & M_AXI_RDATA(31 downto 16) when "10",
+		M_AXI_RDATA(31 downto 0) when others;
 
 	with access_type select load_data_out <=
 		(31 downto 8 => pre_load_data(7)) & pre_load_data(7 downto 0) when "000",
@@ -187,15 +185,17 @@ begin
 
 	with store_cur_state select store_next_state_i <=
 		store_IDLE_next when IDLE,
+		store_SEND_ADDR_next when SEND_ADDR,
 		store_ACCEPTING_next when ACCEPTING;
 
-	store_IDLE_next <= ACCEPTING when load_store = '0' and addr_valid = '1' else IDLE;
+	store_IDLE_next <= SEND_ADDR when load_store = '0' and addr_valid = '1' else IDLE;
+	store_SEND_ADDR_next <= ACCEPTING when M_AXI_AWREADY = '1' else SEND_ADDR;
 	store_ACCEPTING_next <= IDLE when M_AXI_BVALID = '1' else ACCEPTING;
 
 	--Bus outputs
-	M_AXI_AWVALID <= '1' when store_cur_state = ACCEPTING else '0';
-	M_AXI_WVALID <= '1' when store_cur_state = ACCEPTING else '0';
-	M_AXI_BREADY <= '1' when store_cur_state = ACCEPTING else '0';
+	M_AXI_AWVALID <= '1' when store_cur_state = SEND_ADDR else '0';
+	M_AXI_WVALID <= '1' when (store_cur_state = SEND_ADDR or store_cur_state = ACCEPTING) else '0';
+	M_AXI_BREADY <= '1' when (store_cur_state = SEND_ADDR or store_cur_state = ACCEPTING) else '0';
 
 	----both load and store stuff----
 	--external outputs

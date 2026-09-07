@@ -143,7 +143,7 @@ begin
 	accepting <= '1' when (cur_state = HALF_ACCEPTING or cur_state = MISS_ACCEPTING) else '0';
 	FIFO_wen <= '1' when (M_AXI_RREADY_i = '1' and M_AXI_RVALID = '1') else '0';
 	FIFO_ren <= addr_hit;
-	FIFO_rst <= '1' when (cur_state = IDLE and IDLE_next = MISS_ACCEPTING) else '0';
+	FIFO_rst <= '1' when (cur_state = IDLE and IDLE_next = MISS_SEND_ADDR) else '0'; --might be long for timing
 
 	addr_hit <= '1' when (addr_valid = '1' and address = FIFO_out(31 downto 0) and FIFO_empty = '0') else '0';
 	addr_miss <= not addr_hit and addr_valid;

@@ -38,8 +38,8 @@ architecture Behavioral of Datapath is
 
     --id_ex
     signal id_ex_cw : control_word_id_ex;
-    signal id_ex_a, id_ex_b : slv(XLEN - 1 downto 0);
     signal id_ex_pc : slv(29 downto 0);
+    signal id_ex_a, id_ex_b : slv(XLEN - 1 downto 0);
 
     --ex
     signal a_bus, b_bus, alu_out : slv(XLEN - 1 downto 0);
@@ -50,6 +50,7 @@ architecture Behavioral of Datapath is
 
     --ex_mem
     signal ex_mem_cw : control_word_ex_mem;
+    signal ex_mem_pc : slv(29 downto 0);
     signal ex_mem_alu_out, ex_mem_store_data : slv(XLEN - 1 downto 0);
 
     --mem
@@ -57,6 +58,7 @@ architecture Behavioral of Datapath is
 
     --mem_wb
     signal mem_wb_cw : control_word_mem_wb;
+    signal mem_wb_pc : slv(29 downto 0);
     signal mem_wb_load_data, mem_wb_alu_out : slv(XLEN - 1 downto 0);
 
     --wb
@@ -261,5 +263,30 @@ begin
     id_ex_stall <= ex_mem_stall;
     ex_mem_stall <= ls_hazard;
     mem_wb_stall <= '0';
+
+    DEBUG_SIGNALS : if DEBUG generate
+    begin
+        DEBUG_proc : process(clk) is
+        begin
+            if rising_edge(clk) then
+                if (reset = '1' or ex_mem_nop = '1') then
+                    ex_mem_pc <= (others => '0');
+                else
+                    if (ex_mem_stall = '0') then
+                        ex_mem_pc <= id_ex_pc;
+                    end if;
+                end if;
+
+                if (reset = '1' or mem_wb_nop = '1') then
+                    mem_wb_pc <= (others => '0');
+                else
+                    if (mem_wb_stall = '0') then
+                        mem_wb_pc <= id_ex_pc;
+                    end if;
+                end if;
+            end if;
+        end process DEBUG_proc;
+
+    end generate;
 
 end Behavioral;
