@@ -23,13 +23,11 @@ entity Fetch is
 		-- Users can add ports here.
 		clk : in sl; -- Global Clock Signal.
 		reset : in sl; -- Global Reset Singal. This Signal is Active High
-		read_addr_valid : in sl;
-		read_addr_ready : out sl;
-		read_address : in slv(C_M_AXI_ADDR_WIDTH - 1 downto 0);
-		read_data_valid : out sl;
-		read_data_ready : in sl;
-		read_data : out slv(C_M_AXI_DATA_WIDTH - 1 downto 0);
-		Error : out sl;
+		addr_valid : in sl;
+		address : in slv(C_M_AXI_ADDR_WIDTH - 1 downto 0);
+		data_valid : out sl;
+		data : out slv(C_M_AXI_DATA_WIDTH - 1 downto 0);
+		error : out sl;
 		-- User ports ends
 		-- AXI Read Address Channel
 		M_AXI_ARID : out slv(C_M_AXI_ID_WIDTH - 1 downto 0); -- Master Interface Read Address.
@@ -56,37 +54,40 @@ entity Fetch is
 end Fetch;
 
 architecture implementation of Fetch is
-	type state_t is (IDLE, START, ACCEPTING);
-	signal cur_state, next_state_i, next_state_final : state_t;
-	signal IDLE_next, START_next, ACCEPTING_next : state_t;
+	constant FIFO_DEPTH : integer := 2 * PRE_FETCH_BURST_SIZE;
+	constant FIFO_DEPTH_BITS : integer := clog2(FIFO_DEPTH);
+
+	type state_t is (IDLE, HALF_SEND_ADDR, MISS_SEND_ADDR, HALF_ACCEPTING, MISS_ACCEPTING);
+	signal cur_state, next_state_i, next_state_final, prev_state, prev_state_final : state_t;
+	signal IDLE_next, HALF_SEND_ADDR_next, MISS_SEND_ADDR_next, HALF_ACCEPTING_next, MISS_ACCEPTING_next : state_t;
 	signal FIFO_out : slv(2 * XLEN - 1 downto 0);
 	signal FIFO_wdata : slv(2 * XLEN - 1 downto 0);
-	signal FIFO_wen, FIFO_ren, FIFO_empty, FIFO_full : sl;
-	signal read_done, IR_en, hit : sl;
-	signal IR, next_IR : slv(XLEN - 1 downto 0);
-	signal next_transfer_count : unsigned(1 downto 0) := "00";
-	signal transfer_count : unsigned(1 downto 0) := "00";
-	signal address : slv(C_M_AXI_ADDR_WIDTH - 1 downto 0) := (others => '0');
-	signal ctrl : slv(1 downto 0);
-	signal FIFO_rst : sl;
+	signal FIFO_rst, FIFO_wen, FIFO_ren, FIFO_empty, FIFO_full, FIFO_below_threshold : sl;
+	signal next_transfer_count : unsigned(FIFO_DEPTH_BITS - 1 downto 0) := (others => '0');
+	signal transfer_count : unsigned(FIFO_DEPTH_BITS - 1 downto 0) := (others => '0');
+	signal axi_address, next_axi_address, axi_addr_plus_1x, axi_addr_plus_2x : slv(C_M_AXI_ADDR_WIDTH - 1 downto 0) := (others => '0');
+	signal send_addr, accepting, addr_hit, addr_miss : sl;
+	signal M_AXI_RREADY_i : sl;
 begin
-	--Instruction FIFO -- data = FIFO_out(63 downto 32) -- address = FIFO_out(31 downto 0);
-	IR <= next_IR when rising_edge(clk);
-	next_IR <= (others => '0') when reset = '1' else FIFO_out(63 downto 32) when IR_en = '1' else IR;
-
+	--FIFO format: data = FIFO_out(63 downto 32), address = FIFO_out(31 downto 0);
+	FIFO_wdata <= M_AXI_RDATA & slv(unsigned(axi_address) + resize(unsigned(transfer_count) & "00", 32)); --need to track whcih address in thing 
 	FIFO : entity work.generic_FIFO(behavioral)
-		generic map(bits => 2 * XLEN, depth => PRE_FETCH_SIZE) --change depth if wanna be more betterer maybe in trial and error
+		generic map(bits => 2 * XLEN, depth => FIFO_DEPTH) --change depth if wanna be more betterer maybe in trial and error
 		port map(clk => clk, rst => reset or FIFO_rst,
 		         wdata => FIFO_wdata,
 		         wen => FIFO_wen,
 		         ren => FIFO_ren,
+		         threshold => slv(to_unsigned(PRE_FETCH_BURST_SIZE - 1, FIFO_DEPTH_BITS)),
 		         rdata => FIFO_out,
 		         empty => FIFO_empty,
-		         full => FIFO_full);
-	FIFO_wdata <= M_AXI_RDATA & slv(unsigned(address) + resize(unsigned(transfer_count) & "00", 32)); --need to track whcih address in thing 
+		         full => FIFO_full,
+		         below_threshold => FIFO_below_threshold
+		        );
 
 	transfer_count <= next_transfer_count when rising_edge(clk);
-	next_transfer_count <= "00" when (reset = '1' or cur_state = IDLE) else transfer_count + 1 when FIFO_wen = '1' else transfer_count;
+	next_transfer_count <= (others => '0') when cur_state = IDLE else
+	                       transfer_count + 1 when FIFO_wen = '1' else
+	                       transfer_count;
 
 	------------------------------
 	-- Read Address Channel
@@ -96,8 +97,9 @@ begin
 	----------------------------------
 	--constant-ish outputs
 	M_AXI_ARID <= (others => '0');
-	M_AXI_ARADDR <= address;
-	M_AXI_ARLEN <= slv(to_unsigned(PRE_FETCH_SIZE - 1, 8));
+	M_AXI_ARADDR <= axi_address;
+	M_AXI_ARLEN <= slv(to_unsigned(2 * PRE_FETCH_BURST_SIZE - 1, 8)) when cur_state = MISS_SEND_ADDR else
+	               slv(to_unsigned(PRE_FETCH_BURST_SIZE - 1, 8));
 	M_AXI_ARSIZE <= "010";
 	M_AXI_ARBURST <= "01"; --INCR
 	M_AXI_ARLOCK <= '0';
@@ -108,33 +110,52 @@ begin
 	--memory
 	cur_state <= next_state_final when rising_edge(clk);
 	next_state_final <= IDLE when reset = '1' else next_state_i;
+
+	prev_state <= prev_state_final when rising_edge(clk);
+	prev_state_final <= IDLE when reset = '1' else cur_state;
+
+	axi_address <= next_axi_address when rising_edge(clk);
+	next_axi_address <= (others => '0') when reset = '1' else
+	                    address when cur_state = MISS_SEND_ADDR and prev_state = IDLE else
+	                    axi_addr_plus_2x when (cur_state = IDLE and prev_state = MISS_ACCEPTING) else
+	                    axi_addr_plus_1x when (cur_state = IDLE and prev_state = HALF_ACCEPTING) else
+	                    axi_address;
+	axi_addr_plus_1x <= slv(unsigned(axi_address) + to_unsigned(4 * PRE_FETCH_BURST_SIZE, axi_address'length));
+	axi_addr_plus_2x <= slv(unsigned(axi_address) + to_unsigned(8 * PRE_FETCH_BURST_SIZE, axi_address'length));
 	--next state
 	with cur_state select next_state_i <=
 		IDLE_next when IDLE,
-		START_next when START,
-		ACCEPTING_next when ACCEPTING;
+		HALF_SEND_ADDR_next when HALF_SEND_ADDR,
+		MISS_SEND_ADDR_next when MISS_SEND_ADDR,
+		HALF_ACCEPTING_next when HALF_ACCEPTING,
+		MISS_ACCEPTING_next when MISS_ACCEPTING;
 
-	IDLE_next <= START when hit = '0' else IDLE;
-	START_next <= ACCEPTING when M_AXI_ARREADY = '1' else START;
-	ACCEPTING_next <= IDLE when M_AXI_RLAST = '1' else ACCEPTING;
+	IDLE_next <= MISS_SEND_ADDR when (addr_miss = '1') else
+	             HALF_SEND_ADDR when (FIFO_below_threshold = '1') else
+	             IDLE;
+	MISS_SEND_ADDR_next <= MISS_ACCEPTING when (M_AXI_ARREADY = '1') else MISS_SEND_ADDR;
+	HALF_SEND_ADDR_next <= HALF_ACCEPTING when (M_AXI_ARREADY = '1') else HALF_SEND_ADDR;
+	MISS_ACCEPTING_next <= IDLE when M_AXI_RLAST = '1' else MISS_ACCEPTING;
+	HALF_ACCEPTING_next <= IDLE when M_AXI_RLAST = '1' else HALF_ACCEPTING;
 
 	--internal signals
-	FIFO_wen <= '1' when (cur_state = ACCEPTING and M_AXI_RVALID = '1') else '0';
-	FIFO_ren <= '1' when (read_done = '1' and read_addr_valid = '1') else '0';
-	FIFO_rst <= '1' when (cur_state = IDLE and hit = '0') else '0';
-	IR_en <= '1' when hit = '1' and read_addr_valid = '1' else '0';
+	send_addr <= '1' when (cur_state = HALF_SEND_ADDR or cur_state = MISS_SEND_ADDR) else '0';
+	accepting <= '1' when (cur_state = HALF_ACCEPTING or cur_state = MISS_ACCEPTING) else '0';
+	FIFO_wen <= '1' when (M_AXI_RREADY_i = '1' and M_AXI_RVALID = '1') else '0';
+	FIFO_ren <= addr_hit;
+	FIFO_rst <= '1' when (cur_state = IDLE and IDLE_next = MISS_ACCEPTING) else '0';
 
-	--internal latch --TODO look at how it sythsiszes this logic
-	address <= (others => '0') when reset = '1' else read_address when cur_state = IDLE else address;
-	hit <= '1' when read_address = FIFO_out(31 downto 0) else '0';
-	read_done <= '1' when hit = '1' and FIFO_empty = '0' else '0';
+	addr_hit <= '1' when (addr_valid = '1' and address = FIFO_out(31 downto 0) and FIFO_empty = '0') else '0';
+	addr_miss <= not addr_hit and addr_valid;
 
 	--Bus outputs
-	M_AXI_ARVALID <= '1' when cur_state = START else '0';
-	M_AXI_RREADY <= '1' when cur_state = ACCEPTING else '0';
-	--external outputs
+	M_AXI_ARVALID <= send_addr;
+	M_AXI_RREADY_i <= send_addr or accepting;
+	M_AXI_RREADY <= M_AXI_RREADY_i;
 
-	Error <= '1' when M_AXI_RRESP(1) = '1' else '0'; --both errors have RRESP bit 1 as high
-	read_data <= IR;
+	--external outputs
+	error <= '1' when M_AXI_RRESP(1) = '1' or (FIFO_wen = '1' and FIFO_full = '1') else '0';
+	data <= FIFO_out(63 downto 32);
+	data_valid <= addr_hit;
 
 end implementation;

@@ -9,6 +9,13 @@
 *.hw/
 *.ip_user_files/
 *.sim/
+!RISC_V.sim/
+!RISC_V.sim/sim_1/
+!RISC_V.sim/sim_1/behav/
+!RISC_V.sim/sim_1/behav/xsim/
+RISC_V.sim/sim_1/behav/xsim/*
+!RISC_V.sim/sim_1/behav/xsim/RISC_V.tcl
+
 
 # Generated project files
 *.jou
@@ -78,6 +85,8 @@ Thumbs.db
 *.tcl.bak
 *.tcl.orig
 
+# extra
 .sigasi/generated/
 sigasi-doc/
 nlviewcommon.logfile
+*.wcfg
