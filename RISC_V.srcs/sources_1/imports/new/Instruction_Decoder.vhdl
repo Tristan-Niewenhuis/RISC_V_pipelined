@@ -81,7 +81,7 @@ begin
     control_word_out.Aused <= not (is_J or is_AUIPC or is_LUI or is_system);
     control_word_out.Bsel <= inst(24 downto 20);
     control_word_out.Bused <= is_B or is_S or is_R;
-    control_word_out.PCAsel <= is_AUIPC or is_J or is_B;
+    control_word_out.PCAsel <= is_AUIPC or is_J or is_B; --no is_B?
     control_word_out.IMMBsel <= is_S or is_I or is_U or is_J or is_B;
     control_word_out.PCle <= is_J or is_JALR;
     control_word_out.isBR <= is_B;

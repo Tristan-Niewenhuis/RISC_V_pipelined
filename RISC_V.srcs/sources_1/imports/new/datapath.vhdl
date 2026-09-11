@@ -45,7 +45,7 @@ architecture Behavioral of Datapath is
     signal a_bus, b_bus, alu_out : slv(XLEN - 1 downto 0);
     signal BTU_out : sl;
     signal branch_correct, branch_take : sl;
-    signal pc_d : slv(29 downto 0);
+    signal pc_d, pc_base : slv(29 downto 0);
     signal pc_latch : sl;
 
     --ex_mem
@@ -74,7 +74,8 @@ begin
     branch_correct <= '1' when pc_d = if_id_pc else '0';
     branch_take <= id_ex_cw.PCle or BTU_out;
 
-    pc_d <= slv(signed(id_ex_pc) + signed(id_ex_cw.IMM(31 downto 2))); --unsigned or signed add, doesn't matter. same logic under the hood
+    pc_base <= id_ex_pc when id_ex_cw.PCAsel = '1' else id_ex_a(31 downto 2);
+    pc_d <= slv(signed(pc_base) + signed(id_ex_cw.IMM(31 downto 2))); --unsigned or signed add, doesn't matter. same logic under the hood
     pc_latch <= branch_take and (not branch_correct);
     pc_incr <= (fetch_addr_valid_i and fetch_inst_valid);
     Program_Counter : entity work.generic_counter(Behavioral)
@@ -104,7 +105,7 @@ begin
     IF_ID_proc : process(clk) is
     begin
         if rising_edge(clk) then
-            if (reset = '1' or if_id_nop = '1') then
+            if (reset = '1' or (if_id_nop = '1' and if_id_stall = '0')) then
                 if_id_pc <= (others => '0');
                 if_id_cw <= CONTROL_WORD_IF_ID_NOP;
             else
@@ -118,7 +119,7 @@ begin
     end process;
 
     d_in <= mem_wb_load_data when mem_wb_cw.LoadDsel = '1' else
-            slv(unsigned(pc) + 4) when mem_wb_cw.PCDsel = '1' else
+            (slv(unsigned(mem_wb_pc) + 1) & "00") when mem_wb_cw.PCDsel = '1' else
             mem_wb_alu_out;
 
     Regs : entity work.generic_register_file(Behavioral)
@@ -136,7 +137,7 @@ begin
     ID_EX_proc : process(clk) is
     begin
         if rising_edge(clk) then
-            if (reset = '1' or id_ex_nop = '1') then
+            if (reset = '1' or (id_ex_nop = '1' and id_ex_stall = '0')) then
                 id_ex_pc <= (others => '0');
                 id_ex_a <= (others => '0');
                 id_ex_b <= (others => '0');
@@ -175,14 +176,16 @@ begin
     EX_MEM_proc : process(clk) is
     begin
         if rising_edge(clk) then
-            if (reset = '1' or ex_mem_nop = '1') then
+            if (reset = '1' or (ex_mem_nop = '1' and ex_mem_stall = '0')) then
                 ex_mem_alu_out <= (others => '0');
                 ex_mem_store_data <= (others => '0');
+                ex_mem_pc <= (others => '0');
                 ex_mem_cw <= CONTROL_WORD_EX_MEM_NOP;
             else
                 if (ex_mem_stall = '0') then
                     ex_mem_alu_out <= alu_out;
                     ex_mem_store_data <= id_ex_b;
+                    ex_mem_pc <= id_ex_pc;
 
                     ex_mem_cw <= id_ex_to_ex_mem(id_ex_cw);
                 end if;
@@ -202,14 +205,16 @@ begin
     MEM_WB_proc : process(clk) is
     begin
         if rising_edge(clk) then
-            if (reset = '1' or mem_wb_nop = '1') then
+            if (reset = '1' or (mem_wb_nop = '1' and mem_wb_stall = '0')) then
                 mem_wb_load_data <= (others => '0');
                 mem_wb_alu_out <= (others => '0');
+                mem_wb_pc <= (others => '0');
                 mem_wb_cw <= CONTROL_WORD_MEM_WB_NOP;
             else
                 if (mem_wb_stall = '0') then
                     mem_wb_load_data <= load_data;
                     mem_wb_alu_out <= ex_mem_alu_out;
+                    mem_wb_pc <= ex_mem_pc;
 
                     mem_wb_cw <= ex_mem_to_mem_wb(ex_mem_cw);
                 end if;
@@ -264,29 +269,29 @@ begin
     ex_mem_stall <= ls_hazard;
     mem_wb_stall <= '0';
 
-    DEBUG_SIGNALS : if DEBUG generate
-    begin
-        DEBUG_proc : process(clk) is
-        begin
-            if rising_edge(clk) then
-                if (reset = '1' or ex_mem_nop = '1') then
-                    ex_mem_pc <= (others => '0');
-                else
-                    if (ex_mem_stall = '0') then
-                        ex_mem_pc <= id_ex_pc;
-                    end if;
-                end if;
+    -- DEBUG_SIGNALS : if DEBUG generate
+    -- begin
+    --     DEBUG_proc : process(clk) is
+    --     begin
+    --         if rising_edge(clk) then
+    --             if (reset = '1' or (ex_mem_nop = '1' and ex_mem_stall = '0')) then
+    --                 ex_mem_pc <= (others => '0');
+    --             else
+    --                 if (ex_mem_stall = '0') then
+    --                     ex_mem_pc <= id_ex_pc;
+    --                 end if;
+    --             end if;
 
-                if (reset = '1' or mem_wb_nop = '1') then
-                    mem_wb_pc <= (others => '0');
-                else
-                    if (mem_wb_stall = '0') then
-                        mem_wb_pc <= id_ex_pc;
-                    end if;
-                end if;
-            end if;
-        end process DEBUG_proc;
+    --             if (reset = '1' or (mem_wb_nop = '1' and mem_wb_stall = '0')) then
+    --                 mem_wb_pc <= (others => '0');
+    --             else
+    --                 if (mem_wb_stall = '0') then
+    --                     mem_wb_pc <= ex_mem_pc;
+    --                 end if;
+    --             end if;
+    --         end if;
+    --     end process DEBUG_proc;
 
-    end generate;
+    -- end generate;
 
 end Behavioral;

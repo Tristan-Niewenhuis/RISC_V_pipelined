@@ -34,7 +34,7 @@ entity generic_FIFO is
     depth : integer := 4
   );
   port(
-    clk, rst : sl;
+    clk, rst : in sl;
     wdata : in slv(bits - 1 downto 0);
     wen : in sl;
     ren : in sl;
