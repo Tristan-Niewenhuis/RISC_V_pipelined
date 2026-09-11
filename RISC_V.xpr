@@ -134,14 +134,6 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/imports/imports/new/generic_counter.vhdl">
-        <FileInfo>
-          <Attr Name="ImportPath" Val="$PPRDIR/../../Users/trist/OneDrive/Desktop/git/Da_Big_One_with_prefetch/Da_Big_One_with_prefetch.srcs/sources_1/imports/new/generic_counter.vhdl"/>
-          <Attr Name="ImportTime" Val="1786824552"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
       <File Path="$PSRCDIR/sources_1/imports/imports/new/generic_register.vhdl">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -150,6 +142,14 @@
       </File>
       <File Path="$PSRCDIR/sources_1/imports/imports/new/generic_register_file.vhdl">
         <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/imports/imports/new/generic_counter.vhdl">
+        <FileInfo>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../Users/trist/OneDrive/Desktop/git/Da_Big_One_with_prefetch/Da_Big_One_with_prefetch.srcs/sources_1/imports/new/generic_counter.vhdl"/>
+          <Attr Name="ImportTime" Val="1786824552"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
