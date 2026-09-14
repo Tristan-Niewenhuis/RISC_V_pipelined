@@ -193,42 +193,6 @@
                 "VH": "2",
                 "VT": "PM",
                 "TU": "active"
-            },
-            "V3": {
-                "VT": "AC",
-                "BA": "0x00000000",
-                "HA": "0x00001FFF",
-                "BP": "C_S_AXI_BASEADDR",
-                "HP": "C_S_AXI_HIGHADDR",
-                "MA": "f_M_AXI",
-                "MX": "/RISC_V_0",
-                "MI": "f_M_AXI",
-                "MS": "SEG_axi_bram_ctrl_0_Mem0",
-                "MV": "xilinx.com:module_ref:RISC_V:1.0",
-                "SX": "/axi_bram_ctrl_0",
-                "SI": "S_AXI",
-                "SS": "Mem0",
-                "SV": "xilinx.com:ip:axi_bram_ctrl:4.1",
-                "TM": "both",
-                "TU": "memory"
-            },
-            "V4": {
-                "VT": "AC",
-                "BA": "0xC0000000",
-                "HA": "0xC0001FFF",
-                "BP": "C_S_AXI_BASEADDR",
-                "HP": "C_S_AXI_HIGHADDR",
-                "MA": "ls_M_AXI",
-                "MX": "/RISC_V_0",
-                "MI": "ls_M_AXI",
-                "MS": "SEG_axi_bram_ctrl_1_Mem0",
-                "MV": "xilinx.com:module_ref:RISC_V:1.0",
-                "SX": "/axi_bram_ctrl_1",
-                "SI": "S_AXI",
-                "SS": "Mem0",
-                "SV": "xilinx.com:ip:axi_bram_ctrl:4.1",
-                "TM": "both",
-                "TU": "memory"
             }
         },
         "edges": [
@@ -239,16 +203,6 @@
             {
                 "src": "V1",
                 "trg": "V2"
-            },
-            {
-                "src": "V3",
-                "trg": "V2",
-                "EH": "2"
-            },
-            {
-                "src": "V4",
-                "trg": "V2",
-                "EH": "2"
             }
         ]
     }

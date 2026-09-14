@@ -3,7 +3,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.RISCV_package.all;
 
-entity Fetch is
+entity Fetch_AXI is
 	generic(
 		-- Users can add generic parameters here
 
@@ -51,9 +51,9 @@ entity Fetch is
 		M_AXI_RVALID : in sl; -- Read valid. This signal indicates that the channel is signaling the required read data.
 		M_AXI_RREADY : out sl -- Read ready. This signal indicates that the master can accept the read data and response information.
 	);
-end Fetch;
+end Fetch_AXI;
 
-architecture implementation of Fetch is
+architecture AXI of Fetch_AXI is
 	constant FIFO_DEPTH : integer := 2 * PRE_FETCH_BURST_SIZE;
 	constant FIFO_DEPTH_BITS : integer := clog2(FIFO_DEPTH);
 
@@ -158,4 +158,4 @@ begin
 	data <= FIFO_out(63 downto 32);
 	data_valid <= addr_hit;
 
-end implementation;
+end AXI;

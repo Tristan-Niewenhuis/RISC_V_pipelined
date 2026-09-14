@@ -88,7 +88,7 @@ begin
     control_word_out.ALUFunc <= "0000" when force_add = '1' else inst(14 downto 12) & (inst(30));
     control_word_out.IMM <= immediate;
     control_word_out.is_load <= is_LOAD;
-    control_word_out.is_store <= is_S;
+    control_word_out.is_store <= is_S; --unsiged without load_store hazard, remove TODO
     control_word_out.BRcond_LStype <= inst(14 downto 12);
     control_word_out.Dsel <= inst(11 downto 7);
     control_word_out.Dlen <= is_R or is_I or is_U or is_J;

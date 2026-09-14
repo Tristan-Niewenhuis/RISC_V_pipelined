@@ -1,7 +1,7 @@
 {
    "ActiveEmotionalView":"Default View",
-   "Default View_ScaleFactor":"1.79614",
-   "Default View_TopLeft":"875,145",
+   "Default View_ScaleFactor":"1.27006",
+   "Default View_TopLeft":"363,60",
    "ExpandedHierarchyInLayout":"",
    "guistr":"# # String gsaved with Nlview 7.8.0 2024-04-26 e1825d835c VDI=44 GEI=38 GUI=JA:24.0
 #  -string -flagsOSRD
@@ -20,25 +20,21 @@ preplace inst ilconstant_0 -pg 1 -lvl 1 -x 110 -y 100 -defaultsOSRD
 preplace inst ilconstant_1 -pg 1 -lvl 1 -x 110 -y 200 -defaultsOSRD
 preplace inst proc_sys_reset_0 -pg 1 -lvl 2 -x 400 -y 100 -defaultsOSRD
 preplace inst axi_interconnect_0 -pg 1 -lvl 4 -x 960 -y 360 -defaultsOSRD
-preplace inst RISC_V_0 -pg 1 -lvl 3 -x 690 -y 220 -defaultsOSRD
-preplace netloc clk_wiz_0_clk_out1 1 1 4 210 210 580 290 820 150 1120
+preplace netloc clk_wiz_0_clk_out1 1 1 4 220 200 N 200 810 150 1120
 preplace netloc clk_wiz_0_locked 1 1 1 230 140n
 preplace netloc ilconstant_0_dout 1 1 1 NJ 100
-preplace netloc ilconstant_1_dout 1 1 1 220J 120n
-preplace netloc proc_sys_reset_0_mb_reset 1 2 1 570 60n
-preplace netloc proc_sys_reset_0_peripheral_aresetn 1 2 3 NJ 140 810 140 1130
+preplace netloc ilconstant_1_dout 1 1 1 200J 120n
+preplace netloc proc_sys_reset_0_peripheral_aresetn 1 2 3 NJ 140 800 140 1130
 preplace netloc reset_1 1 0 2 20 40 230J
 preplace netloc sys_clock_1 1 0 1 NJ 320
-preplace netloc RISC_V_0_f_M_AXI 1 3 1 N 210
-preplace netloc RISC_V_0_ls_M_AXI 1 3 1 N 230
 preplace netloc axi_bram_ctrl_0_BRAM_PORTA 1 5 1 NJ 110
 preplace netloc axi_bram_ctrl_1_BRAM_PORTA 1 5 1 NJ 250
 preplace netloc axi_gpio_0_GPIO 1 5 2 NJ 390 NJ
 preplace netloc axi_gpio_1_GPIO 1 5 2 NJ 530 NJ
-preplace netloc axi_interconnect_0_M00_AXI 1 4 1 1100 90n
+preplace netloc axi_interconnect_0_M00_AXI 1 4 1 1110 90n
 preplace netloc axi_interconnect_0_M01_AXI 1 4 1 1140 230n
 preplace netloc axi_interconnect_0_M02_AXI 1 4 1 N 370
-preplace netloc axi_interconnect_0_M03_AXI 1 4 1 1100 390n
+preplace netloc axi_interconnect_0_M03_AXI 1 4 1 1110 390n
 levelinfo -pg 1 -10 110 400 690 960 1270 1520 1660
 pagesize -pg 1 -db -bbox -sgen -130 -70 1920 1030
 "

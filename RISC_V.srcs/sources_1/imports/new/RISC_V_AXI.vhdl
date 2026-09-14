@@ -3,7 +3,7 @@ use IEEE.std_logic_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 use work.RISCV_package.all;
 
-entity RISC_V is
+entity RISC_V_AXI is
   Port(clk, reset : in std_logic;
        --fetch unit port
        f_M_AXI_ARID : out std_logic_vector(0 downto 0);
@@ -73,9 +73,9 @@ entity RISC_V is
        --M_AXI_BUSER	: in std_logic_vector(C_M_AXI_BUSER_WIDTH-1 downto 0); 
        ls_M_AXI_BVALID : in std_logic;
        ls_M_AXI_BREADY : out std_logic);
-end RISC_V;
+end RISC_V_AXI;
 
-architecture Behavioral of RISC_V is
+architecture AXI of RISC_V_AXI is
   signal any_error, fetch_error, ls_error : sl;
   signal fetch_addr_valid, fetch_data_valid : sl;
   signal ls_addr_valid, ls_done_valid, ls_ctrl : sl;
@@ -103,7 +103,7 @@ begin
       load_data => load_data
     );
 
-  Fetch : entity work.Fetch(implementation)
+  Fetch : entity work.Fetch(AXI)
     GENERIC MAP(
       C_M_TARGET_SLAVE_BASE_ADDR => X"00000000",
       C_M_AXI_BURST_LEN => 1,
@@ -162,7 +162,7 @@ begin
       addr_valid => ls_addr_valid,
       load_store => ls_ctrl,
       access_type => ls_type,
-      address => ls_address,
+      ls_address_in => ls_address,
       done_valid => ls_done_valid,
       store_data => store_data,
       load_data_out => load_data,
@@ -206,4 +206,4 @@ begin
       M_AXI_BREADY => ls_M_AXI_BREADY
     );
 
-end Behavioral;
+end AXI;

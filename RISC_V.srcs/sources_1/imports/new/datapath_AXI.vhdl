@@ -3,61 +3,68 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.numeric_std.all;
 use work.RISCV_package.all;
 
-entity Datapath is
+entity Datapath_AXI is
     port(
         clk, reset : in sl;
         --
-        fetch_address : out slv(I_ADDR_BITS - 1 downto 0);
+        fetch_addr_valid : out sl;
+        fetch_address : out slv(XLEN - 1 downto 0);
+        fetch_inst_valid : in sl;
         inst : in slv(31 downto 0);
         --
+        ls_addr_valid : out sl;
         ls_ctrl : out sl;
         ls_type : out slv(2 downto 0);
-        ls_address : out slv(D_ADDR_BITS - 1 downto 0);
+        ls_address : out slv(XLEN - 1 downto 0);
         store_data : out slv(XLEN - 1 downto 0);
+        ls_done_valid : in sl;
         load_data : in slv(XLEN - 1 downto 0)
     );
-end Datapath;
+end Datapath_AXI;
 
-architecture Behavioral of Datapath is
+architecture Behavioral of Datapath_AXI is
     --if
-    signal pc, pc_delay : slv(I_ADDR_BITS - 3 downto 0);
+    signal pc : slv(XLEN - 1 downto 0);
+    signal fetch_addr_valid_i : sl;
     signal pc_incr : sl;
     signal cw_decoded : control_word_if_id;
 
     --if_id
     signal if_id_cw : control_word_if_id;
-    signal if_id_pc : slv(I_ADDR_BITS - 3 downto 0);
+    signal if_id_pc : slv(29 downto 0);
 
     --id
     signal a_out, b_out : slv(XLEN - 1 downto 0);
 
     --id_ex
     signal id_ex_cw : control_word_id_ex;
-    signal id_ex_pc : slv(I_ADDR_BITS - 3 downto 0);
+    signal id_ex_pc : slv(29 downto 0);
     signal id_ex_a, id_ex_b : slv(XLEN - 1 downto 0);
 
     --ex
     signal a_bus, b_bus, alu_out : slv(XLEN - 1 downto 0);
     signal BTU_out : sl;
     signal branch_correct, branch_take : sl;
-    signal pc_d, pc_base : slv(I_ADDR_BITS - 3 downto 0);
+    signal pc_d, pc_base : slv(29 downto 0);
     signal pc_latch : sl;
 
     --ex_mem
     signal ex_mem_cw : control_word_ex_mem;
-    signal ex_mem_pc : slv(I_ADDR_BITS - 3 downto 0);
+    signal ex_mem_pc : slv(29 downto 0);
     signal ex_mem_alu_out, ex_mem_store_data : slv(XLEN - 1 downto 0);
 
     --mem
+    signal ls_addr_valid_i : sl;
 
     --mem_wb
     signal mem_wb_cw : control_word_mem_wb;
-    signal mem_wb_pc : slv(I_ADDR_BITS - 3 downto 0);
+    signal mem_wb_pc : slv(29 downto 0);
     signal mem_wb_load_data, mem_wb_alu_out : slv(XLEN - 1 downto 0);
 
     --wb
-    signal d_in, PC_d_in : slv(XLEN - 1 downto 0);
+    signal d_in : slv(XLEN - 1 downto 0);
 
+    signal fetch_hazard, ls_hazard : sl;
     signal if_id_stall, id_ex_stall, ex_mem_stall, mem_wb_stall : sl;
     signal if_id_nop, id_ex_nop, ex_mem_nop, mem_wb_nop : sl;
     signal id_ex_a_hazard, id_ex_b_hazard, ex_mem_a_hazard, ex_mem_b_hazard, raw_hazard : sl;
@@ -67,21 +74,25 @@ begin
     branch_correct <= '1' when pc_d = if_id_pc else '0';
     branch_take <= id_ex_cw.PCle or BTU_out;
 
-    pc_base <= id_ex_pc when id_ex_cw.PCAsel = '1' else id_ex_a(I_ADDR_BITS - 1 downto 2);
-    pc_d <= slv(signed(pc_base) + signed(id_ex_cw.IMM(I_ADDR_BITS - 1 downto 2))); --unsigned or signed add, doesn't matter. same logic under the hood
+    pc_base <= id_ex_pc when id_ex_cw.PCAsel = '1' else id_ex_a(31 downto 2);
+    pc_d <= slv(signed(pc_base) + signed(id_ex_cw.IMM(31 downto 2))); --unsigned or signed add, doesn't matter. same logic under the hood
     pc_latch <= branch_take and (not branch_correct);
-    pc_incr <= (not if_id_stall and not branch_hazard);
+    pc_incr <= (fetch_addr_valid_i and fetch_inst_valid);
     Program_Counter : entity work.generic_counter(Behavioral)
-        generic map(bits => I_ADDR_BITS - 2)
+        generic map(bits => XLEN - 2)
         port map(clk => clk,
                  reset => reset,
                  latch => pc_latch,
                  enable => pc_incr,
                  d => pc_d,
-                 q => pc
-                );
+                 q => pc(31 downto 2));
+    pc(1 downto 0) <= "00"; --hard set last 2 bits of pc to 00
 
-    fetch_address <= pc & "00";
+    fetch_addr_valid_i <= (not if_id_stall and not branch_hazard);
+    fetch_addr_valid <= fetch_addr_valid_i;
+    fetch_address <= pc;
+
+    fetch_hazard <= (fetch_addr_valid_i and not fetch_inst_valid);
 
     Instruction_Decoder : entity work.Instruction_Decoder(Behavioral)
         port map(
@@ -99,8 +110,7 @@ begin
                 if_id_cw <= CONTROL_WORD_IF_ID_NOP;
             else
                 if (if_id_stall = '0') then
-                    pc_delay <= pc;
-                    if_id_pc <= pc_delay;
+                    if_id_pc <= pc(31 downto 2);
 
                     if_id_cw <= cw_decoded;
                 end if;
@@ -108,9 +118,8 @@ begin
         end if;
     end process;
 
-    PC_d_in <= ((31 downto I_ADDR_BITS => '0') & slv(unsigned(mem_wb_pc) + 1) & "00");
     d_in <= mem_wb_load_data when mem_wb_cw.LoadDsel = '1' else
-            PC_d_in when mem_wb_cw.PCDsel = '1' else
+            (slv(unsigned(mem_wb_pc) + 1) & "00") when mem_wb_cw.PCDsel = '1' else
             mem_wb_alu_out;
 
     Regs : entity work.generic_register_file(Behavioral)
@@ -146,7 +155,7 @@ begin
     end process;
 
     --TODO: can move this to id if not meeting timing
-    a_bus <= ((31 downto I_ADDR_BITS => '0') & id_ex_pc & "00") when id_ex_cw.PCAsel = '1' else
+    a_bus <= id_ex_pc & "00" when id_ex_cw.PCAsel = '1' else
              id_ex_a;
     b_bus <= id_ex_cw.IMM when id_ex_cw.IMMBsel = '1' else
              id_ex_b;
@@ -164,22 +173,18 @@ begin
                  enable => id_ex_cw.isBR,
                  BTU_out => BTU_out);
 
-    --load/store addr goes in now, so data is ready by the time the mem stage happens
-    ls_ctrl <= id_ex_cw.is_load;
-    ls_type <= id_ex_cw.BRcond_LStype;
-    ls_address <= slv(unsigned(id_ex_a(D_ADDR_BITS - 1 downto 0)) + unsigned(id_ex_cw.IMM(D_ADDR_BITS - 1 downto 0)));
-    store_data <= id_ex_b;
-
     EX_MEM_proc : process(clk) is
     begin
         if rising_edge(clk) then
             if (reset = '1' or (ex_mem_nop = '1' and ex_mem_stall = '0')) then
                 ex_mem_alu_out <= (others => '0');
+                ex_mem_store_data <= (others => '0');
                 ex_mem_pc <= (others => '0');
                 ex_mem_cw <= CONTROL_WORD_EX_MEM_NOP;
             else
                 if (ex_mem_stall = '0') then
                     ex_mem_alu_out <= alu_out;
+                    ex_mem_store_data <= id_ex_b;
                     ex_mem_pc <= id_ex_pc;
 
                     ex_mem_cw <= id_ex_to_ex_mem(id_ex_cw);
@@ -187,6 +192,15 @@ begin
             end if;
         end if;
     end process;
+
+    ls_addr_valid_i <= ex_mem_cw.is_load or ex_mem_cw.is_store;
+    ls_addr_valid <= ls_addr_valid_i;
+    ls_ctrl <= ex_mem_cw.is_load;
+    ls_type <= ex_mem_cw.BRcond_LStype;
+    ls_address <= ex_mem_alu_out;
+    store_data <= ex_mem_store_data;
+
+    ls_hazard <= (ls_addr_valid_i and not ls_done_valid);
 
     MEM_WB_proc : process(clk) is
     begin
@@ -244,15 +258,15 @@ begin
     branch_hazard <= '1' when (branch_take = '1' and branch_correct = '0') else '0';
 
     --pipeline register bubbles
-    if_id_nop <= branch_hazard;
+    if_id_nop <= fetch_hazard or branch_hazard;
     id_ex_nop <= raw_hazard or branch_hazard;
     ex_mem_nop <= '0';
-    mem_wb_nop <= '0';
+    mem_wb_nop <= ls_hazard;
 
     --pipeline register enable
     if_id_stall <= id_ex_stall or raw_hazard;
     id_ex_stall <= ex_mem_stall;
-    ex_mem_stall <= '0';
+    ex_mem_stall <= ls_hazard;
     mem_wb_stall <= '0';
 
     -- DEBUG_SIGNALS : if DEBUG generate

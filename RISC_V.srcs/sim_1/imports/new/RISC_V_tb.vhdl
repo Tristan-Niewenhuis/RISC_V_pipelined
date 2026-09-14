@@ -12,11 +12,14 @@ architecture Behavioral of RISC_V_tb is
     signal resetn : sl := '1';
     signal led_16bits_tri_o, dip_switches_16bits_tri_i : slv(15 downto 0);
 begin
-    uut: entity work.RISC_V_block_wrapper (STRUCTURE)
+    uut: entity work.harvard_wrapper (STRUCTURE)
         port map ( sys_clock => sys_clock,
-                  resetn => resetn,
-                  dip_switches_16bits_tri_i => dip_switches_16bits_tri_i,
-                  led_16bits_tri_o => led_16bits_tri_o);
+                  resetn => resetn);
+--                      uut: entity work.RISC_V_block_wrapper (STRUCTURE)
+--        port map ( sys_clock => sys_clock,
+--                  resetn => resetn,
+--                  dip_switches_16bits_tri_i => dip_switches_16bits_tri_i,
+--                  led_16bits_tri_o => led_16bits_tri_o);
 
      --clk
   sys_clock <= not sys_clock after 5 ns;

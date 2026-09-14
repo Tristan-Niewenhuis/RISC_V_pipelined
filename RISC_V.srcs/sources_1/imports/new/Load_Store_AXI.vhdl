@@ -3,7 +3,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.RISCV_package.all;
 
-entity Load_Store is
+entity Load_Store_AXI is
 	generic(
 		-- User parameters ends
 		C_M_TARGET_SLAVE_BASE_ADDR : slv := x"00000000"; -- Base address of targeted slave
@@ -81,9 +81,9 @@ entity Load_Store is
 		M_AXI_BVALID : in sl; -- Write response valid. This signal indicates that the  channel is signaling a valid write response.
 		M_AXI_BREADY : out sl -- Response ready. This signal indicates that the master can accept a write response.
 	);
-end Load_Store;
+end Load_Store_AXI;
 
-architecture implementation of Load_Store is
+architecture AXI of Load_Store_AXI is
 	type state_t is (IDLE, SEND_ADDR, ACCEPTING);
 	signal load_cur_state, load_next_state_i, load_next_state_final : state_t;
 	signal load_IDLE_next, load_SEND_ADDR_next, load_ACCEPTING_next : state_t;
@@ -204,4 +204,4 @@ begin
 	----error
 	error <= '1' when M_AXI_RRESP(1) = '1' or M_AXI_BRESP(1) = '1' else '0'; --both errors have RRESP bit 1 as high
 
-end implementation;
+end AXI;
