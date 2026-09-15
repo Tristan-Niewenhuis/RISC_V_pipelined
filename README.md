@@ -48,6 +48,5 @@ This project goes further by measuring:
 
 The final performance metric is:
 
-```text
 Performance = IPC × Fmax
-``
+
