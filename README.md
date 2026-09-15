@@ -50,3 +50,33 @@ The final performance metric is:
 
 Performance = IPC × Fmax
 
+--
+
+## Processor Architecture
+The processor is based on the RV32I instruction set and is converted from a non-pipelined implementation into a classic five-stage pipeline.
+
+## Repo Structure TODO
+All sources in the RISC_V.srcs/
+RISC_V.vhdl is the top module of the processor, and the block design is used to connect it to native bram and clocking.
+
+RISC_V_AXI.vhdl is the version of that uses AXI interfaces to fetch and load/store which means it is compatible with external RAM, however there is a large stall penalty waiting for load/store and pre-fetch misses.
+
+Planning on doing forwarding comparisons for both native bram, and axi bus implementations.
+
+## Results TODO
+Come back in November 2026
+
+## Future Work
+- Bimodal and Gshare predictors
+
+## Contact
+Tristan Niewenhuis
+
+Tristanniewenhuis@gmail.com
+
+605-251-9304
+
+https://www.linkedin.com/in/tristanniewenhuis/
+
+https://github.com/Tristan-Niewenhuis
+
