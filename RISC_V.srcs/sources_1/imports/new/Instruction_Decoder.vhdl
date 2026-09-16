@@ -15,7 +15,7 @@ end Instruction_Decoder;
 architecture Behavioral of Instruction_Decoder is
     signal immediate : slv(XLEN - 1 downto 0);
     signal type_control_sig : slv(2 downto 0);
-    signal jalr_condition, instruction_address_misaligned, bottom_11 : sl;
+    signal jalr_condition, instruction_address_misaligned, bottom_11, all_zeros : sl;
     signal force_add : sl;
     signal is_LOAD, is_LUI, is_AUIPC, is_JALR, is_ADDI : sl;
     signal is_R, is_I, is_S, is_B, is_U, is_J, is_system, is_MRET, is_WFI, is_illegal : sl;
@@ -23,6 +23,9 @@ architecture Behavioral of Instruction_Decoder is
 
 begin
     ----combinational logic----
+    --all zeros is illegal
+    all_zeros <= '1' when inst = x"00000000" else '0';
+
     --throw expection when inst(1 downto 0) != 0
     bottom_11 <= '1' when inst(1 downto 0) = "00" else '0';
 

@@ -9,7 +9,8 @@ entity generic_counter is
     Port(
         clk, reset, latch, enable : in sl;
         d : in slv(bits - 1 downto 0);
-        q : out slv(bits - 1 downto 0)
+        q : out slv(bits - 1 downto 0);
+        next_count_out : out slv(bits - 1 downto 0)
     );
 end generic_counter;
 
@@ -30,5 +31,6 @@ begin
 
     --output logic
     q <= current_count;
+    next_count_out <= next_count;
 
 end Behavioral;

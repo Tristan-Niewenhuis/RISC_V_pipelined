@@ -105,7 +105,7 @@
           },
           "i_addr": {
             "direction": "O",
-            "left": "11",
+            "left": "9",
             "right": "0"
           },
           "i_data_in": {
@@ -115,7 +115,7 @@
           },
           "d_addr": {
             "direction": "O",
-            "left": "11",
+            "left": "9",
             "right": "0"
           },
           "d_data_in": {
@@ -246,11 +246,23 @@
           "Coe_File": {
             "value": "../../../../../../../cylon_test/cylon_test/cylon_test.coe"
           },
+          "Enable_A": {
+            "value": "Always_Enabled"
+          },
           "Load_Init_File": {
             "value": "true"
           },
+          "Memory_Type": {
+            "value": "Single_Port_ROM"
+          },
+          "Register_PortA_Output_of_Memory_Core": {
+            "value": "false"
+          },
+          "Register_PortA_Output_of_Memory_Primitives": {
+            "value": "false"
+          },
           "Write_Depth_A": {
-            "value": "4096"
+            "value": "1024"
           },
           "use_bram_block": {
             "value": "Stand_Alone"
@@ -268,11 +280,23 @@
           "Byte_Size": {
             "value": "8"
           },
+          "Enable_A": {
+            "value": "Always_Enabled"
+          },
+          "Register_PortA_Output_of_Memory_Core": {
+            "value": "false"
+          },
+          "Register_PortA_Output_of_Memory_Primitives": {
+            "value": "false"
+          },
           "Use_Byte_Write_Enable": {
             "value": "true"
           },
+          "Use_RSTA_Pin": {
+            "value": "false"
+          },
           "Write_Depth_A": {
-            "value": "4096"
+            "value": "1024"
           },
           "Write_Width_A": {
             "value": "32"
@@ -324,9 +348,9 @@
         "ports": [
           "clk_wiz_0/clk_out1",
           "proc_sys_reset_0/slowest_sync_clk",
-          "RISC_V_0/clk",
           "blk_mem_gen_0/clka",
-          "blk_mem_gen_1/clka"
+          "blk_mem_gen_1/clka",
+          "RISC_V_0/clk"
         ]
       },
       "clk_wiz_0_locked": {
@@ -338,9 +362,7 @@
       "ilconstant_0_dout": {
         "ports": [
           "ilconstant_0/dout",
-          "proc_sys_reset_0/aux_reset_in",
-          "blk_mem_gen_0/ena",
-          "blk_mem_gen_1/ena"
+          "proc_sys_reset_0/aux_reset_in"
         ]
       },
       "ilconstant_1_dout": {

@@ -9,8 +9,8 @@ package RISCV_package is
   constant XLEN_BITS : integer := 5;
   constant XLEN : integer := 2 ** XLEN_BITS;
   constant REGS_ADDR_BITS : integer := 5;
-  constant I_ADDR_BITS : integer := 12;
-  constant D_ADDR_BITS : integer := 12;
+  constant I_BYTES_ADDR_BITS : integer := 12;
+  constant D_BYTES_ADDR_BITS : integer := 12;
   constant PRE_FETCH_BURST_SIZE : integer := 4;
 
   subtype sl is std_logic;

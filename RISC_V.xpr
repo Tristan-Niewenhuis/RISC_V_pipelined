@@ -78,22 +78,8 @@
   <FileSets Version="1" Minor="32">
     <FileSet Name="sources_1" Type="DesignSrcs" RelSrcDir="$PSRCDIR/sources_1" RelGenDir="$PGENDIR/sources_1">
       <Filter Type="Srcs"/>
-      <File Path="$PSRCDIR/sources_1/bd/RISC_V_block/RISC_V_block.bd">
-        <FileInfo>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PGENDIR/sources_1/bd/RISC_V_block/hdl/RISC_V_block_wrapper.vhd">
-        <FileInfo>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
       <File Path="$PSRCDIR/sources_1/imports/new/RISCV_package.vhdl">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PPRDIR/../../Users/trist/OneDrive/Desktop/git/Da_Big_One_with_prefetch/Da_Big_One_with_prefetch.srcs/sources_1/new/RISCV_package.vhdl"/>
           <Attr Name="ImportTime" Val="1786824552"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -102,7 +88,6 @@
       </File>
       <File Path="$PSRCDIR/sources_1/imports/imports/new/generic_shifter.vhdl">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PPRDIR/../../Users/trist/OneDrive/Desktop/git/Da_Big_One_with_prefetch/Da_Big_One_with_prefetch.srcs/sources_1/imports/new/generic_shifter.vhdl"/>
           <Attr Name="ImportTime" Val="1786824552"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -111,7 +96,6 @@
       </File>
       <File Path="$PSRCDIR/sources_1/imports/new/ALU.vhdl">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PPRDIR/../../Users/trist/OneDrive/Desktop/git/Da_Big_One_with_prefetch/Da_Big_One_with_prefetch.srcs/sources_1/new/ALU.vhdl"/>
           <Attr Name="ImportTime" Val="1786824552"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -120,7 +104,6 @@
       </File>
       <File Path="$PSRCDIR/sources_1/imports/new/Instruction_Decoder.vhdl">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PPRDIR/../../Users/trist/OneDrive/Desktop/git/Da_Big_One_with_prefetch/Da_Big_One_with_prefetch.srcs/sources_1/new/Instruction_Decoder.vhdl"/>
           <Attr Name="ImportTime" Val="1786824552"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -129,7 +112,6 @@
       </File>
       <File Path="$PSRCDIR/sources_1/imports/new/Load_Store.vhdl">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PPRDIR/../../Users/trist/OneDrive/Desktop/git/Da_Big_One_with_prefetch/Da_Big_One_with_prefetch.srcs/sources_1/new/Load_Store.vhdl"/>
           <Attr Name="ImportTime" Val="1786824552"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -138,7 +120,6 @@
       </File>
       <File Path="$PSRCDIR/sources_1/imports/imports/new/generic_counter.vhdl">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PPRDIR/../../Users/trist/OneDrive/Desktop/git/Da_Big_One_with_prefetch/Da_Big_One_with_prefetch.srcs/sources_1/imports/new/generic_counter.vhdl"/>
           <Attr Name="ImportTime" Val="1786824552"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -147,21 +128,18 @@
       </File>
       <File Path="$PSRCDIR/sources_1/imports/imports/new/generic_register.vhdl">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
       <File Path="$PSRCDIR/sources_1/imports/imports/new/generic_register_file.vhdl">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
       <File Path="$PSRCDIR/sources_1/imports/new/btu.vhdl">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PPRDIR/../../Users/trist/OneDrive/Desktop/git/Da_Big_One_with_prefetch/Da_Big_One_with_prefetch.srcs/sources_1/new/btu.vhdl"/>
           <Attr Name="ImportTime" Val="1786824552"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -170,7 +148,6 @@
       </File>
       <File Path="$PSRCDIR/sources_1/imports/new/datapath.vhdl">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PPRDIR/../../Users/trist/OneDrive/Desktop/git/Da_Big_One_with_prefetch/Da_Big_One_with_prefetch.srcs/sources_1/new/datapath.vhdl"/>
           <Attr Name="ImportTime" Val="1786824552"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -179,40 +156,14 @@
       </File>
       <File Path="$PSRCDIR/sources_1/imports/new/RISC_V.vhdl">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PPRDIR/../../Users/trist/OneDrive/Desktop/git/Da_Big_One_with_prefetch/Da_Big_One_with_prefetch.srcs/sources_1/new/RISC_V.vhdl"/>
           <Attr Name="ImportTime" Val="1786824552"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/imports/new/Fetch.vhdl">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="ImportPath" Val="$PPRDIR/../../Users/trist/OneDrive/Desktop/git/Da_Big_One_with_prefetch/Da_Big_One_with_prefetch.srcs/sources_1/new/Fetch.vhdl"/>
-          <Attr Name="ImportTime" Val="1786824552"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/imports/imports/packages/generic_FIFO.vhdl">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="ImportPath" Val="$PPRDIR/../../Users/trist/OneDrive/Desktop/git/Da_Big_One_with_prefetch/Da_Big_One_with_prefetch.srcs/sources_1/imports/packages/generic_FIFO.vhdl"/>
-          <Attr Name="ImportTime" Val="1786824552"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PPRDIR/../cylon_test/cylon_test/cylon_test.coe">
-        <FileInfo>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
       <File Path="$PSRCDIR/sources_1/bd/harvard/harvard.bd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -232,14 +183,43 @@
       </File>
       <File Path="$PGENDIR/sources_1/bd/harvard/hdl/harvard_wrapper.vhd">
         <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/imports/imports/packages/generic_FIFO.vhdl">
+        <FileInfo>
           <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../Users/trist/OneDrive/Desktop/git/Da_Big_One_with_prefetch/Da_Big_One_with_prefetch.srcs/sources_1/imports/packages/generic_FIFO.vhdl"/>
+          <Attr Name="ImportTime" Val="1786824552"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/bd/RISC_V_block/RISC_V_block.bd">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PGENDIR/sources_1/bd/RISC_V_block/hdl/RISC_V_block_wrapper.vhd">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../cylon_test/cylon_test/cylon_test.coe">
+        <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
       <Config>
         <Option Name="DesignMode" Val="RTL"/>
-        <Option Name="TopModule" Val="RISC_V_block_wrapper"/>
+        <Option Name="TopModule" Val="harvard_wrapper"/>
         <Option Name="ElabLinkDCPs" Val="0"/>
         <Option Name="ElabIPRTLs" Val="1"/>
       </Config>
@@ -265,6 +245,11 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
+      <File Path="$PPRDIR/temp.wcfg">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
       <Config>
         <Option Name="DesignMode" Val="RTL"/>
         <Option Name="TopModule" Val="RISC_V_tb"/>
@@ -279,6 +264,7 @@
         <Option Name="SrcSet" Val="sources_1"/>
         <Option Name="XSimWcfgFile" Val="$PPRDIR/RISC_V_tb_behav.wcfg"/>
         <Option Name="XSimWcfgFile" Val="$PPRDIR/RISC_V_tb_behav.wcfg"/>
+        <Option Name="XSimWcfgFile" Val="$PPRDIR/temp.wcfg"/>
         <Option Name="CosimPdi" Val=""/>
         <Option Name="CosimPlatform" Val=""/>
         <Option Name="CosimElf" Val=""/>
@@ -301,14 +287,6 @@
         <Option Name="TopAutoSet" Val="TRUE"/>
       </Config>
     </FileSet>
-    <FileSet Name="harvard_RISC_V_0_0" Type="BlockSrcs" RelSrcDir="$PSRCDIR/harvard_RISC_V_0_0" RelGenDir="$PGENDIR/harvard_RISC_V_0_0">
-      <Config>
-        <Option Name="TopModule" Val="harvard_RISC_V_0_0"/>
-        <Option Name="ElabLinkDCPs" Val="0"/>
-        <Option Name="ElabIPRTLs" Val="1"/>
-        <Option Name="UseBlackboxStub" Val="1"/>
-      </Config>
-    </FileSet>
     <FileSet Name="harvard_clk_wiz_0_0" Type="BlockSrcs" RelSrcDir="$PSRCDIR/harvard_clk_wiz_0_0" RelGenDir="$PGENDIR/harvard_clk_wiz_0_0">
       <Config>
         <Option Name="TopModule" Val="harvard_clk_wiz_0_0"/>
@@ -328,6 +306,14 @@
     <FileSet Name="harvard_blk_mem_gen_0_1" Type="BlockSrcs" RelSrcDir="$PSRCDIR/harvard_blk_mem_gen_0_1" RelGenDir="$PGENDIR/harvard_blk_mem_gen_0_1">
       <Config>
         <Option Name="TopModule" Val="harvard_blk_mem_gen_0_1"/>
+        <Option Name="ElabLinkDCPs" Val="0"/>
+        <Option Name="ElabIPRTLs" Val="1"/>
+        <Option Name="UseBlackboxStub" Val="1"/>
+      </Config>
+    </FileSet>
+    <FileSet Name="harvard_RISC_V_0_0" Type="BlockSrcs" RelSrcDir="$PSRCDIR/harvard_RISC_V_0_0" RelGenDir="$PGENDIR/harvard_RISC_V_0_0">
+      <Config>
+        <Option Name="TopModule" Val="harvard_RISC_V_0_0"/>
         <Option Name="ElabLinkDCPs" Val="0"/>
         <Option Name="ElabIPRTLs" Val="1"/>
         <Option Name="UseBlackboxStub" Val="1"/>
@@ -363,23 +349,9 @@
       <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
       <RQSFiles/>
     </Run>
-    <Run Id="harvard_RISC_V_0_0_synth_1" Type="Ft3:Synth" SrcSet="harvard_RISC_V_0_0" Part="xc7a100tcsg324-1" ConstrsSet="harvard_RISC_V_0_0" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/harvard_RISC_V_0_0_synth_1" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/harvard_RISC_V_0_0_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/harvard_RISC_V_0_0_synth_1" ParallelReportGen="true">
-      <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2026">
-          <Desc>Vivado Synthesis Defaults</Desc>
-        </StratHandle>
-        <Step Id="synth_design"/>
-      </Strategy>
-      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
-      <ReportStrategy Name="Vivado Synthesis Default Reports" Flow="Vivado Synthesis 2026"/>
-      <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
-      <RQSFiles/>
-    </Run>
     <Run Id="harvard_clk_wiz_0_0_synth_1" Type="Ft3:Synth" SrcSet="harvard_clk_wiz_0_0" Part="xc7a100tcsg324-1" ConstrsSet="harvard_clk_wiz_0_0" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/harvard_clk_wiz_0_0_synth_1" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/harvard_clk_wiz_0_0_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/harvard_clk_wiz_0_0_synth_1" ParallelReportGen="true">
       <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2026">
-          <Desc>Vivado Synthesis Defaults</Desc>
-        </StratHandle>
+        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2026"/>
         <Step Id="synth_design"/>
       </Strategy>
       <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
@@ -389,9 +361,7 @@
     </Run>
     <Run Id="harvard_blk_mem_gen_0_0_synth_1" Type="Ft3:Synth" SrcSet="harvard_blk_mem_gen_0_0" Part="xc7a100tcsg324-1" ConstrsSet="harvard_blk_mem_gen_0_0" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/harvard_blk_mem_gen_0_0_synth_1" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/harvard_blk_mem_gen_0_0_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/harvard_blk_mem_gen_0_0_synth_1" ParallelReportGen="true">
       <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2026">
-          <Desc>Vivado Synthesis Defaults</Desc>
-        </StratHandle>
+        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2026"/>
         <Step Id="synth_design"/>
       </Strategy>
       <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
@@ -401,9 +371,17 @@
     </Run>
     <Run Id="harvard_blk_mem_gen_0_1_synth_1" Type="Ft3:Synth" SrcSet="harvard_blk_mem_gen_0_1" Part="xc7a100tcsg324-1" ConstrsSet="harvard_blk_mem_gen_0_1" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/harvard_blk_mem_gen_0_1_synth_1" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/harvard_blk_mem_gen_0_1_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/harvard_blk_mem_gen_0_1_synth_1" ParallelReportGen="true">
       <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2026">
-          <Desc>Vivado Synthesis Defaults</Desc>
-        </StratHandle>
+        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2026"/>
+        <Step Id="synth_design"/>
+      </Strategy>
+      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
+      <ReportStrategy Name="Vivado Synthesis Default Reports" Flow="Vivado Synthesis 2026"/>
+      <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
+      <RQSFiles/>
+    </Run>
+    <Run Id="harvard_RISC_V_0_0_synth_1" Type="Ft3:Synth" SrcSet="harvard_RISC_V_0_0" Part="xc7a100tcsg324-1" ConstrsSet="harvard_RISC_V_0_0" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/harvard_RISC_V_0_0_synth_1" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/harvard_RISC_V_0_0_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/harvard_RISC_V_0_0_synth_1" ParallelReportGen="true">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2026"/>
         <Step Id="synth_design"/>
       </Strategy>
       <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
@@ -429,30 +407,9 @@
       <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
       <RQSFiles/>
     </Run>
-    <Run Id="harvard_RISC_V_0_0_impl_1" Type="Ft2:EntireDesign" Part="xc7a100tcsg324-1" ConstrsSet="harvard_RISC_V_0_0" Description="Default settings for Implementation." AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" SynthRun="harvard_RISC_V_0_0_synth_1" IncludeInArchive="false" IsChild="false" GenFullBitstream="true" AutoIncrementalDir="$PSRCDIR/utils_1/imports/harvard_RISC_V_0_0_impl_1" AutoRQSDir="$PSRCDIR/utils_1/imports/harvard_RISC_V_0_0_impl_1" ParallelReportGen="true">
-      <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2026">
-          <Desc>Default settings for Implementation.</Desc>
-        </StratHandle>
-        <Step Id="init_design"/>
-        <Step Id="opt_design"/>
-        <Step Id="power_opt_design"/>
-        <Step Id="place_design"/>
-        <Step Id="post_place_power_opt_design"/>
-        <Step Id="phys_opt_design"/>
-        <Step Id="route_design"/>
-        <Step Id="post_route_phys_opt_design"/>
-        <Step Id="write_bitstream"/>
-      </Strategy>
-      <ReportStrategy Name="Vivado Implementation Default Reports" Flow="Vivado Implementation 2026"/>
-      <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
-      <RQSFiles/>
-    </Run>
     <Run Id="harvard_clk_wiz_0_0_impl_1" Type="Ft2:EntireDesign" Part="xc7a100tcsg324-1" ConstrsSet="harvard_clk_wiz_0_0" Description="Default settings for Implementation." AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" SynthRun="harvard_clk_wiz_0_0_synth_1" IncludeInArchive="false" IsChild="false" GenFullBitstream="true" AutoIncrementalDir="$PSRCDIR/utils_1/imports/harvard_clk_wiz_0_0_impl_1" AutoRQSDir="$PSRCDIR/utils_1/imports/harvard_clk_wiz_0_0_impl_1" ParallelReportGen="true">
       <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2026">
-          <Desc>Default settings for Implementation.</Desc>
-        </StratHandle>
+        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2026"/>
         <Step Id="init_design"/>
         <Step Id="opt_design"/>
         <Step Id="power_opt_design"/>
@@ -469,9 +426,7 @@
     </Run>
     <Run Id="harvard_blk_mem_gen_0_0_impl_1" Type="Ft2:EntireDesign" Part="xc7a100tcsg324-1" ConstrsSet="harvard_blk_mem_gen_0_0" Description="Default settings for Implementation." AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" SynthRun="harvard_blk_mem_gen_0_0_synth_1" IncludeInArchive="false" IsChild="false" GenFullBitstream="true" AutoIncrementalDir="$PSRCDIR/utils_1/imports/harvard_blk_mem_gen_0_0_impl_1" AutoRQSDir="$PSRCDIR/utils_1/imports/harvard_blk_mem_gen_0_0_impl_1" ParallelReportGen="true">
       <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2026">
-          <Desc>Default settings for Implementation.</Desc>
-        </StratHandle>
+        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2026"/>
         <Step Id="init_design"/>
         <Step Id="opt_design"/>
         <Step Id="power_opt_design"/>
@@ -488,9 +443,24 @@
     </Run>
     <Run Id="harvard_blk_mem_gen_0_1_impl_1" Type="Ft2:EntireDesign" Part="xc7a100tcsg324-1" ConstrsSet="harvard_blk_mem_gen_0_1" Description="Default settings for Implementation." AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" SynthRun="harvard_blk_mem_gen_0_1_synth_1" IncludeInArchive="false" IsChild="false" GenFullBitstream="true" AutoIncrementalDir="$PSRCDIR/utils_1/imports/harvard_blk_mem_gen_0_1_impl_1" AutoRQSDir="$PSRCDIR/utils_1/imports/harvard_blk_mem_gen_0_1_impl_1" ParallelReportGen="true">
       <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2026">
-          <Desc>Default settings for Implementation.</Desc>
-        </StratHandle>
+        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2026"/>
+        <Step Id="init_design"/>
+        <Step Id="opt_design"/>
+        <Step Id="power_opt_design"/>
+        <Step Id="place_design"/>
+        <Step Id="post_place_power_opt_design"/>
+        <Step Id="phys_opt_design"/>
+        <Step Id="route_design"/>
+        <Step Id="post_route_phys_opt_design"/>
+        <Step Id="write_bitstream"/>
+      </Strategy>
+      <ReportStrategy Name="Vivado Implementation Default Reports" Flow="Vivado Implementation 2026"/>
+      <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
+      <RQSFiles/>
+    </Run>
+    <Run Id="harvard_RISC_V_0_0_impl_1" Type="Ft2:EntireDesign" Part="xc7a100tcsg324-1" ConstrsSet="harvard_RISC_V_0_0" Description="Default settings for Implementation." AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" SynthRun="harvard_RISC_V_0_0_synth_1" IncludeInArchive="false" IsChild="false" GenFullBitstream="true" AutoIncrementalDir="$PSRCDIR/utils_1/imports/harvard_RISC_V_0_0_impl_1" AutoRQSDir="$PSRCDIR/utils_1/imports/harvard_RISC_V_0_0_impl_1" ParallelReportGen="true">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2026"/>
         <Step Id="init_design"/>
         <Step Id="opt_design"/>
         <Step Id="power_opt_design"/>

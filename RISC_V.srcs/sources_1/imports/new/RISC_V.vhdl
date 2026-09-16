@@ -6,10 +6,10 @@ use work.RISCV_package.all;
 entity RISC_V is
   Port(clk, reset : in std_logic;
        --fetch unit port
-       i_addr : out std_logic_vector(I_ADDR_BITS - 1 downto 0);
+       i_addr : out std_logic_vector(I_BYTES_ADDR_BITS - 3 downto 0);
        i_data_in : in std_logic_vector(31 downto 0);
        --load store unit ports    
-       d_addr : out std_logic_vector(D_ADDR_BITS - 1 downto 0);
+       d_addr : out std_logic_vector(D_BYTES_ADDR_BITS - 3 downto 0);
        d_data_in : in std_logic_vector(31 downto 0);
        d_data_out : out std_logic_vector(31 downto 0);
        d_strobe : out std_logic_vector(3 downto 0)
@@ -19,7 +19,7 @@ end RISC_V;
 architecture Behavioral of RISC_V is
   signal ls_ctrl : sl;
   signal ls_type : slv(2 downto 0);
-  signal ls_address : slv(D_ADDR_BITS - 1 downto 0);
+  signal ls_address : slv(31 downto 0);
   signal load_data, store_data : slv(XLEN - 1 downto 0);
 begin
   datapath : entity work.Datapath
@@ -37,6 +37,8 @@ begin
 
   Load_Store_inst : entity work.Load_Store
     port map(
+      clk => clk,
+      reset => reset,
       load_store => ls_ctrl,
       access_type => ls_type,
       ls_address_in => ls_address,

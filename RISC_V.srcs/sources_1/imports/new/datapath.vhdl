@@ -7,12 +7,12 @@ entity Datapath is
     port(
         clk, reset : in sl;
         --
-        fetch_address : out slv(I_ADDR_BITS - 1 downto 0);
+        fetch_address : out slv(I_BYTES_ADDR_BITS - 3 downto 0);
         inst : in slv(31 downto 0);
         --
         ls_ctrl : out sl;
         ls_type : out slv(2 downto 0);
-        ls_address : out slv(D_ADDR_BITS - 1 downto 0);
+        ls_address : out slv(31 downto 0);
         store_data : out slv(XLEN - 1 downto 0);
         load_data : in slv(XLEN - 1 downto 0)
     );
@@ -20,39 +20,39 @@ end Datapath;
 
 architecture Behavioral of Datapath is
     --if
-    signal pc, pc_delay : slv(I_ADDR_BITS - 3 downto 0);
+    signal pc_next, pc : slv(I_BYTES_ADDR_BITS - 3 downto 0);
     signal pc_incr : sl;
     signal cw_decoded : control_word_if_id;
 
     --if_id
     signal if_id_cw : control_word_if_id;
-    signal if_id_pc : slv(I_ADDR_BITS - 3 downto 0);
+    signal if_id_pc : slv(I_BYTES_ADDR_BITS - 3 downto 0);
 
     --id
     signal a_out, b_out : slv(XLEN - 1 downto 0);
 
     --id_ex
     signal id_ex_cw : control_word_id_ex;
-    signal id_ex_pc : slv(I_ADDR_BITS - 3 downto 0);
+    signal id_ex_pc : slv(I_BYTES_ADDR_BITS - 3 downto 0);
     signal id_ex_a, id_ex_b : slv(XLEN - 1 downto 0);
 
     --ex
     signal a_bus, b_bus, alu_out : slv(XLEN - 1 downto 0);
     signal BTU_out : sl;
     signal branch_correct, branch_take : sl;
-    signal pc_d, pc_base : slv(I_ADDR_BITS - 3 downto 0);
+    signal pc_d, pc_base : slv(I_BYTES_ADDR_BITS - 3 downto 0);
     signal pc_latch : sl;
 
     --ex_mem
     signal ex_mem_cw : control_word_ex_mem;
-    signal ex_mem_pc : slv(I_ADDR_BITS - 3 downto 0);
-    signal ex_mem_alu_out, ex_mem_store_data : slv(XLEN - 1 downto 0);
+    signal ex_mem_pc : slv(I_BYTES_ADDR_BITS - 3 downto 0);
+    signal ex_mem_alu_out : slv(XLEN - 1 downto 0);
 
     --mem
 
     --mem_wb
     signal mem_wb_cw : control_word_mem_wb;
-    signal mem_wb_pc : slv(I_ADDR_BITS - 3 downto 0);
+    signal mem_wb_pc : slv(I_BYTES_ADDR_BITS - 3 downto 0);
     signal mem_wb_load_data, mem_wb_alu_out : slv(XLEN - 1 downto 0);
 
     --wb
@@ -67,21 +67,22 @@ begin
     branch_correct <= '1' when pc_d = if_id_pc else '0';
     branch_take <= id_ex_cw.PCle or BTU_out;
 
-    pc_base <= id_ex_pc when id_ex_cw.PCAsel = '1' else id_ex_a(I_ADDR_BITS - 1 downto 2);
-    pc_d <= slv(signed(pc_base) + signed(id_ex_cw.IMM(I_ADDR_BITS - 1 downto 2))); --unsigned or signed add, doesn't matter. same logic under the hood
+    pc_base <= id_ex_pc when id_ex_cw.PCAsel = '1' else id_ex_a(I_BYTES_ADDR_BITS - 1 downto 2);
+    pc_d <= slv(signed(pc_base) + signed(id_ex_cw.IMM(I_BYTES_ADDR_BITS - 1 downto 2))); --unsigned or signed add, doesn't matter. same logic under the hood
     pc_latch <= branch_take and (not branch_correct);
     pc_incr <= (not if_id_stall and not branch_hazard);
     Program_Counter : entity work.generic_counter(Behavioral)
-        generic map(bits => I_ADDR_BITS - 2)
+        generic map(bits => I_BYTES_ADDR_BITS - 2)
         port map(clk => clk,
                  reset => reset,
                  latch => pc_latch,
                  enable => pc_incr,
                  d => pc_d,
-                 q => pc
+                 q => pc,
+                 next_count_out => pc_next
                 );
 
-    fetch_address <= pc & "00";
+    fetch_address <= pc_next;
 
     Instruction_Decoder : entity work.Instruction_Decoder(Behavioral)
         port map(
@@ -99,8 +100,7 @@ begin
                 if_id_cw <= CONTROL_WORD_IF_ID_NOP;
             else
                 if (if_id_stall = '0') then
-                    pc_delay <= pc;
-                    if_id_pc <= pc_delay;
+                    if_id_pc <= pc;
 
                     if_id_cw <= cw_decoded;
                 end if;
@@ -108,7 +108,7 @@ begin
         end if;
     end process;
 
-    PC_d_in <= ((31 downto I_ADDR_BITS => '0') & slv(unsigned(mem_wb_pc) + 1) & "00");
+    PC_d_in <= ((31 downto I_BYTES_ADDR_BITS => '0') & slv(unsigned(mem_wb_pc) + 1) & "00");
     d_in <= mem_wb_load_data when mem_wb_cw.LoadDsel = '1' else
             PC_d_in when mem_wb_cw.PCDsel = '1' else
             mem_wb_alu_out;
@@ -146,7 +146,7 @@ begin
     end process;
 
     --TODO: can move this to id if not meeting timing
-    a_bus <= ((31 downto I_ADDR_BITS => '0') & id_ex_pc & "00") when id_ex_cw.PCAsel = '1' else
+    a_bus <= ((31 downto I_BYTES_ADDR_BITS => '0') & id_ex_pc & "00") when id_ex_cw.PCAsel = '1' else
              id_ex_a;
     b_bus <= id_ex_cw.IMM when id_ex_cw.IMMBsel = '1' else
              id_ex_b;
@@ -165,9 +165,9 @@ begin
                  BTU_out => BTU_out);
 
     --load/store addr goes in now, so data is ready by the time the mem stage happens
-    ls_ctrl <= id_ex_cw.is_load;
+    ls_ctrl <= id_ex_cw.is_store;
     ls_type <= id_ex_cw.BRcond_LStype;
-    ls_address <= slv(unsigned(id_ex_a(D_ADDR_BITS - 1 downto 0)) + unsigned(id_ex_cw.IMM(D_ADDR_BITS - 1 downto 0)));
+    ls_address <= slv(unsigned(id_ex_a) + unsigned(id_ex_cw.IMM)); --slv(unsigned(id_ex_a(D_ADDR_BITS - 1 downto 0)) + unsigned(id_ex_cw.IMM(D_ADDR_BITS - 1 downto 0)));
     store_data <= id_ex_b;
 
     EX_MEM_proc : process(clk) is
