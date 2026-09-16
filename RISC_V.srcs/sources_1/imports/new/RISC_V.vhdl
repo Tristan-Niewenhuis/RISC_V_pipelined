@@ -18,7 +18,7 @@ end RISC_V;
 
 architecture Behavioral of RISC_V is
   signal ls_ctrl : sl;
-  signal ls_type : slv(2 downto 0);
+  signal store_type, load_type : slv(2 downto 0);
   signal ls_address : slv(31 downto 0);
   signal load_data, store_data : slv(XLEN - 1 downto 0);
 begin
@@ -29,7 +29,8 @@ begin
       fetch_address => i_addr,
       inst => i_data_in,
       ls_ctrl => ls_ctrl,
-      ls_type => ls_type,
+      store_type => store_type,
+      load_type => load_type,
       ls_address => ls_address,
       store_data => store_data,
       load_data => load_data
@@ -40,7 +41,8 @@ begin
       clk => clk,
       reset => reset,
       load_store => ls_ctrl,
-      access_type => ls_type,
+      store_type => store_type,
+      load_type => load_type,
       ls_address_in => ls_address,
       store_data => store_data,
       load_data_out => load_data,

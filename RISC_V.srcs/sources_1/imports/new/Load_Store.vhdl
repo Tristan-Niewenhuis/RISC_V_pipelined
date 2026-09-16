@@ -7,7 +7,8 @@ entity Load_Store is
 	port(
 		clk, reset : in sl;
 		load_store : in sl; --1 is store, 0 is load
-		access_type : in slv(2 downto 0);
+		store_type : in slv(2 downto 0);
+		load_type : in slv(2 downto 0);
 		ls_address_in : in slv(31 downto 0); --(D_ADDR_BITS - 1 downto 0);
 		store_data : in slv(31 downto 0);
 		load_data_out : out slv(31 downto 0);
@@ -40,7 +41,7 @@ begin
 	-- 	(31 downto 16 => '0') & load_data_in(31 downto 16) when "10",
 	-- 	load_data_in(31 downto 0) when others;
 
-	with access_type select load_data_out <=
+	with load_type select load_data_out <=
 		(31 downto 8 => pre_load_data(7)) & pre_load_data(7 downto 0) when "000",
 		(31 downto 16 => pre_load_data(15)) & pre_load_data(15 downto 0) when "001",
 		(31 downto 8 => '0') & pre_load_data(7 downto 0) when "100",
@@ -60,7 +61,7 @@ begin
 		"1000" when others; --"11"
 	half_mask <= "0011" when ls_address_in(1) = '0' else "1100";
 
-	with access_type(1 downto 0) select pre_mask <=
+	with store_type(1 downto 0) select pre_mask <=
 		byte_mask when "00",
 		half_mask when "01",
 		"1111" when others;

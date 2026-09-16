@@ -11,7 +11,8 @@ entity Datapath is
         inst : in slv(31 downto 0);
         --
         ls_ctrl : out sl;
-        ls_type : out slv(2 downto 0);
+        store_type : out slv(2 downto 0);
+        load_type : out slv(2 downto 0);
         ls_address : out slv(31 downto 0);
         store_data : out slv(XLEN - 1 downto 0);
         load_data : in slv(XLEN - 1 downto 0)
@@ -95,7 +96,7 @@ begin
     IF_ID_proc : process(clk) is
     begin
         if rising_edge(clk) then
-            if (reset = '1' or (if_id_nop = '1' and if_id_stall = '0')) then
+            if (reset = '1' or (if_id_nop = '1')) then
                 if_id_pc <= (others => '0');
                 if_id_cw <= CONTROL_WORD_IF_ID_NOP;
             else
@@ -128,7 +129,7 @@ begin
     ID_EX_proc : process(clk) is
     begin
         if rising_edge(clk) then
-            if (reset = '1' or (id_ex_nop = '1' and id_ex_stall = '0')) then
+            if (reset = '1' or (id_ex_nop = '1')) then
                 id_ex_pc <= (others => '0');
                 id_ex_a <= (others => '0');
                 id_ex_b <= (others => '0');
@@ -166,14 +167,14 @@ begin
 
     --load/store addr goes in now, so data is ready by the time the mem stage happens
     ls_ctrl <= id_ex_cw.is_store;
-    ls_type <= id_ex_cw.BRcond_LStype;
+    store_type <= id_ex_cw.BRcond_LStype;
     ls_address <= slv(unsigned(id_ex_a) + unsigned(id_ex_cw.IMM)); --slv(unsigned(id_ex_a(D_ADDR_BITS - 1 downto 0)) + unsigned(id_ex_cw.IMM(D_ADDR_BITS - 1 downto 0)));
     store_data <= id_ex_b;
 
     EX_MEM_proc : process(clk) is
     begin
         if rising_edge(clk) then
-            if (reset = '1' or (ex_mem_nop = '1' and ex_mem_stall = '0')) then
+            if (reset = '1' or (ex_mem_nop = '1')) then
                 ex_mem_alu_out <= (others => '0');
                 ex_mem_pc <= (others => '0');
                 ex_mem_cw <= CONTROL_WORD_EX_MEM_NOP;
@@ -188,10 +189,12 @@ begin
         end if;
     end process;
 
+    load_type <= ex_mem_cw.BRcond_LStype;
+
     MEM_WB_proc : process(clk) is
     begin
         if rising_edge(clk) then
-            if (reset = '1' or (mem_wb_nop = '1' and mem_wb_stall = '0')) then
+            if (reset = '1' or (mem_wb_nop = '1')) then
                 mem_wb_load_data <= (others => '0');
                 mem_wb_alu_out <= (others => '0');
                 mem_wb_pc <= (others => '0');

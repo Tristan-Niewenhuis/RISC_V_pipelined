@@ -244,7 +244,7 @@
         "has_run_ip_tcl": "true",
         "parameters": {
           "Coe_File": {
-            "value": "../../../../../../../cylon_test/cylon_test/cylon_test.coe"
+            "value": "../../../../../../cylon_test/cylon_test/cylon_test.coe"
           },
           "Enable_A": {
             "value": "Always_Enabled"
