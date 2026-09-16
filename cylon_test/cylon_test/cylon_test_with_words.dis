@@ -1,0 +1,150 @@
+
+cylon_test.elf:     file format elf32-littleriscv
+
+
+Disassembly of section .text:
+
+00000000 <_start>:
+0-0:	c0001117          	auipc	x2,0xc0001
+1-4:	00010113          	addi	x2,x2,0 # c0001000 <__StackTop+0x0>
+2-8:	c0000297          	auipc	x5,0xc0000
+3-c:	ff828293          	addi	x5,x5,-8 # c0000000 <__StackTop+0xfffff000>
+4-10:	c0000317          	auipc	x6,0xc0000
+5-14:	ff030313          	addi	x6,x6,-16 # c0000000 <__StackTop+0xfffff000>
+6-18:	0062ca63          	blt	x5,x6,2c <movedata>
+7-1c:	00000e13          	addi	x28,x0,0
+
+00000020 <bssloop>:
+8-20:	01c2a023          	sw	x28,0(x5)
+9-24:	00428293          	addi	x5,x5,4
+a-28:	fe62cce3          	blt	x5,x6,20 <bssloop>
+
+0000002c <movedata>:
+b-2c:	14000293          	addi	x5,x0,320
+c-30:	14c00313          	addi	x6,x0,332
+
+00000034 <copyloop>:
+d-34:	0262dc63          	bge	x5,x6,6c <endcopy>
+e-38:	0002a383          	lw	x7,0(x5)
+f-3c:	00428293          	addi	x5,x5,4
+10-40:	0002ae03          	lw	x28,0(x5)
+11-44:	00428293          	addi	x5,x5,4
+12-48:	0002ae83          	lw	x29,0(x5)
+13-4c:	00428293          	addi	x5,x5,4
+
+00000050 <ctloop>:
+14-50:	0003af03          	lw	x30,0(x7)
+15-54:	00438393          	addi	x7,x7,4
+16-58:	01eea023          	sw	x30,0(x29)
+17-5c:	004e8e93          	addi	x29,x29,4
+18-60:	fffe0e13          	addi	x28,x28,-1
+19-64:	ffc046e3          	blt	x0,x28,50 <ctloop>
+1a-68:	fcdff06f          	jal	x0,34 <copyloop>
+
+0000006c <endcopy>:
+1b-6c:	04c000ef          	jal	x1,b8 <main>
+
+00000070 <hang>:
+1c-70:	0000006f          	jal	x0,70 <hang>
+
+00000074 <delay>:
+1d-74:	fd010113          	addi	x2,x2,-48
+1e-78:	02812623          	sw	x8,44(x2)
+1f-7c:	03010413          	addi	x8,x2,48
+20-80:	fca42e23          	sw	x10,-36(x8)
+21-84:	fe042623          	sw	x0,-20(x8)
+22-88:	0100006f          	jal	x0,98 <delay+0x24>
+23-8c:	fec42783          	lw	x15,-20(x8)
+24-90:	00178793          	addi	x15,x15,1
+25-94:	fef42623          	sw	x15,-20(x8)
+26-98:	fec42703          	lw	x14,-20(x8)
+27-9c:	fdc42783          	lw	x15,-36(x8)
+28-a0:	fef766e3          	bltu	x14,x15,8c <delay+0x18>
+29-a4:	00000013          	addi	x0,x0,0
+2a-a8:	00000013          	addi	x0,x0,0
+2b-ac:	02c12403          	lw	x8,44(x2)
+2c-b0:	03010113          	addi	x2,x2,48
+2d-b4:	00008067          	jalr	x0,0(x1)
+
+000000b8 <main>:
+2e-b8:	fe010113          	addi	x2,x2,-32
+2f-bc:	00112e23          	sw	x1,28(x2)
+30-c0:	00812c23          	sw	x8,24(x2)
+31-c4:	02010413          	addi	x8,x2,32
+32-c8:	00100793          	addi	x15,x0,1
+33-cc:	fef42623          	sw	x15,-20(x8)
+34-d0:	400107b7          	lui	x15,0x40010
+35-d4:	0007a783          	lw	x15,0(x15) # 40010000 <__RAM_SIZE+0x4000f000>
+36-d8:	fef42423          	sw	x15,-24(x8)
+37-dc:	0240006f          	jal	x0,100 <__STACK_SIZE>
+38-e0:	400007b7          	lui	x15,0x40000
+39-e4:	fec42703          	lw	x14,-20(x8)
+3a-e8:	00e7a023          	sw	x14,0(x15) # 40000000 <__RAM_SIZE+0x3ffff000>
+3b-ec:	fec42783          	lw	x15,-20(x8)
+3c-f0:	00179793          	slli	x15,x15,0x1
+3d-f4:	fef42623          	sw	x15,-20(x8)
+3e-f8:	fe842503          	lw	x10,-24(x8)
+3f-fc:	f79ff0ef          	jal	x1,74 <delay>
+40-100:	fec42703          	lw	x14,-20(x8)
+41-104:	000087b7          	lui	x15,0x8
+42-108:	fcf71ce3          	bne	x14,x15,e0 <main+0x28>
+43-10c:	0240006f          	jal	x0,130 <__STACK_SIZE+0x30>
+44-110:	400007b7          	lui	x15,0x40000
+45-114:	fec42703          	lw	x14,-20(x8)
+46-118:	00e7a023          	sw	x14,0(x15) # 40000000 <__RAM_SIZE+0x3ffff000>
+47-11c:	fec42783          	lw	x15,-20(x8)
+48-120:	0017d793          	srli	x15,x15,0x1
+49-124:	fef42623          	sw	x15,-20(x8)
+4a-128:	fe842503          	lw	x10,-24(x8)
+4b-12c:	f49ff0ef          	jal	x1,74 <delay>
+4c-130:	fec42703          	lw	x14,-20(x8)
+4d-134:	00100793          	addi	x15,x0,1
+4e-138:	fcf71ce3          	bne	x14,x15,110 <__STACK_SIZE+0x10>
+4f-13c:	f95ff06f          	jal	x0,d0 <main+0x18>
+
+Disassembly of section .copy.table:
+
+00000140 <__copy_table_start__>:
+50-140:	0154                	.2byte	0x154
+	...
+52-14a:	c000                	.2byte	0xc000
+
+Disassembly of section .zero.table:
+
+0000014c <__zero_table_start__>:
+53-14c:	0000                	.2byte	0x0
+53-14e:	c000                	.2byte	0xc000
+54-150:	0000                	.2byte	0x0
+54-152:	c000                	.2byte	0xc000
+
+Disassembly of section .stack:
+
+c0000f00 <__StackLimit>:
+	...
+
+Disassembly of section .comment:
+
+00000000 <.comment>:
+0-0:	3a434347          	.4byte	0x3a434347
+1-4:	2820                	.2byte	0x2820
+1-6:	29554e47          	.4byte	0x29554e47
+2-a:	3120                	.2byte	0x3120
+3-c:	2e342e33          	.4byte	0x2e342e33
+4-10:	0030                	.2byte	0x30
+
+Disassembly of section .riscv.attributes:
+
+00000000 <.riscv.attributes>:
+0-0:	1b41                	.2byte	0x1b41
+0-2:	0000                	.2byte	0x0
+1-4:	7200                	.2byte	0x7200
+1-6:	7369                	.2byte	0x7369
+2-8:	01007663          	bgeu	x0,x16,14 <__ROM_BASE+0x14>
+3-c:	0011                	.2byte	0x11
+3-e:	0000                	.2byte	0x0
+4-10:	1004                	.2byte	0x1004
+4-12:	7205                	.2byte	0x7205
+5-14:	3376                	.2byte	0x3376
+5-16:	6932                	.2byte	0x6932
+6-18:	7032                	.2byte	0x7032
+6-1a:	0031                	.2byte	0x31

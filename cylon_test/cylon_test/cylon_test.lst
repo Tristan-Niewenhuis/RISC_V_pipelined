@@ -1,0 +1,83 @@
+GAS LISTING cylon_test.S 			page 1
+
+
+   1              		.file	"cylon_test.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p1"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              		.align	2
+   8              		.globl	delay
+   9              		.type	delay, @function
+  10              	delay:
+  11 0000 130101FD 		addi	sp,sp,-48
+  12 0004 23268102 		sw	s0,44(sp)
+  13 0008 13040103 		addi	s0,sp,48
+  14 000c 232EA4FC 		sw	a0,-36(s0)
+  15 0010 232604FE 		sw	zero,-20(s0)
+  16 0014 6F000001 		j	.L2
+  17              	.L3:
+  18 0018 8327C4FE 		lw	a5,-20(s0)
+  19 001c 93871700 		addi	a5,a5,1
+  20 0020 2326F4FE 		sw	a5,-20(s0)
+  21              	.L2:
+  22 0024 0327C4FE 		lw	a4,-20(s0)
+  23 0028 8327C4FD 		lw	a5,-36(s0)
+  24 002c E366F7FE 		bltu	a4,a5,.L3
+  25 0030 13000000 		nop
+  26 0034 13000000 		nop
+  27 0038 0324C102 		lw	s0,44(sp)
+  28 003c 13010103 		addi	sp,sp,48
+  29 0040 67800000 		jr	ra
+  30              		.size	delay, .-delay
+  31              		.align	2
+  32              		.globl	main
+  33              		.type	main, @function
+  34              	main:
+  35 0044 130101FE 		addi	sp,sp,-32
+  36 0048 232E1100 		sw	ra,28(sp)
+  37 004c 232C8100 		sw	s0,24(sp)
+  38 0050 13040102 		addi	s0,sp,32
+  39 0054 93071000 		li	a5,1
+  40 0058 2326F4FE 		sw	a5,-20(s0)
+  41              	.L9:
+  42 005c B7070140 		li	a5,1073807360
+  43 0060 83A70700 		lw	a5,0(a5)
+  44 0064 2324F4FE 		sw	a5,-24(s0)
+  45 0068 6F008002 		j	.L5
+  46              	.L6:
+  47 006c B7070040 		li	a5,1073741824
+  48 0070 0327C4FE 		lw	a4,-20(s0)
+  49 0074 23A0E700 		sw	a4,0(a5)
+  50 0078 8327C4FE 		lw	a5,-20(s0)
+  51 007c 93971700 		slli	a5,a5,1
+  52 0080 2326F4FE 		sw	a5,-20(s0)
+  53 0084 032584FE 		lw	a0,-24(s0)
+  54 0088 97000000 		call	delay
+  54      E7800000 
+  55              	.L5:
+  56 0090 0327C4FE 		lw	a4,-20(s0)
+GAS LISTING cylon_test.S 			page 2
+
+
+  57 0094 B7870000 		li	a5,32768
+  58 0098 E31AF7FC 		bne	a4,a5,.L6
+  59 009c 6F008002 		j	.L7
+  60              	.L8:
+  61 00a0 B7070040 		li	a5,1073741824
+  62 00a4 0327C4FE 		lw	a4,-20(s0)
+  63 00a8 23A0E700 		sw	a4,0(a5)
+  64 00ac 8327C4FE 		lw	a5,-20(s0)
+  65 00b0 93D71700 		srli	a5,a5,1
+  66 00b4 2326F4FE 		sw	a5,-20(s0)
+  67 00b8 032584FE 		lw	a0,-24(s0)
+  68 00bc 97000000 		call	delay
+  68      E7800000 
+  69              	.L7:
+  70 00c4 0327C4FE 		lw	a4,-20(s0)
+  71 00c8 93071000 		li	a5,1
+  72 00cc E31AF7FC 		bne	a4,a5,.L8
+  73 00d0 6FF0DFF8 		j	.L9
+  74              		.size	main, .-main
+  75              		.ident	"GCC: (GNU) 13.4.0"
