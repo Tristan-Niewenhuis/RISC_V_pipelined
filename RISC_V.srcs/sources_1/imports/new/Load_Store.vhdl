@@ -29,13 +29,13 @@ begin
 	ls_address_prev <= ls_address_in when rising_edge(clk);
 	--format load_store_out
 	sw_load_data <= x"00000003" when ls_address_prev = x"40010000" else load_data_in;
-	with ls_address_in(1 downto 0) select pre_load_data <=
+	with ls_address_prev(1 downto 0) select pre_load_data <=
 		(31 downto 8 => '0') & sw_load_data(15 downto 8) when "01",
 		(31 downto 8 => '0') & sw_load_data(31 downto 24) when "11",
 		(31 downto 16 => '0') & sw_load_data(31 downto 16) when "10",
 		sw_load_data(31 downto 0) when others;
 
-	-- with ls_address_in(1 downto 0) select pre_load_data <=
+	-- with ls_address_prev(1 downto 0) select pre_load_data <=
 	-- 	(31 downto 8 => '0') & load_data_in(15 downto 8) when "01",
 	-- 	(31 downto 8 => '0') & load_data_in(31 downto 24) when "11",
 	-- 	(31 downto 16 => '0') & load_data_in(31 downto 16) when "10",

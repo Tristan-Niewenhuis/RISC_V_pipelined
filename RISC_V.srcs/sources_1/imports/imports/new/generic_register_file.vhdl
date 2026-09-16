@@ -34,8 +34,8 @@ begin
     end generate regs;
     array_reg(0) <= (others => '0'); --x0 = 0
 
-    a_out <= d_in when ((a_addr = d_addr) and write_en = '1') else
+    a_out <= d_in when (a_addr = d_addr and d_addr /= (d_addr'range => '0') and write_en = '1') else
              array_reg(to_integer(unsigned(a_addr)));
-    b_out <= d_in when ((b_addr = d_addr) and write_en = '1') else
+    b_out <= d_in when (b_addr = d_addr and d_addr /= (d_addr'range => '0') and write_en = '1') else
              array_reg(to_integer(unsigned(b_addr)));
 end Behavioral;
