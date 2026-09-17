@@ -24,6 +24,10 @@ architecture implementation of Load_Store is
 	signal pre_load_data, sw_load_data, ls_address_prev : slv(31 downto 0);
 	signal byte_mask, half_mask, pre_mask : slv(3 downto 0);
 	signal led, led_next : slv(15 downto 0);
+
+	attribute DONT_TOUCH : string;
+	attribute DONT_TOUCH of led : signal is "true";
+
 begin
 	ls_address_out <= ls_address_in(D_BYTES_ADDR_BITS - 1 downto 2);
 	ls_address_prev <= ls_address_in when rising_edge(clk);
