@@ -17,8 +17,8 @@ architecture Behavioral of Instruction_Decoder is
     signal type_control_sig : slv(2 downto 0);
     signal jalr_condition, instruction_address_misaligned, bottom_11, all_zeros : sl;
     signal force_add : sl;
-    signal is_LOAD, is_LUI, is_AUIPC, is_JALR, is_ADDI : sl;
-    signal is_R, is_I, is_S, is_B, is_U, is_J, is_system, is_MRET, is_WFI, is_illegal : sl;
+    signal is_LOAD, is_LUI, is_AUIPC, is_JALR, is_ADDI, is_CSR : sl;
+    signal is_R, is_I, is_S, is_B, is_U, is_JAL, is_system, is_illegal : sl;
     signal inst_type : slv(5 downto 0);
 
 begin
@@ -31,7 +31,7 @@ begin
 
     --jump/branch alligment
     jalr_condition <= '0' when inst(21 downto 20) = "00" else '1';
-    instruction_address_misaligned <= (is_J and inst(21)) or (is_B and inst(8) and branch_cond) or (is_JALR and jalr_condition);
+    instruction_address_misaligned <= (is_JAL and inst(21)) or (is_B and inst(8) and branch_cond) or (is_JALR and jalr_condition);
 
     --opcode interpretation
     is_LOAD <= '1' when inst(6 downto 2) = "00000" else '0';
@@ -39,6 +39,7 @@ begin
     is_AUIPC <= '1' when inst(6 downto 2) = "00101" else '0';
     is_JALR <= '1' when inst(6 downto 2) = "11001" else '0';
     is_ADDI <= '1' when inst(6 downto 2) = "00100" and inst(14 downto 12) = "000" else '0';
+    is_CSR <= '1' when inst(6 downto 2) = "11100" and unsigned(inst(14 downto 12)) > 0 else '0';
 
     --MISC-MEM aka FENCE inst(6 downto 2) = "00011"
     --STYSTEM aka ECALL and EBreak inst(6 downto 2) = "11100"
@@ -52,11 +53,11 @@ begin
     with inst(6 downto 2) select is_U <=
         '1' when "01101" | "00101",
         '0' when others;
-    is_J <= '1' when inst(6 downto 2) = "11011" else '0';
+    is_JAL <= '1' when inst(6 downto 2) = "11011" else '0';
     is_system <= '1' when inst(6 downto 2) = "11100" else '0';
 
     --encode these into a 3 bit control word
-    inst_type <= is_R & is_I & is_S & is_B & is_U & is_J;
+    inst_type <= is_R & is_I & is_S & is_B & is_U & is_JAL;
     with inst_type select type_control_sig <=
         "000" when "100000", --R
         "001" when "010000", --I
@@ -78,23 +79,25 @@ begin
         (others => '0') when others;
 
     --all the functions that need a add
-    force_add <= (not is_R and not is_I) or is_JALR or is_LOAD or is_ADDI;
+    force_add <= (not is_R and not is_I and not is_CSR) or is_JALR or is_LOAD or is_ADDI;
 
     control_word_out.Asel <= "00000" when is_LUI = '1' else inst(19 downto 15);
-    control_word_out.Aused <= not (is_J or is_AUIPC or is_LUI or is_system);
+    control_word_out.Aused <= not (is_JAL or is_AUIPC or is_LUI or is_system) or (is_CSR and not inst(14));
     control_word_out.Bsel <= inst(24 downto 20);
     control_word_out.Bused <= is_B or is_S or is_R;
-    control_word_out.PCAsel <= is_AUIPC or is_J or is_B; --no is_B?
-    control_word_out.IMMBsel <= is_S or is_I or is_U or is_J or is_B;
-    control_word_out.PCle <= is_J or is_JALR;
+    control_word_out.PCAsel <= is_AUIPC or is_JAL or is_B; --no is_B?
+    control_word_out.IMMBsel <= is_S or is_I or is_U or is_JAL or is_B;
+    control_word_out.PCle <= is_JAL or is_JALR;
     control_word_out.isBR <= is_B;
-    control_word_out.ALUFunc <= "0000" when force_add = '1' else inst(14 downto 12) & (inst(30));
+    control_word_out.ALUFunc_CSRtype <= "0000" when force_add = '1' else inst(14 downto 12) & (inst(30));
     control_word_out.IMM <= immediate;
     control_word_out.is_load <= is_LOAD;
     control_word_out.is_store <= is_S; --unsiged without load_store hazard, remove TODO
     control_word_out.BRcond_LStype <= inst(14 downto 12);
+    control_word_out.CSR_reg <= inst(31 downto 20);
+    control_word_out.is_CSR <= is_CSR;
     control_word_out.Dsel <= inst(11 downto 7);
-    control_word_out.Dlen <= is_R or is_I or is_U or is_J;
-    control_word_out.PCDsel <= is_J or is_JALR;
+    control_word_out.Dlen <= is_R or is_I or is_U or is_JAL or is_CSR;
+    control_word_out.PCDsel <= is_JAL or is_JALR;
     control_word_out.LoadDsel <= is_LOAD;
 end Behavioral;

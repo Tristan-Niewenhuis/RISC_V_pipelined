@@ -39,11 +39,13 @@ package RISCV_package is
     IMMBsel : sl;
     PCle : sl;
     isBR : sl;
-    ALUFunc : slv(3 downto 0);
+    ALUFunc_CSRtype : slv(3 downto 0);
     IMM : slv(31 downto 0);
     is_load : sl;
     is_store : sl;
     BRcond_LStype : slv(2 downto 0);
+    is_CSR : sl;
+    CSR_reg : slv(11 downto 0);
     Dsel : slv(4 downto 0);
     Dlen : sl;
     PCDsel : sl;
@@ -59,11 +61,13 @@ package RISCV_package is
     IMMBsel => '0',
     PCle => '0',
     isBR => '0',
-    ALUFunc => (others => '0'),
+    ALUFunc_CSRtype => (others => '0'),
     IMM => (others => '0'),
     is_load => '0',
     is_store => '0',
     BRcond_LStype => (others => '0'),
+    is_CSR => '0',
+    CSR_reg => (others => '0'),
     Dsel => (others => '0'),
     Dlen => '0',
     PCDsel => '0',
@@ -71,15 +75,18 @@ package RISCV_package is
   );
 
   type control_word_id_ex is record
+    CSRuimm : slv(4 downto 0);
     PCAsel : sl;
     IMMBsel : sl;
     PCle : sl;
     isBR : sl;
-    ALUFunc : slv(3 downto 0);
+    ALUFunc_CSRtype : slv(3 downto 0);
     IMM : slv(31 downto 0);
     is_load : sl;
     is_store : sl;
     BRcond_LStype : slv(2 downto 0);
+    is_CSR : sl;
+    CSR_reg : slv(11 downto 0);
     Dsel : slv(4 downto 0);
     Dlen : sl;
     PCDsel : sl;
@@ -87,15 +94,18 @@ package RISCV_package is
   end record control_word_id_ex;
 
   constant CONTROL_WORD_ID_EX_NOP : control_word_id_ex := (
+    CSRuimm => (others => '0'),
     PCAsel => '0',
     IMMBsel => '0',
     PCle => '0',
     isBR => '0',
-    ALUFunc => (others => '0'),
+    ALUFunc_CSRtype => (others => '0'),
     IMM => (others => '0'),
     is_load => '0',
     is_store => '0',
     BRcond_LStype => (others => '0'),
+    is_CSR => '0',
+    CSR_reg => (others => '0'),
     Dsel => (others => '0'),
     Dlen => '0',
     PCDsel => '0',
@@ -106,6 +116,8 @@ package RISCV_package is
     is_load : sl;
     is_store : sl;
     BRcond_LStype : slv(2 downto 0);
+    is_CSR : sl;
+    CSR_reg : slv(11 downto 0);
     Dsel : slv(4 downto 0);
     Dlen : sl;
     PCDsel : sl;
@@ -116,6 +128,8 @@ package RISCV_package is
     is_load => '0',
     is_store => '0',
     BRcond_LStype => (others => '0'),
+    is_CSR => '0',
+    CSR_reg => (others => '0'),
     Dsel => (others => '0'),
     Dlen => '0',
     PCDsel => '0',
@@ -179,15 +193,18 @@ package body RISCV_package is
   function if_id_to_id_ex(if_id : control_word_if_id) return control_word_id_ex is
     variable id_ex : control_word_id_ex;
   begin
+    id_ex.CSRuimm := if_id.Asel;
     id_ex.PCAsel := if_id.PCAsel;
     id_ex.IMMBsel := if_id.IMMBsel;
     id_ex.PCle := if_id.PCle;
     id_ex.isBR := if_id.isBR;
-    id_ex.ALUFunc := if_id.ALUFunc;
+    id_ex.ALUFunc_CSRtype := if_id.ALUFunc_CSRtype;
     id_ex.IMM := if_id.IMM;
     id_ex.is_load := if_id.is_load;
     id_ex.is_store := if_id.is_store;
     id_ex.BRcond_LStype := if_id.BRcond_LStype;
+    id_ex.is_CSR := if_id.is_CSR;
+    id_ex.CSR_reg := if_id.CSR_reg;
     id_ex.Dsel := if_id.Dsel;
     id_ex.Dlen := if_id.Dlen;
     id_ex.PCDsel := if_id.PCDsel;
@@ -201,6 +218,8 @@ package body RISCV_package is
     ex_mem.is_load := id_ex.is_load;
     ex_mem.is_store := id_ex.is_store;
     ex_mem.BRcond_LStype := id_ex.BRcond_LStype;
+    ex_mem.is_CSR := id_ex.is_CSR;
+    ex_mem.CSR_reg := id_ex.CSR_reg;
     ex_mem.Dsel := id_ex.Dsel;
     ex_mem.Dlen := id_ex.Dlen;
     ex_mem.PCDsel := id_ex.PCDsel;

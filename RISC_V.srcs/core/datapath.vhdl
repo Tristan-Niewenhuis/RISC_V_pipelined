@@ -38,7 +38,7 @@ architecture Behavioral of Datapath is
     signal id_ex_a, id_ex_b : slv(XLEN - 1 downto 0);
 
     --ex
-    signal a_bus, b_bus, alu_out : slv(XLEN - 1 downto 0);
+    signal a_bus, b_bus, alu_out, csr_d, csr_q : slv(XLEN - 1 downto 0);
     signal BTU_out : sl;
     signal branch_correct, branch_take : sl;
     signal pc_d, pc_base : slv(I_BYTES_ADDR_BITS - 3 downto 0);
@@ -47,17 +47,19 @@ architecture Behavioral of Datapath is
     --ex_mem
     signal ex_mem_cw : control_word_ex_mem;
     signal ex_mem_pc : slv(I_BYTES_ADDR_BITS - 3 downto 0);
-    signal ex_mem_alu_out : slv(XLEN - 1 downto 0);
+    signal ex_mem_alu_out, ex_mem_csr_q : slv(XLEN - 1 downto 0);
 
     --mem
+    signal data_out : slv(XLEN - 1 downto 0);
 
     --mem_wb
     signal mem_wb_cw : control_word_mem_wb;
     signal mem_wb_pc : slv(I_BYTES_ADDR_BITS - 3 downto 0);
-    signal mem_wb_load_data, mem_wb_alu_out : slv(XLEN - 1 downto 0);
+    signal mem_wb_load_data, mem_wb_data_out : slv(XLEN - 1 downto 0);
 
     --wb
     signal d_in, PC_d_in : slv(XLEN - 1 downto 0);
+    signal exec : sl;
 
     signal if_id_stall, id_ex_stall, ex_mem_stall, mem_wb_stall : sl;
     signal if_id_nop, id_ex_nop, ex_mem_nop, mem_wb_nop : sl;
@@ -112,7 +114,7 @@ begin
     PC_d_in <= ((31 downto I_BYTES_ADDR_BITS => '0') & slv(unsigned(mem_wb_pc) + 1) & "00");
     d_in <= mem_wb_load_data when mem_wb_cw.LoadDsel = '1' else
             PC_d_in when mem_wb_cw.PCDsel = '1' else
-            mem_wb_alu_out;
+            mem_wb_data_out;
 
     Regs : entity work.generic_register_file(Behavioral)
         generic map(word_len => XLEN, addr_bits => REGS_ADDR_BITS)
@@ -156,7 +158,7 @@ begin
         port map(a => a_bus,
                  b => b_bus,
                  alu_out => alu_out,
-                 func => id_ex_cw.ALUfunc);
+                 func => id_ex_cw.ALUFunc_CSRtype);
 
     BTU : entity work.BTU(Behavioral)
         port map(a => id_ex_a,
@@ -171,6 +173,21 @@ begin
     ls_address <= slv(unsigned(id_ex_a) + unsigned(id_ex_cw.IMM)); --slv(unsigned(id_ex_a(D_ADDR_BITS - 1 downto 0)) + unsigned(id_ex_cw.IMM(D_ADDR_BITS - 1 downto 0)));
     store_data <= id_ex_b;
 
+    exec <= '0' when (mem_wb_pc = (mem_wb_pc'range => '0')) or mem_wb_stall = '1' else '1';
+    csr_d <= ((XLEN - 1 downto 5 => '0') & id_ex_cw.CSRuimm) when id_ex_cw.ALUFunc_CSRtype(3) = '1' else id_ex_a;
+    CSR_regs : entity work.CSR_regs
+        port map(
+            clk => clk,
+            reset => reset,
+            d_sel => id_ex_cw.CSR_reg,
+            d_len => id_ex_cw.is_CSR,
+            d_in => csr_d,
+            d_type => id_ex_cw.ALUFunc_CSRtype(2 downto 1),
+            q_sel => id_ex_cw.CSR_reg,
+            q_out => csr_q,
+            exec => exec
+        );
+
     EX_MEM_proc : process(clk) is
     begin
         if rising_edge(clk) then
@@ -181,6 +198,7 @@ begin
             else
                 if (ex_mem_stall = '0') then
                     ex_mem_alu_out <= alu_out;
+                    ex_mem_csr_q <= csr_q;
                     ex_mem_pc <= id_ex_pc;
 
                     ex_mem_cw <= id_ex_to_ex_mem(id_ex_cw);
@@ -191,18 +209,20 @@ begin
 
     load_type <= ex_mem_cw.BRcond_LStype;
 
+    data_out <= ex_mem_csr_q when ex_mem_cw.is_CSR = '1' else ex_mem_alu_out;
+
     MEM_WB_proc : process(clk) is
     begin
         if rising_edge(clk) then
             if (reset = '1' or (mem_wb_nop = '1')) then
                 mem_wb_load_data <= (others => '0');
-                mem_wb_alu_out <= (others => '0');
+                mem_wb_data_out <= (others => '0');
                 mem_wb_pc <= (others => '0');
                 mem_wb_cw <= CONTROL_WORD_MEM_WB_NOP;
             else
                 if (mem_wb_stall = '0') then
                     mem_wb_load_data <= load_data;
-                    mem_wb_alu_out <= ex_mem_alu_out;
+                    mem_wb_data_out <= data_out;
                     mem_wb_pc <= ex_mem_pc;
 
                     mem_wb_cw <= ex_mem_to_mem_wb(ex_mem_cw);

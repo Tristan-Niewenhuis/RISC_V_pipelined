@@ -164,7 +164,7 @@ begin
         port map(a => a_bus,
                  b => b_bus,
                  alu_out => alu_out,
-                 func => id_ex_cw.ALUfunc);
+                 func => id_ex_cw.ALUFunc_CSRtype);
 
     BTU : entity work.BTU(Behavioral)
         port map(a => id_ex_a,

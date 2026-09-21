@@ -90,3 +90,7 @@ Thumbs.db
 sigasi-doc/
 nlviewcommon.logfile
 *.wcfg
+*.o
+*.exe
+*.dis
+*.dblite

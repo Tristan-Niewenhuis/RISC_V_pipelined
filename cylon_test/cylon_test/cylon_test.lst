@@ -1,83 +1,278 @@
-GAS LISTING cylon_test.S 			page 1
+GAS LISTING C:\Users\trist\AppData\Local\Temp\ccYSD126.s 			page 1
 
 
+   1              	# 0 "cylon_test.S"
+   2              	# 0 "<built-in>"
+   3              	# 0 "<command-line>"
+   4              	# 1 "cylon_test.S"
    1              		.file	"cylon_test.c"
-   2              		.option nopic
-   3              		.attribute arch, "rv32i2p1"
-   4              		.attribute unaligned_access, 0
-   5              		.attribute stack_align, 16
-   6              		.text
-   7              		.align	2
-   8              		.globl	delay
-   9              		.type	delay, @function
-  10              	delay:
-  11 0000 130101FD 		addi	sp,sp,-48
-  12 0004 23268102 		sw	s0,44(sp)
-  13 0008 13040103 		addi	s0,sp,48
-  14 000c 232EA4FC 		sw	a0,-36(s0)
-  15 0010 232604FE 		sw	zero,-20(s0)
-  16 0014 6F000001 		j	.L2
-  17              	.L3:
-  18 0018 8327C4FE 		lw	a5,-20(s0)
-  19 001c 93871700 		addi	a5,a5,1
-  20 0020 2326F4FE 		sw	a5,-20(s0)
-  21              	.L2:
-  22 0024 0327C4FE 		lw	a4,-20(s0)
-  23 0028 8327C4FD 		lw	a5,-36(s0)
-  24 002c E366F7FE 		bltu	a4,a5,.L3
-  25 0030 13000000 		nop
-  26 0034 13000000 		nop
-  27 0038 0324C102 		lw	s0,44(sp)
-  28 003c 13010103 		addi	sp,sp,48
-  29 0040 67800000 		jr	ra
-  30              		.size	delay, .-delay
-  31              		.align	2
-  32              		.globl	main
-  33              		.type	main, @function
-  34              	main:
-  35 0044 130101FE 		addi	sp,sp,-32
-  36 0048 232E1100 		sw	ra,28(sp)
-  37 004c 232C8100 		sw	s0,24(sp)
-  38 0050 13040102 		addi	s0,sp,32
-  39 0054 93071000 		li	a5,1
-  40 0058 2326F4FE 		sw	a5,-20(s0)
-  41              	.L9:
-  42 005c B7070140 		li	a5,1073807360
-  43 0060 83A70700 		lw	a5,0(a5)
-  44 0064 2324F4FE 		sw	a5,-24(s0)
-  45 0068 6F008002 		j	.L5
-  46              	.L6:
-  47 006c B7070040 		li	a5,1073741824
-  48 0070 0327C4FE 		lw	a4,-20(s0)
-  49 0074 23A0E700 		sw	a4,0(a5)
-  50 0078 8327C4FE 		lw	a5,-20(s0)
-  51 007c 93971700 		slli	a5,a5,1
-  52 0080 2326F4FE 		sw	a5,-20(s0)
-  53 0084 032584FE 		lw	a0,-24(s0)
-  54 0088 97000000 		call	delay
-  54      E7800000 
-  55              	.L5:
-  56 0090 0327C4FE 		lw	a4,-20(s0)
-GAS LISTING cylon_test.S 			page 2
+   1              	#include <stdint.h>
+   2              	
+   3              	#define LED ((uint32_t *)0x40000000)
+   4              	#define SWITCHES ((uint32_t *)0x40010000)
+   5              	
+   6              	volatile uint32_t start_cycles_hi;
+   7              	volatile uint32_t start_cycles_lo;
+   8              	volatile uint32_t stop_cycles_hi;
+   9              	volatile uint32_t stop_cycles_lo;
+  10              	
+  11              	void delay(uint32_t count)
+  12              	{
+  13 0000 00000000 	  uint32_t i;
+  14              	  for (i = 0; i < count; i++)
+  15              	    ;
+  16              	}
+  17              	
+  18              	int main()
+  19 0004 00000000 	{
+  20              	  uint32_t ledbits = 1;
+  21              	  uint32_t switches;
+  22              	
+  23              	  while (1)
+  24              	  {
+  25 0008 00000000 	    __asm__ volatile("rdcycle %0" : "=r"(start_cycles_lo));
+  26              	    __asm__ volatile("rdcycleh %0" : "=r"(start_cycles_hi));
+  27              	
+  28              	    switches = *SWITCHES;
+  29              	    while (ledbits != 0x8000)
+  30              	    {
+  31 000c 00000000 	      *LED = ledbits;
+  32              	      ledbits <<= 1;
+  33              	      delay(switches);
+  34              	    }
+  35              	    while (ledbits != 1)
+  36              	    {
+  37 0000 130101FD 	      *LED = ledbits;
+  38 0004 23268102 	      ledbits >>= 1;
+  39 0008 13040103 	      delay(switches);
+  40 000c 232EA4FC 	    }
+  41 0010 232604FE 	
+  42 0014 6F000001 	    __asm__ volatile("rdcycle %0" : "=r"(stop_cycles_lo));
+  43              	    __asm__ volatile("rdcycleh %0" : "=r"(stop_cycles_hi));
+  44 0018 8327C4FE 	    // do the subtraction
+  45 001c 93871700 	    uint64_t dif = (((uint64_t)stop_cycles_hi << 32) | (uint64_t)stop_cycles_lo) - (((uint64_t)star
+  46 0020 2326F4FE 	    uint32_t dif_lo = (uint32_t)dif;
+  47              	    uint32_t dif_hi = (uint32_t)(dif >> 32);
+  48 0024 0327C4FE 	    // but the result in a0 and a1, and then a keyword in a2 to probe trigger on debugger
+  49 0028 8327C4FD 	    __asm__ volatile("mv a0, %0" : : "r"(dif_lo) : "a0");
+  50 002c E366F7FE 	    __asm__ volatile("mv a1, %0" : : "r"(dif_hi) : "a1");
+  51 0030 13000000 	    __asm__ volatile("li a2, 0x12345678" : : : "a2");
+  52 0034 13000000 	  }
+GAS LISTING C:\Users\trist\AppData\Local\Temp\ccYSD126.s 			page 2
 
 
-  57 0094 B7870000 		li	a5,32768
-  58 0098 E31AF7FC 		bne	a4,a5,.L6
-  59 009c 6F008002 		j	.L7
-  60              	.L8:
-  61 00a0 B7070040 		li	a5,1073741824
-  62 00a4 0327C4FE 		lw	a4,-20(s0)
-  63 00a8 23A0E700 		sw	a4,0(a5)
-  64 00ac 8327C4FE 		lw	a5,-20(s0)
-  65 00b0 93D71700 		srli	a5,a5,1
-  66 00b4 2326F4FE 		sw	a5,-20(s0)
-  67 00b8 032584FE 		lw	a0,-24(s0)
-  68 00bc 97000000 		call	delay
-  68      E7800000 
-  69              	.L7:
-  70 00c4 0327C4FE 		lw	a4,-20(s0)
-  71 00c8 93071000 		li	a5,1
-  72 00cc E31AF7FC 		bne	a4,a5,.L8
-  73 00d0 6FF0DFF8 		j	.L9
-  74              		.size	main, .-main
-  75              		.ident	"GCC: (GNU) 13.4.0"
+  53 0038 0324C102 	
+  54 003c 13010103 	  return 0;
+  55 0040 67800000 	}
+  56              	...
+   5              	 .file "cylon_test.c"
+   6              	 .option nopic
+   7              	 .attribute arch, "rv32i2p1_zicntr_zicsr2p0"
+   8              	 .attribute unaligned_access, 0
+   9              	 .attribute stack_align, 16
+  10              	 .text
+  11              	 .globl start_cycles_hi
+  12              	 .section .sbss,"aw",@nobits
+  13              	 .align 2
+  14              	 .type start_cycles_hi, @object
+  15              	 .size start_cycles_hi, 4
+  16              	start_cycles_hi:
+  17              	 .zero 4
+  18              	 .globl start_cycles_lo
+  19              	 .align 2
+  20              	 .type start_cycles_lo, @object
+  21              	 .size start_cycles_lo, 4
+  22              	start_cycles_lo:
+  23              	 .zero 4
+  24              	 .globl stop_cycles_hi
+  25              	 .align 2
+  26              	 .type stop_cycles_hi, @object
+  27              	 .size stop_cycles_hi, 4
+  28              	stop_cycles_hi:
+  29              	 .zero 4
+  30              	 .globl stop_cycles_lo
+  31              	 .align 2
+  32              	 .type stop_cycles_lo, @object
+  33              	 .size stop_cycles_lo, 4
+  34              	stop_cycles_lo:
+  35              	 .zero 4
+  36              	 .text
+  37              	 .align 2
+  38              	 .globl delay
+  39              	 .type delay, @function
+  40              	delay:
+  41              	 addi sp,sp,-48
+  42              	 sw s0,44(sp)
+  43              	 addi s0,sp,48
+  44              	 sw a0,-36(s0)
+  45              	 sw zero,-20(s0)
+  46              	 j .L2
+  47              	.L3:
+  48              	 lw a5,-20(s0)
+  49              	 addi a5,a5,1
+  50              	 sw a5,-20(s0)
+  51              	.L2:
+  52              	 lw a4,-20(s0)
+  53              	 lw a5,-36(s0)
+  54              	 bltu a4,a5,.L3
+  55              	 nop
+  56              	 nop
+  57              	 lw s0,44(sp)
+GAS LISTING C:\Users\trist\AppData\Local\Temp\ccYSD126.s 			page 3
+
+
+  58              	 addi sp,sp,48
+  59              	 jr ra
+  60              	 .size delay, .-delay
+  61              	 .align 2
+  62              	 .globl main
+  63              	 .type main, @function
+  64              	main:
+  65              	 addi sp,sp,-112
+  66              	 sw ra,108(sp)
+  67              	 sw s0,104(sp)
+  68              	 sw s2,100(sp)
+  69              	 sw s3,96(sp)
+  70              	 sw s4,92(sp)
+  71              	 sw s5,88(sp)
+  72              	 sw s6,84(sp)
+  73              	 sw s7,80(sp)
+  74              	 sw s8,76(sp)
+  75              	 sw s9,72(sp)
+  76              	 sw s10,68(sp)
+  77              	 sw s11,64(sp)
+  78              	 addi s0,sp,112
+  79              	 li a5,1
+  80              	 sw a5,-52(s0)
+  81              	.L9:
+  82              	 #APP
+  83              	# 25 "cylon_test.c" 1
+  84              	 rdcycle a4
+  85              	# 0 "" 2
+  86              	 #NO_APP
+  87 0088 B7070000 	 lui a5,%hi(start_cycles_lo)
+  88 008c 23A0E700 	 sw a4,%lo(start_cycles_lo)(a5)
+  89              	 #APP
+  90              	# 26 "cylon_test.c" 1
+  91              	 rdcycleh a4
+  92              	# 0 "" 2
+  93              	 #NO_APP
+  94 0094 B7070000 	 lui a5,%hi(start_cycles_hi)
+  95 0098 23A0E700 	 sw a4,%lo(start_cycles_hi)(a5)
+  96 009c B7070140 	 li a5,1073807360
+  97 00a0 83A70700 	 lw a5,0(a5)
+  98 00a4 2324F4FC 	 sw a5,-56(s0)
+  99 00a8 6F008002 	 j .L5
+ 100              	.L6:
+ 101 00ac B7070040 	 li a5,1073741824
+ 102 00b0 0327C4FC 	 lw a4,-52(s0)
+ 103 00b4 23A0E700 	 sw a4,0(a5)
+ 104 00b8 8327C4FC 	 lw a5,-52(s0)
+ 105 00bc 93971700 	 slli a5,a5,1
+ 106 00c0 2326F4FC 	 sw a5,-52(s0)
+ 107 00c4 032584FC 	 lw a0,-56(s0)
+ 108 00c8 97000000 	 call delay
+ 108      E7800000 
+ 109              	.L5:
+ 110 00d0 0327C4FC 	 lw a4,-52(s0)
+ 111 00d4 B7870000 	 li a5,32768
+ 112 00d8 E31AF7FC 	 bne a4,a5,.L6
+ 113 00dc 6F008002 	 j .L7
+GAS LISTING C:\Users\trist\AppData\Local\Temp\ccYSD126.s 			page 4
+
+
+ 114              	.L8:
+ 115 00e0 B7070040 	 li a5,1073741824
+ 116 00e4 0327C4FC 	 lw a4,-52(s0)
+ 117 00e8 23A0E700 	 sw a4,0(a5)
+ 118 00ec 8327C4FC 	 lw a5,-52(s0)
+ 119 00f0 93D71700 	 srli a5,a5,1
+ 120 00f4 2326F4FC 	 sw a5,-52(s0)
+ 121 00f8 032584FC 	 lw a0,-56(s0)
+ 122 00fc 97000000 	 call delay
+ 122      E7800000 
+ 123              	.L7:
+ 124 0104 0327C4FC 	 lw a4,-52(s0)
+ 125 0108 93071000 	 li a5,1
+ 126 010c E31AF7FC 	 bne a4,a5,.L8
+ 127              	 #APP
+ 128              	# 42 "cylon_test.c" 1
+ 129              	 rdcycle a4
+ 130              	# 0 "" 2
+ 131              	 #NO_APP
+ 132 0114 B7070000 	 lui a5,%hi(stop_cycles_lo)
+ 133 0118 23A0E700 	 sw a4,%lo(stop_cycles_lo)(a5)
+ 134              	 #APP
+ 135              	# 43 "cylon_test.c" 1
+ 136              	 rdcycleh a4
+ 137              	# 0 "" 2
+ 138              	 #NO_APP
+ 139 0120 B7070000 	 lui a5,%hi(stop_cycles_hi)
+ 140 0124 23A0E700 	 sw a4,%lo(stop_cycles_hi)(a5)
+ 141 0128 B7070000 	 lui a5,%hi(stop_cycles_hi)
+ 142 012c 83A70700 	 lw a5,%lo(stop_cycles_hi)(a5)
+ 143 0130 2324F4FA 	 sw a5,-88(s0)
+ 144 0134 232604FA 	 sw zero,-84(s0)
+ 145 0138 832784FA 	 lw a5,-88(s0)
+ 146 013c 939C0700 	 slli s9,a5,0
+ 147 0140 130C0000 	 li s8,0
+ 148 0144 B7070000 	 lui a5,%hi(stop_cycles_lo)
+ 149 0148 83A70700 	 lw a5,%lo(stop_cycles_lo)(a5)
+ 150 014c 2320F4FA 	 sw a5,-96(s0)
+ 151 0150 232204FA 	 sw zero,-92(s0)
+ 152 0154 832604FA 	 lw a3,-96(s0)
+ 153 0158 032744FA 	 lw a4,-92(s0)
+ 154 015c 93870600 	 mv a5,a3
+ 155 0160 3369FC00 	 or s2,s8,a5
+ 156 0164 93070700 	 mv a5,a4
+ 157 0168 B3E9FC00 	 or s3,s9,a5
+ 158 016c B7070000 	 lui a5,%hi(start_cycles_hi)
+ 159 0170 83A70700 	 lw a5,%lo(start_cycles_hi)(a5)
+ 160 0174 232CF4F8 	 sw a5,-104(s0)
+ 161 0178 232E04F8 	 sw zero,-100(s0)
+ 162 017c 832784F9 	 lw a5,-104(s0)
+ 163 0180 939B0700 	 slli s7,a5,0
+ 164 0184 130B0000 	 li s6,0
+ 165 0188 B7070000 	 lui a5,%hi(start_cycles_lo)
+ 166 018c 83A70700 	 lw a5,%lo(start_cycles_lo)(a5)
+ 167 0190 138D0700 	 mv s10,a5
+ 168 0194 930D0000 	 li s11,0
+ 169 0198 336AAB01 	 or s4,s6,s10
+GAS LISTING C:\Users\trist\AppData\Local\Temp\ccYSD126.s 			page 5
+
+
+ 170 019c B3EABB01 	 or s5,s7,s11
+ 171 01a0 33074941 	 sub a4,s2,s4
+ 172 01a4 93060700 	 mv a3,a4
+ 173 01a8 B336D900 	 sgtu a3,a3,s2
+ 174 01ac B3875941 	 sub a5,s3,s5
+ 175 01b0 B386D740 	 sub a3,a5,a3
+ 176 01b4 93870600 	 mv a5,a3
+ 177 01b8 2320E4FC 	 sw a4,-64(s0)
+ 178 01bc 2322F4FC 	 sw a5,-60(s0)
+ 179 01c0 832704FC 	 lw a5,-64(s0)
+ 180 01c4 232EF4FA 	 sw a5,-68(s0)
+ 181 01c8 832744FC 	 lw a5,-60(s0)
+ 182 01cc 93D70700 	 srli a5,a5,0
+ 183 01d0 2328F4F8 	 sw a5,-112(s0)
+ 184 01d4 232A04F8 	 sw zero,-108(s0)
+ 185 01d8 832704F9 	 lw a5,-112(s0)
+ 186 01dc 232CF4FA 	 sw a5,-72(s0)
+ 187 01e0 8327C4FB 	 lw a5,-68(s0)
+ 188              	 #APP
+ 189              	# 49 "cylon_test.c" 1
+ 190              	 mv a0, a5
+ 191              	# 0 "" 2
+ 192              	 #NO_APP
+ 193 01e8 832784FB 	 lw a5,-72(s0)
+ 194              	 #APP
+ 195              	# 50 "cylon_test.c" 1
+ 196              	 mv a1, a5
+ 197              	# 0 "" 2
+ 198              	# 51 "cylon_test.c" 1
+ 199              	 li a2, 0x12345678
+ 200              	# 0 "" 2
+ 201              	 #NO_APP
+ 202 01f8 6FF0DFE8 	 j .L9
+ 203              	 .size main, .-main
+ 204              	 .ident "GCC: (GNU) 13.4.0"

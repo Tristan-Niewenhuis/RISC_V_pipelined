@@ -14,15 +14,20 @@ OBJCOPY=riscv64-unknown-elf-objcopy
 OBJDUMP=riscv64-unknown-elf-objdump
 
 all:
-	$(TOOLPATH)/$(GCC) -march=rv32i -mabi=ilp32 -c riscv_startup.S
-	$(TOOLPATH)/$(GCC) -S -I$INCPATH -march=rv32i -mabi=ilp32 $(BASENAME).c
+	$(TOOLPATH)/$(GCC) -march=rv32i_zicsr_zicntr -mabi=ilp32 -c riscv_startup.S
+	$(TOOLPATH)/$(GCC) -S -I$INCPATH -march=rv32i_zicsr_zicntr -mabi=ilp32 $(BASENAME).c
 	mv $(BASENAME).s $(BASENAME).S
-	$(TOOLPATH)/$(AS) -march=rv32i $(BASENAME).S -alh -o $(BASENAME).o > $(BASENAME).lst
+
+	$(TOOLPATH)/$(GCC) -march=rv32i_zicsr_zicntr -mabi=ilp32 -c $(BASENAME).S -Wa,-alh -o $(BASENAME).o > $(BASENAME).lst
+
 	$(TOOLPATH)/$(LD) $(BASENAME).o riscv_startup.o -o $(BASENAME).elf -T link.ld
 	$(TOOLPATH)/$(LD) $(BASENAME).o riscv_startup.o -o $(BASENAME)_spike.elf -T link_spike.ld
-	$(TOOLPATH)/$(OBJCOPY) -O binary $(BASENAME).elf $(BASENAME).bin
+	
 	$(TOOLPATH)/$(OBJDUMP) -d -M no-aliases,numeric $(BASENAME).o > $(BASENAME).S
-	$(TOOLPATH)/$(OBJDUMP) -D -M no-aliases,numeric $(BASENAME).elf > $(BASENAME).dis
+
+	$(TOOLPATH)/$(OBJDUMP) -d -M no-aliases,numeric $(BASENAME).elf > $(BASENAME).dis
+
+	$(TOOLPATH)/$(OBJCOPY) -O binary $(BASENAME).elf $(BASENAME).bin
 	xxd -c 4 -g 4 -e $(BASENAME).bin  | cut -d ' ' -f 2 > tmp1
 	echo "memory_initialization_radix = 16;" > tmp2
 	echo -n "memory_initialization_vector = " >> tmp2
@@ -30,6 +35,8 @@ all:
 	echo `tail -1 tmp1`';' >> tmp2
 	mv tmp2 $(BASENAME).coe
 	rm tmp1
+
+	python add_divided_4_to_dis.py
 
 clean:
 	rm  $(BASENAME).lst *.o $(BASENAME).elf $(BASENAME).bin $(BASENAME).coe $(BASENAME).dis $(BASENAME).S 
