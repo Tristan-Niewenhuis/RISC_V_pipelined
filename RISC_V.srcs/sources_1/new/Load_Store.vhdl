@@ -35,7 +35,7 @@ begin
 	ls_address_out <= ls_address_in(D_BYTES_ADDR_BITS - 1 downto 2);
 	ls_address_prev <= ls_address_in when rising_edge(clk);
 	--format load_store_out
-	sw_load_data <= sw_in & x"0000" when ls_address_prev = x"40010000" else load_data_in;
+	sw_load_data <= x"0000" & sw_in when ls_address_prev = x"40010000" else load_data_in;
 	with ls_address_prev(1 downto 0) select pre_load_data <=
 		(31 downto 8 => '0') & sw_load_data(15 downto 8) when "01",
 		(31 downto 8 => '0') & sw_load_data(31 downto 24) when "11",

@@ -275,7 +275,7 @@ begin
     --pipeline register enable
     if_id_stall <= id_ex_stall or raw_hazard;
     id_ex_stall <= ex_mem_stall;
-    ex_mem_stall <= '0';
+    ex_mem_stall <= mem_wb_stall;
     mem_wb_stall <= '0';
 
     -- DEBUG_SIGNALS : if DEBUG generate
