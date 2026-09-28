@@ -5,173 +5,163 @@ cylon_test.elf:     file format elf32-littleriscv
 Disassembly of section .text:
 
 00000000 <_start>:
-0-0:	c0001117          	auipc	x2,0xc0001
-1-4:	00010113          	addi	x2,x2,0 # c0001000 <__StackTop+0x0>
-2-8:	c0000297          	auipc	x5,0xc0000
-3-c:	ff828293          	addi	x5,x5,-8 # c0000000 <__StackTop+0xfffff000>
-4-10:	c0000317          	auipc	x6,0xc0000
-5-14:	00030313          	addi	x6,x6,0 # c0000010 <__StackTop+0xfffff010>
-6-18:	0062ca63          	blt	x5,x6,2c <movedata>
-7-1c:	00000e13          	addi	x28,x0,0
+0-0:	00001117          	auipc	x2,0x1
+1-4:	00010113          	addi	x2,x2,0 # 1000 <__RAM_SIZE>
+2-8:	00000293          	addi	x5,x0,0
+3-c:	01000313          	addi	x6,x0,16
+4-10:	0062ca63          	blt	x5,x6,24 <movedata>
+5-14:	00000e13          	addi	x28,x0,0
 
-00000020 <bssloop>:
-8-20:	01c2a023          	sw	x28,0(x5)
-9-24:	00428293          	addi	x5,x5,4
-a-28:	fe62cce3          	blt	x5,x6,20 <bssloop>
+00000018 <bssloop>:
+6-18:	01c2a023          	sw	x28,0(x5)
+7-1c:	00428293          	addi	x5,x5,4
+8-20:	fe62cce3          	blt	x5,x6,18 <bssloop>
 
-0000002c <movedata>:
-b-2c:	26800293          	addi	x5,x0,616
-c-30:	27400313          	addi	x6,x0,628
+00000024 <movedata>:
+9-24:	24000293          	addi	x5,x0,576
+a-28:	24c00313          	addi	x6,x0,588
 
-00000034 <copyloop>:
-d-34:	0262dc63          	bge	x5,x6,6c <endcopy>
-e-38:	0002a383          	lw	x7,0(x5)
+0000002c <copyloop>:
+b-2c:	0262dc63          	bge	x5,x6,64 <endcopy>
+c-30:	0002a383          	lw	x7,0(x5)
+d-34:	00428293          	addi	x5,x5,4
+e-38:	0002ae03          	lw	x28,0(x5)
 f-3c:	00428293          	addi	x5,x5,4
-10-40:	0002ae03          	lw	x28,0(x5)
+10-40:	0002ae83          	lw	x29,0(x5)
 11-44:	00428293          	addi	x5,x5,4
-12-48:	0002ae83          	lw	x29,0(x5)
-13-4c:	00428293          	addi	x5,x5,4
 
-00000050 <ctloop>:
-14-50:	0003af03          	lw	x30,0(x7)
-15-54:	00438393          	addi	x7,x7,4
-16-58:	01eea023          	sw	x30,0(x29)
-17-5c:	004e8e93          	addi	x29,x29,4
-18-60:	fffe0e13          	addi	x28,x28,-1
-19-64:	ffc046e3          	blt	x0,x28,50 <ctloop>
-1a-68:	fcdff06f          	jal	x0,34 <copyloop>
+00000048 <ctloop>:
+12-48:	0003af03          	lw	x30,0(x7)
+13-4c:	00438393          	addi	x7,x7,4
+14-50:	01eea023          	sw	x30,0(x29)
+15-54:	004e8e93          	addi	x29,x29,4
+16-58:	fffe0e13          	addi	x28,x28,-1
+17-5c:	ffc046e3          	blt	x0,x28,48 <ctloop>
+18-60:	fcdff06f          	jal	x0,2c <copyloop>
 
-0000006c <endcopy>:
-1b-6c:	04c000ef          	jal	x1,b8 <main>
+00000064 <endcopy>:
+19-64:	04c000ef          	jal	x1,b0 <main>
 
-00000070 <hang>:
-1c-70:	0000006f          	jal	x0,70 <hang>
+00000068 <hang>:
+1a-68:	0000006f          	jal	x0,68 <hang>
 
-00000074 <delay>:
-1d-74:	fd010113          	addi	x2,x2,-48
-1e-78:	02812623          	sw	x8,44(x2)
-1f-7c:	03010413          	addi	x8,x2,48
-20-80:	fca42e23          	sw	x10,-36(x8)
-21-84:	fe042623          	sw	x0,-20(x8)
-22-88:	0100006f          	jal	x0,98 <delay+0x24>
-23-8c:	fec42783          	lw	x15,-20(x8)
-24-90:	00178793          	addi	x15,x15,1
-25-94:	fef42623          	sw	x15,-20(x8)
-26-98:	fec42703          	lw	x14,-20(x8)
-27-9c:	fdc42783          	lw	x15,-36(x8)
-28-a0:	fef766e3          	bltu	x14,x15,8c <delay+0x18>
-29-a4:	00000013          	addi	x0,x0,0
-2a-a8:	00000013          	addi	x0,x0,0
-2b-ac:	02c12403          	lw	x8,44(x2)
-2c-b0:	03010113          	addi	x2,x2,48
-2d-b4:	00008067          	jalr	x0,0(x1)
+0000006c <delay>:
+1b-6c:	fd010113          	addi	x2,x2,-48
+1c-70:	02812623          	sw	x8,44(x2)
+1d-74:	03010413          	addi	x8,x2,48
+1e-78:	fca42e23          	sw	x10,-36(x8)
+1f-7c:	fe042623          	sw	x0,-20(x8)
+20-80:	0100006f          	jal	x0,90 <delay+0x24>
+21-84:	fec42783          	lw	x15,-20(x8)
+22-88:	00178793          	addi	x15,x15,1
+23-8c:	fef42623          	sw	x15,-20(x8)
+24-90:	fec42703          	lw	x14,-20(x8)
+25-94:	fdc42783          	lw	x15,-36(x8)
+26-98:	fef766e3          	bltu	x14,x15,84 <delay+0x18>
+27-9c:	00000013          	addi	x0,x0,0
+28-a0:	00000013          	addi	x0,x0,0
+29-a4:	02c12403          	lw	x8,44(x2)
+2a-a8:	03010113          	addi	x2,x2,48
+2b-ac:	00008067          	jalr	x0,0(x1)
 
-000000b8 <main>:
-2e-b8:	f9010113          	addi	x2,x2,-112
-2f-bc:	06112623          	sw	x1,108(x2)
-30-c0:	06812423          	sw	x8,104(x2)
-31-c4:	07212223          	sw	x18,100(x2)
-32-c8:	07312023          	sw	x19,96(x2)
-33-cc:	05412e23          	sw	x20,92(x2)
-34-d0:	05512c23          	sw	x21,88(x2)
-35-d4:	05612a23          	sw	x22,84(x2)
-36-d8:	05712823          	sw	x23,80(x2)
-37-dc:	05812623          	sw	x24,76(x2)
-38-e0:	05912423          	sw	x25,72(x2)
-39-e4:	05a12223          	sw	x26,68(x2)
-3a-e8:	05b12023          	sw	x27,64(x2)
-3b-ec:	07010413          	addi	x8,x2,112
-3c-f0:	00100793          	addi	x15,x0,1
-3d-f4:	fcf42623          	sw	x15,-52(x8)
-3e-f8:	c0002773          	csrrs	x14,cycle,x0
-3f-fc:	c00007b7          	lui	x15,0xc0000
-40-100:	00e7a223          	sw	x14,4(x15) # c0000004 <__StackTop+0xfffff004>
-41-104:	c8002773          	csrrs	x14,cycleh,x0
-42-108:	c00007b7          	lui	x15,0xc0000
-43-10c:	00e7a023          	sw	x14,0(x15) # c0000000 <__StackTop+0xfffff000>
-44-110:	400107b7          	lui	x15,0x40010
-45-114:	0007a783          	lw	x15,0(x15) # 40010000 <__RAM_SIZE+0x4000f000>
-46-118:	fcf42423          	sw	x15,-56(x8)
-47-11c:	0240006f          	jal	x0,140 <__STACK_SIZE+0x40>
-48-120:	400007b7          	lui	x15,0x40000
-49-124:	fcc42703          	lw	x14,-52(x8)
-4a-128:	00e7a023          	sw	x14,0(x15) # 40000000 <__RAM_SIZE+0x3ffff000>
-4b-12c:	fcc42783          	lw	x15,-52(x8)
-4c-130:	00179793          	slli	x15,x15,0x1
-4d-134:	fcf42623          	sw	x15,-52(x8)
-4e-138:	fc842503          	lw	x10,-56(x8)
-4f-13c:	f39ff0ef          	jal	x1,74 <delay>
-50-140:	fcc42703          	lw	x14,-52(x8)
-51-144:	000087b7          	lui	x15,0x8
-52-148:	fcf71ce3          	bne	x14,x15,120 <__STACK_SIZE+0x20>
-53-14c:	0240006f          	jal	x0,170 <__STACK_SIZE+0x70>
-54-150:	400007b7          	lui	x15,0x40000
-55-154:	fcc42703          	lw	x14,-52(x8)
-56-158:	00e7a023          	sw	x14,0(x15) # 40000000 <__RAM_SIZE+0x3ffff000>
-57-15c:	fcc42783          	lw	x15,-52(x8)
-58-160:	0017d793          	srli	x15,x15,0x1
-59-164:	fcf42623          	sw	x15,-52(x8)
-5a-168:	fc842503          	lw	x10,-56(x8)
-5b-16c:	f09ff0ef          	jal	x1,74 <delay>
-5c-170:	fcc42703          	lw	x14,-52(x8)
-5d-174:	00100793          	addi	x15,x0,1
-5e-178:	fcf71ce3          	bne	x14,x15,150 <__STACK_SIZE+0x50>
-5f-17c:	c0002773          	csrrs	x14,cycle,x0
-60-180:	c00007b7          	lui	x15,0xc0000
-61-184:	00e7a623          	sw	x14,12(x15) # c000000c <__StackTop+0xfffff00c>
-62-188:	c8002773          	csrrs	x14,cycleh,x0
-63-18c:	c00007b7          	lui	x15,0xc0000
-64-190:	00e7a423          	sw	x14,8(x15) # c0000008 <__StackTop+0xfffff008>
-65-194:	c00007b7          	lui	x15,0xc0000
-66-198:	0087a783          	lw	x15,8(x15) # c0000008 <__StackTop+0xfffff008>
-67-19c:	faf42423          	sw	x15,-88(x8)
-68-1a0:	fa042623          	sw	x0,-84(x8)
-69-1a4:	fa842783          	lw	x15,-88(x8)
-6a-1a8:	00079c93          	slli	x25,x15,0x0
-6b-1ac:	00000c13          	addi	x24,x0,0
-6c-1b0:	c00007b7          	lui	x15,0xc0000
-6d-1b4:	00c7a783          	lw	x15,12(x15) # c000000c <__StackTop+0xfffff00c>
-6e-1b8:	faf42023          	sw	x15,-96(x8)
-6f-1bc:	fa042223          	sw	x0,-92(x8)
-70-1c0:	fa042683          	lw	x13,-96(x8)
-71-1c4:	fa442703          	lw	x14,-92(x8)
-72-1c8:	00068793          	addi	x15,x13,0
-73-1cc:	00fc6933          	or	x18,x24,x15
-74-1d0:	00070793          	addi	x15,x14,0
-75-1d4:	00fce9b3          	or	x19,x25,x15
-76-1d8:	c00007b7          	lui	x15,0xc0000
-77-1dc:	0007a783          	lw	x15,0(x15) # c0000000 <__StackTop+0xfffff000>
-78-1e0:	f8f42c23          	sw	x15,-104(x8)
-79-1e4:	f8042e23          	sw	x0,-100(x8)
-7a-1e8:	f9842783          	lw	x15,-104(x8)
-7b-1ec:	00079b93          	slli	x23,x15,0x0
-7c-1f0:	00000b13          	addi	x22,x0,0
-7d-1f4:	c00007b7          	lui	x15,0xc0000
-7e-1f8:	0047a783          	lw	x15,4(x15) # c0000004 <__StackTop+0xfffff004>
-7f-1fc:	00078d13          	addi	x26,x15,0
-80-200:	00000d93          	addi	x27,x0,0
-81-204:	01ab6a33          	or	x20,x22,x26
-82-208:	01bbeab3          	or	x21,x23,x27
-83-20c:	41490733          	sub	x14,x18,x20
-84-210:	00070693          	addi	x13,x14,0
-85-214:	00d936b3          	sltu	x13,x18,x13
-86-218:	415987b3          	sub	x15,x19,x21
-87-21c:	40d786b3          	sub	x13,x15,x13
-88-220:	00068793          	addi	x15,x13,0
-89-224:	fce42023          	sw	x14,-64(x8)
-8a-228:	fcf42223          	sw	x15,-60(x8)
-8b-22c:	fc042783          	lw	x15,-64(x8)
-8c-230:	faf42e23          	sw	x15,-68(x8)
-8d-234:	fc442783          	lw	x15,-60(x8)
-8e-238:	0007d793          	srli	x15,x15,0x0
-8f-23c:	f8f42823          	sw	x15,-112(x8)
-90-240:	f8042a23          	sw	x0,-108(x8)
-91-244:	f9042783          	lw	x15,-112(x8)
-92-248:	faf42c23          	sw	x15,-72(x8)
-93-24c:	fbc42783          	lw	x15,-68(x8)
-94-250:	00078513          	addi	x10,x15,0
-95-254:	fb842783          	lw	x15,-72(x8)
-96-258:	00078593          	addi	x11,x15,0
-97-25c:	12345637          	lui	x12,0x12345
-98-260:	67860613          	addi	x12,x12,1656 # 12345678 <__RAM_SIZE+0x12344678>
-99-264:	e95ff06f          	jal	x0,f8 <main+0x40>
+000000b0 <main>:
+2c-b0:	f9010113          	addi	x2,x2,-112
+2d-b4:	06112623          	sw	x1,108(x2)
+2e-b8:	06812423          	sw	x8,104(x2)
+2f-bc:	07212223          	sw	x18,100(x2)
+30-c0:	07312023          	sw	x19,96(x2)
+31-c4:	05412e23          	sw	x20,92(x2)
+32-c8:	05512c23          	sw	x21,88(x2)
+33-cc:	05612a23          	sw	x22,84(x2)
+34-d0:	05712823          	sw	x23,80(x2)
+35-d4:	05812623          	sw	x24,76(x2)
+36-d8:	05912423          	sw	x25,72(x2)
+37-dc:	05a12223          	sw	x26,68(x2)
+38-e0:	05b12023          	sw	x27,64(x2)
+39-e4:	07010413          	addi	x8,x2,112
+3a-e8:	00100793          	addi	x15,x0,1
+3b-ec:	fcf42623          	sw	x15,-52(x8)
+3c-f0:	c0002773          	csrrs	x14,cycle,x0
+3d-f4:	00e02223          	sw	x14,4(x0) # 4 <start_cycles_lo>
+3e-f8:	c8002773          	csrrs	x14,cycleh,x0
+3f-fc:	00e02023          	sw	x14,0(x0) # 0 <_start>
+40-100:	400107b7          	lui	x15,0x40010
+41-104:	0007a783          	lw	x15,0(x15) # 40010000 <__RAM_SIZE+0x4000f000>
+42-108:	fcf42423          	sw	x15,-56(x8)
+43-10c:	0240006f          	jal	x0,130 <__STACK_SIZE+0x30>
+44-110:	400007b7          	lui	x15,0x40000
+45-114:	fcc42703          	lw	x14,-52(x8)
+46-118:	00e7a023          	sw	x14,0(x15) # 40000000 <__RAM_SIZE+0x3ffff000>
+47-11c:	fcc42783          	lw	x15,-52(x8)
+48-120:	00179793          	slli	x15,x15,0x1
+49-124:	fcf42623          	sw	x15,-52(x8)
+4a-128:	fc842503          	lw	x10,-56(x8)
+4b-12c:	f41ff0ef          	jal	x1,6c <delay>
+4c-130:	fcc42703          	lw	x14,-52(x8)
+4d-134:	000087b7          	lui	x15,0x8
+4e-138:	fcf71ce3          	bne	x14,x15,110 <__STACK_SIZE+0x10>
+4f-13c:	0240006f          	jal	x0,160 <__STACK_SIZE+0x60>
+50-140:	400007b7          	lui	x15,0x40000
+51-144:	fcc42703          	lw	x14,-52(x8)
+52-148:	00e7a023          	sw	x14,0(x15) # 40000000 <__RAM_SIZE+0x3ffff000>
+53-14c:	fcc42783          	lw	x15,-52(x8)
+54-150:	0017d793          	srli	x15,x15,0x1
+55-154:	fcf42623          	sw	x15,-52(x8)
+56-158:	fc842503          	lw	x10,-56(x8)
+57-15c:	f11ff0ef          	jal	x1,6c <delay>
+58-160:	fcc42703          	lw	x14,-52(x8)
+59-164:	00100793          	addi	x15,x0,1
+5a-168:	fcf71ce3          	bne	x14,x15,140 <__STACK_SIZE+0x40>
+5b-16c:	c0002773          	csrrs	x14,cycle,x0
+5c-170:	00e02623          	sw	x14,12(x0) # c <stop_cycles_lo>
+5d-174:	c8002773          	csrrs	x14,cycleh,x0
+5e-178:	00e02423          	sw	x14,8(x0) # 8 <stop_cycles_hi>
+5f-17c:	00802783          	lw	x15,8(x0) # 8 <stop_cycles_hi>
+60-180:	faf42423          	sw	x15,-88(x8)
+61-184:	fa042623          	sw	x0,-84(x8)
+62-188:	fa842783          	lw	x15,-88(x8)
+63-18c:	00079c93          	slli	x25,x15,0x0
+64-190:	00000c13          	addi	x24,x0,0
+65-194:	00c02783          	lw	x15,12(x0) # c <stop_cycles_lo>
+66-198:	faf42023          	sw	x15,-96(x8)
+67-19c:	fa042223          	sw	x0,-92(x8)
+68-1a0:	fa042683          	lw	x13,-96(x8)
+69-1a4:	fa442703          	lw	x14,-92(x8)
+6a-1a8:	00068793          	addi	x15,x13,0
+6b-1ac:	00fc6933          	or	x18,x24,x15
+6c-1b0:	00070793          	addi	x15,x14,0
+6d-1b4:	00fce9b3          	or	x19,x25,x15
+6e-1b8:	00002783          	lw	x15,0(x0) # 0 <_start>
+6f-1bc:	f8f42c23          	sw	x15,-104(x8)
+70-1c0:	f8042e23          	sw	x0,-100(x8)
+71-1c4:	f9842783          	lw	x15,-104(x8)
+72-1c8:	00079b93          	slli	x23,x15,0x0
+73-1cc:	00000b13          	addi	x22,x0,0
+74-1d0:	00402783          	lw	x15,4(x0) # 4 <start_cycles_lo>
+75-1d4:	00078d13          	addi	x26,x15,0
+76-1d8:	00000d93          	addi	x27,x0,0
+77-1dc:	01ab6a33          	or	x20,x22,x26
+78-1e0:	01bbeab3          	or	x21,x23,x27
+79-1e4:	41490733          	sub	x14,x18,x20
+7a-1e8:	00070693          	addi	x13,x14,0
+7b-1ec:	00d936b3          	sltu	x13,x18,x13
+7c-1f0:	415987b3          	sub	x15,x19,x21
+7d-1f4:	40d786b3          	sub	x13,x15,x13
+7e-1f8:	00068793          	addi	x15,x13,0
+7f-1fc:	fce42023          	sw	x14,-64(x8)
+80-200:	fcf42223          	sw	x15,-60(x8)
+81-204:	fc042783          	lw	x15,-64(x8)
+82-208:	faf42e23          	sw	x15,-68(x8)
+83-20c:	fc442783          	lw	x15,-60(x8)
+84-210:	0007d793          	srli	x15,x15,0x0
+85-214:	f8f42823          	sw	x15,-112(x8)
+86-218:	f8042a23          	sw	x0,-108(x8)
+87-21c:	f9042783          	lw	x15,-112(x8)
+88-220:	faf42c23          	sw	x15,-72(x8)
+89-224:	fbc42783          	lw	x15,-68(x8)
+8a-228:	00078513          	addi	x10,x15,0
+8b-22c:	fb842783          	lw	x15,-72(x8)
+8c-230:	00078593          	addi	x11,x15,0
+8d-234:	12345637          	lui	x12,0x12345
+8e-238:	67860613          	addi	x12,x12,1656 # 12345678 <__RAM_SIZE+0x12344678>
+8f-23c:	eb5ff06f          	jal	x0,f0 <main+0x40>

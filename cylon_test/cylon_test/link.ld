@@ -3,10 +3,10 @@ OUTPUT_FORMAT("elf32-littleriscv")
 /* change this when we have a startup routine */
 ENTRY(_start)
 
-__ROM_BASE = 0x00000000;
+__ROM_BASE = 0x80000000;
 __ROM_SIZE = 0x00001000;
 
-__RAM_BASE = 0xC0000000;
+__RAM_BASE = 0x00000000;
 __RAM_SIZE = 0x00001000;
 
 /* __HEAP_BASE = 0x60000000;  */
