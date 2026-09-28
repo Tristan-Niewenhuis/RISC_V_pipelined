@@ -16,7 +16,7 @@
         "AXI_ID_Width": [ { "value": "4", "resolve_type": "user", "format": "long", "enabled": false, "usage": "all" } ],
         "Memory_Type": [ { "value": "Single_Port_ROM", "value_src": "user", "resolve_type": "user", "usage": "all" } ],
         "PRIM_type_to_Implement": [ { "value": "BRAM", "resolve_type": "user", "enabled": false, "usage": "all" } ],
-        "Enable_32bit_Address": [ { "value": "false", "value_permission": "bd_and_user", "resolve_type": "user", "format": "bool", "usage": "all" } ],
+        "Enable_32bit_Address": [ { "value": "false", "value_src": "user", "value_permission": "bd_and_user", "resolve_type": "user", "format": "bool", "usage": "all" } ],
         "ecctype": [ { "value": "No_ECC", "resolve_type": "user", "enabled": false, "usage": "all" } ],
         "ECC": [ { "value": "false", "resolve_type": "user", "format": "bool", "enabled": false, "usage": "all" } ],
         "softecc": [ { "value": "false", "resolve_type": "user", "format": "bool", "enabled": false, "usage": "all" } ],
@@ -52,10 +52,10 @@
         "register_portb_output_of_softecc": [ { "value": "false", "resolve_type": "user", "format": "bool", "enabled": false, "usage": "all" } ],
         "Pipeline_Stages": [ { "value": "0", "resolve_type": "user", "format": "long", "enabled": false, "usage": "all" } ],
         "Load_Init_File": [ { "value": "true", "value_src": "user", "resolve_type": "user", "format": "bool", "usage": "all" } ],
-        "Coe_File": [ { "value": "../../../../../cylon_test/cylon_test/cylon_test.coe", "value_src": "user", "resolve_type": "user", "usage": "all" } ],
+        "Coe_File": [ { "value": "../../../../../../cylon_test/cylon_test/cylon_test.coe", "value_src": "user", "resolve_type": "user", "usage": "all" } ],
         "Fill_Remaining_Memory_Locations": [ { "value": "false", "resolve_type": "user", "format": "bool", "usage": "all" } ],
         "Remaining_Memory_Locations": [ { "value": "0", "resolve_type": "user", "enabled": false, "usage": "all" } ],
-        "Use_RSTA_Pin": [ { "value": "false", "resolve_type": "user", "format": "bool", "usage": "all" } ],
+        "Use_RSTA_Pin": [ { "value": "false", "value_src": "user", "resolve_type": "user", "format": "bool", "usage": "all" } ],
         "Reset_Memory_Latch_A": [ { "value": "false", "resolve_type": "user", "format": "bool", "enabled": false, "usage": "all" } ],
         "Reset_Priority_A": [ { "value": "CE", "resolve_type": "user", "enabled": false, "usage": "all" } ],
         "Output_Reset_Value_A": [ { "value": "0", "resolve_type": "user", "enabled": false, "usage": "all" } ],
@@ -66,7 +66,7 @@
         "Reset_Type": [ { "value": "SYNC", "resolve_type": "user", "enabled": false, "usage": "all" } ],
         "Additional_Inputs_for_Power_Estimation": [ { "value": "false", "resolve_type": "user", "format": "bool", "usage": "all" } ],
         "Port_A_Clock": [ { "value": "100", "resolve_type": "user", "format": "long", "usage": "all" } ],
-        "Port_A_Write_Rate": [ { "value": "0", "resolve_type": "user", "format": "long", "usage": "all" } ],
+        "Port_A_Write_Rate": [ { "value": "0", "value_src": "user", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "Port_B_Clock": [ { "value": "0", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "Port_B_Write_Rate": [ { "value": "0", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "Port_A_Enable_Rate": [ { "value": "100", "resolve_type": "user", "format": "long", "usage": "all" } ],
@@ -253,5 +253,5 @@
       }
     }
   },
-  "checksum": "32ffacc0"
+  "checksum": "62dc8503"
 }

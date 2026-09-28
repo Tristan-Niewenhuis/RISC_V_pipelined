@@ -25,7 +25,7 @@ begin
 
     test : process
     begin
-        sw <= "0000000000000001";
+        sw <= "0000000000000000";
         wait for 10 ns;
         --reset in beginning
         resetn <= '0';

@@ -235,7 +235,10 @@
         "has_run_ip_tcl": "true",
         "parameters": {
           "Coe_File": {
-            "value": "../../../../../cylon_test/cylon_test/cylon_test.coe"
+            "value": "../../../../../../cylon_test/cylon_test/cylon_test.coe"
+          },
+          "Enable_32bit_Address": {
+            "value": "false"
           },
           "Enable_A": {
             "value": "Always_Enabled"
@@ -246,11 +249,17 @@
           "Memory_Type": {
             "value": "Single_Port_ROM"
           },
+          "Port_A_Write_Rate": {
+            "value": "0"
+          },
           "Register_PortA_Output_of_Memory_Core": {
             "value": "false"
           },
           "Register_PortA_Output_of_Memory_Primitives": {
             "value": "true"
+          },
+          "Use_RSTA_Pin": {
+            "value": "false"
           },
           "Write_Depth_A": {
             "value": "1024"
@@ -344,9 +353,9 @@
       "clk_wiz_0_clk_out1": {
         "ports": [
           "clk_wiz_0/clk_out1",
-          "blk_mem_gen_0/clka",
           "blk_mem_gen_1/clka",
-          "RISC_V_0/clk"
+          "RISC_V_0/clk",
+          "blk_mem_gen_0/clka"
         ]
       },
       "clk_wiz_0_locked": {
