@@ -1,4 +1,4 @@
-GAS LISTING C:\Users\trist\AppData\Local\Temp\ccYSD126.s 			page 1
+GAS LISTING C:\Users\trist\AppData\Local\Temp\ccVhh5Hc.s 			page 1
 
 
    1              	# 0 "cylon_test.S"
@@ -58,7 +58,7 @@ GAS LISTING C:\Users\trist\AppData\Local\Temp\ccYSD126.s 			page 1
   50 002c E366F7FE 	    __asm__ volatile("mv a1, %0" : : "r"(dif_hi) : "a1");
   51 0030 13000000 	    __asm__ volatile("li a2, 0x12345678" : : : "a2");
   52 0034 13000000 	  }
-GAS LISTING C:\Users\trist\AppData\Local\Temp\ccYSD126.s 			page 2
+GAS LISTING C:\Users\trist\AppData\Local\Temp\ccVhh5Hc.s 			page 2
 
 
   53 0038 0324C102 	
@@ -118,7 +118,7 @@ GAS LISTING C:\Users\trist\AppData\Local\Temp\ccYSD126.s 			page 1
   55              	 nop
   56              	 nop
   57              	 lw s0,44(sp)
-GAS LISTING C:\Users\trist\AppData\Local\Temp\ccYSD126.s 			page 3
+GAS LISTING C:\Users\trist\AppData\Local\Temp\ccVhh5Hc.s 			page 3
 
 
   58              	 addi sp,sp,48
@@ -178,7 +178,7 @@ GAS LISTING C:\Users\trist\AppData\Local\Temp\ccYSD126.s 			page 1
  111 00d4 B7870000 	 li a5,32768
  112 00d8 E31AF7FC 	 bne a4,a5,.L6
  113 00dc 6F008002 	 j .L7
-GAS LISTING C:\Users\trist\AppData\Local\Temp\ccYSD126.s 			page 4
+GAS LISTING C:\Users\trist\AppData\Local\Temp\ccVhh5Hc.s 			page 4
 
 
  114              	.L8:
@@ -238,7 +238,7 @@ GAS LISTING C:\Users\trist\AppData\Local\Temp\ccYSD126.s 			page 1
  167 0190 138D0700 	 mv s10,a5
  168 0194 930D0000 	 li s11,0
  169 0198 336AAB01 	 or s4,s6,s10
-GAS LISTING C:\Users\trist\AppData\Local\Temp\ccYSD126.s 			page 5
+GAS LISTING C:\Users\trist\AppData\Local\Temp\ccVhh5Hc.s 			page 5
 
 
  170 019c B3EABB01 	 or s5,s7,s11
