@@ -43,7 +43,9 @@
         "d_addr": [ { "direction": "out", "size_left": "9", "size_right": "0" } ],
         "d_data_in": [ { "direction": "in", "size_left": "31", "size_right": "0" } ],
         "d_data_out": [ { "direction": "out", "size_left": "31", "size_right": "0" } ],
-        "d_strobe": [ { "direction": "out", "size_left": "3", "size_right": "0" } ]
+        "d_strobe": [ { "direction": "out", "size_left": "3", "size_right": "0" } ],
+        "sw": [ { "direction": "in", "size_left": "15", "size_right": "0" } ],
+        "led": [ { "direction": "out", "size_left": "15", "size_right": "0" } ]
       },
       "interfaces": {
         "resetn": {
@@ -79,5 +81,5 @@
       }
     }
   },
-  "checksum": "4c5c2ff4"
+  "checksum": "1b26e69d"
 }

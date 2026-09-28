@@ -1,7 +1,7 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0x838C9E1040D3F9B8",
+      "boundary_crc": "0xB96AAA8C4C27F731",
       "device": "xc7a100tcsg324-1",
       "gen_directory": "../../../../RISC_V.gen/sources_1/bd/harvard",
       "name": "harvard",
@@ -53,6 +53,16 @@
             "value": "0.0"
           }
         }
+      },
+      "sw": {
+        "direction": "I",
+        "left": "15",
+        "right": "0"
+      },
+      "led": {
+        "direction": "O",
+        "left": "15",
+        "right": "0"
       }
     },
     "components": {
@@ -129,6 +139,16 @@
           "d_strobe": {
             "direction": "O",
             "left": "3",
+            "right": "0"
+          },
+          "sw": {
+            "direction": "I",
+            "left": "15",
+            "right": "0"
+          },
+          "led": {
+            "direction": "O",
+            "left": "15",
             "right": "0"
           }
         }
@@ -230,7 +250,7 @@
             "value": "false"
           },
           "Register_PortA_Output_of_Memory_Primitives": {
-            "value": "false"
+            "value": "true"
           },
           "Write_Depth_A": {
             "value": "1024"
@@ -303,6 +323,12 @@
           "blk_mem_gen_0/addra"
         ]
       },
+      "RISC_V_0_led": {
+        "ports": [
+          "RISC_V_0/led",
+          "led"
+        ]
+      },
       "blk_mem_gen_0_douta": {
         "ports": [
           "blk_mem_gen_0/douta",
@@ -333,6 +359,12 @@
         "ports": [
           "resetn",
           "clk_wiz_0/resetn"
+        ]
+      },
+      "sw_1": {
+        "ports": [
+          "sw",
+          "RISC_V_0/sw"
         ]
       },
       "sys_clock_1": {
