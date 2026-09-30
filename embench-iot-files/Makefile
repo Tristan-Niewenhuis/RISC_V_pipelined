@@ -17,7 +17,7 @@ OBJCOPY=riscv64-unknown-elf-objcopy
 OBJDUMP=riscv64-unknown-elf-objdump
 
 CFLAGS="-O2 -ffunction-sections -fdata-sections -march=rv32i_zicsr_zicntr -mabi=ilp32"
-LDFLAGS="-O2 -march=rv32i_zicsr_zicntr -mabi=ilp32 -Wl,--gc-sections -Wl,--no-warn-rwx-segments -static -o $(BUILD_DIR_FROM_EMBENCH)/$(STARTUP).o -T ${BUILD_DIR_FROM_EMBENCH}/link.ld"
+LDFLAGS="-O2 -march=rv32i_zicsr_zicntr -mabi=ilp32 -Wl,--gc-sections -Wl,--no-warn-rwx-segments -static -nostartfiles $(BUILD_DIR_FROM_EMBENCH)/$(STARTUP).o -T ${BUILD_DIR_FROM_EMBENCH}/link.ld"
 
 all: elf dis coe
 
