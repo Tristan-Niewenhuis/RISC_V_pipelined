@@ -13,9 +13,6 @@ entity RISC_V is
        d_data_in : in std_logic_vector(31 downto 0);
        d_data_out : out std_logic_vector(31 downto 0);
        d_strobe : out std_logic_vector(3 downto 0);
-       --custom io
-       sw : in std_logic_vector(15 downto 0);
-       led : out std_logic_vector(15 downto 0)
       );
 end RISC_V;
 
@@ -43,7 +40,6 @@ begin
   Load_Store_inst : entity work.Load_Store
     port map(
       clk => clk,
-      reset => reset,
       load_store => ls_ctrl,
       store_type => store_type,
       load_type => load_type,
@@ -54,9 +50,7 @@ begin
       ls_address_out => d_addr,
       load_data_in => d_data_in,
       store_data_out => d_data_out,
-      write_strobe => d_strobe,
-      sw_in => sw,
-      led_out => led
+      write_strobe => d_strobe
     );
 
 end Behavioral;

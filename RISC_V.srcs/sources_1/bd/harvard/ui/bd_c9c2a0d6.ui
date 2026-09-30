@@ -1,32 +1,48 @@
 {
    "ActiveEmotionalView":"Default View",
-   "Default View_ScaleFactor":"1.0",
-   "Default View_TopLeft":"-514,-52",
+   "Default View_ScaleFactor":"0.931114",
+   "Default View_TopLeft":"-110,-46",
    "ExpandedHierarchyInLayout":"",
    "guistr":"# # String gsaved with Nlview 7.8.0 2024-04-26 e1825d835c VDI=44 GEI=38 GUI=JA:24.0 threadsafe
 #  -string -flagsOSRD
-preplace port port-id_resetn -pg 1 -lvl 0 -x -10 -y 210 -defaultsOSRD
-preplace port port-id_sys_clock -pg 1 -lvl 0 -x -10 -y 240 -defaultsOSRD
-preplace portBus sw -pg 1 -lvl 0 -x -10 -y 300 -defaultsOSRD
-preplace portBus led -pg 1 -lvl 4 -x 830 -y 300 -defaultsOSRD
-preplace inst RISC_V_0 -pg 1 -lvl 2 -x 380 -y 260 -defaultsOSRD
-preplace inst clk_wiz_0 -pg 1 -lvl 1 -x 110 -y 230 -defaultsOSRD
-preplace inst blk_mem_gen_0 -pg 1 -lvl 3 -x 700 -y 170 -defaultsOSRD
-preplace inst blk_mem_gen_1 -pg 1 -lvl 3 -x 700 -y 530 -defaultsOSRD
-preplace netloc RISC_V_0_d_addr 1 2 1 560 240n
-preplace netloc RISC_V_0_d_data_out 1 2 1 550 260n
-preplace netloc RISC_V_0_d_strobe 1 2 1 540 280n
-preplace netloc RISC_V_0_i_addr 1 2 1 580 160n
-preplace netloc RISC_V_0_led 1 2 2 NJ 300 NJ
-preplace netloc blk_mem_gen_0_douta 1 1 2 220 150 590J
-preplace netloc blk_mem_gen_1_douta 1 1 2 220 560 N
-preplace netloc clk_wiz_0_clk_out1 1 1 2 210 160 570
-preplace netloc clk_wiz_0_locked 1 1 1 N 240
-preplace netloc reset_1 1 0 1 10J 210n
-preplace netloc sw_1 1 0 2 NJ 300 NJ
-preplace netloc sys_clock_1 1 0 1 NJ 240
-levelinfo -pg 1 -10 110 380 700 830
-pagesize -pg 1 -db -bbox -sgen -130 0 940 640
+preplace port port-id_resetn -pg 1 -lvl 0 -x 0 -y 400 -defaultsOSRD
+preplace port port-id_sys_clock -pg 1 -lvl 0 -x 0 -y 430 -defaultsOSRD
+preplace inst RISC_V_0 -pg 1 -lvl 2 -x 400 -y 100 -defaultsOSRD
+preplace inst clk_wiz_0 -pg 1 -lvl 1 -x 110 -y 420 -defaultsOSRD
+preplace inst blk_mem_gen_0 -pg 1 -lvl 5 -x 1530 -y 620 -defaultsOSRD
+preplace inst blk_mem_gen_1 -pg 1 -lvl 5 -x 1530 -y 300 -defaultsOSRD
+preplace inst jtag_axi_0 -pg 1 -lvl 2 -x 400 -y 510 -defaultsOSRD
+preplace inst smartconnect_0 -pg 1 -lvl 3 -x 750 -y 520 -defaultsOSRD
+preplace inst axi_bram_ctrl_0 -pg 1 -lvl 4 -x 1210 -y 670 -defaultsOSRD
+preplace inst axi_bram_ctrl_1 -pg 1 -lvl 4 -x 1210 -y 430 -defaultsOSRD
+preplace inst io_interconnect_0 -pg 1 -lvl 3 -x 750 -y 120 -defaultsOSRD
+preplace inst test_controller_1 -pg 1 -lvl 4 -x 1210 -y 130 -defaultsOSRD
+preplace netloc clk_wiz_0_clk_out1 1 1 4 210 430 560 430 1040 300 1410
+preplace netloc clk_wiz_0_locked 1 1 3 200 440 NJ 440 1050
+preplace netloc reset_1 1 0 1 20J 400n
+preplace netloc sys_clock_1 1 0 1 NJ 430
+preplace netloc RISC_V_0_i_addr 1 2 3 560J 260 NJ 260 1390
+preplace netloc blk_mem_gen_0_doutb 1 1 4 240 240 NJ 240 960J 250 1380
+preplace netloc RISC_V_0_d_addr 1 2 1 N 90
+preplace netloc RISC_V_0_d_data_out 1 2 1 N 110
+preplace netloc RISC_V_0_d_strobe 1 2 1 N 130
+preplace netloc io_interconnect_0_in_d_data_in 1 1 3 230 250 NJ 250 930
+preplace netloc io_interconnect_0_out_d_addr 1 3 2 940J 20 1410
+preplace netloc io_interconnect_0_out_d_data_out 1 3 2 980J 240 1380
+preplace netloc io_interconnect_0_out_d_strobe 1 3 2 970J 270 N
+preplace netloc blk_mem_gen_1_douta 1 2 3 570 290 NJ 290 1400
+preplace netloc test_controller_1_CPU_resetn 1 1 4 220 280 NJ 280 NJ 280 1370
+preplace netloc io_interconnect_0_io_d_addr 1 3 1 N 140
+preplace netloc io_interconnect_0_io_d_data_out 1 3 1 N 160
+preplace netloc io_interconnect_0_io_d_strobe 1 3 1 N 180
+preplace netloc jtag_axi_0_M_AXI 1 2 1 N 510
+preplace netloc smartconnect_0_M00_AXI 1 3 1 930 500n
+preplace netloc smartconnect_0_M01_AXI 1 3 1 980 410n
+preplace netloc smartconnect_0_M02_AXI 1 3 1 950 80n
+preplace netloc axi_bram_ctrl_1_BRAM_PORTA 1 4 1 1420 290n
+preplace netloc axi_bram_ctrl_0_BRAM_PORTA 1 4 1 1420 530n
+levelinfo -pg 1 0 110 400 750 1210 1530 1640
+pagesize -pg 1 -db -bbox -sgen -110 0 1640 1430
 "
 }
 0
