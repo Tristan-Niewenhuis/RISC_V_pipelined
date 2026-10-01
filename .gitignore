@@ -94,3 +94,5 @@ nlviewcommon.logfile
 *.exe
 *.dis
 *.dblite
+# proprietary IP: track everything, including .xml and object files
+!RISC_V.srcs/sources_1/proprietary/**
