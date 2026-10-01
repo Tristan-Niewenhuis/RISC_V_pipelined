@@ -6,6 +6,9 @@
 -- Engineering checkoff log
 --   2026-10-01  imported for RISC_V_pipelined; clog2 now comes from
 --               RISCV_package; added USE_NEGEDGE for port A
+--   2026-10-01  read-only port templates (READ_ONLY, PORT_B_WRITE) and
+--               rom_style, so Vivado infers BRAM when a port is never
+--               written
 -- ============================================================
 --
 -- Tightly Coupled Memory (TCM)
@@ -16,8 +19,8 @@
 -- Can be used as ITCM or DTCM.  When READ_ONLY is true, CPU writes are
 -- rejected and fault is asserted (combinational, same cycle).  The
 -- pipeline should use fault to generate a Store/AMO access fault
--- (mcause = 7).  The debug port ignores READ_ONLY and can always
--- read and write.
+-- (mcause = 7).  The debug port ignores READ_ONLY.  It can always
+-- read, and it can write unless PORT_B_WRITE is false.
 --
 -- Initialization file formats (detected from file extension):
 --   .hex -- one 32-bit word per line as hex digits (e.g. "00000093")
@@ -33,7 +36,15 @@
 --   SIZE_BYTES  -- memory size in bytes (must be power of 2, >= 8)
 --   INIT_FILE   -- path to initialization file ("" for all zeros)
 --   READ_ONLY   -- when true, CPU writes are rejected with fault='1'
+--   PORT_B_WRITE -- when false, port B is read-only
 --   USE_NEGEDGE -- when true, port A is clocked on the falling edge
+--
+-- A port that is never written must be declared read-only with
+-- READ_ONLY (port A) or PORT_B_WRITE (port B), not by tying its write
+-- enable to '0'.  Vivado 2026.1 cannot infer BRAM from a write template
+-- whose enable is constant ("Unsupported RAM template"); the generics
+-- select a read-only template instead.  With both ports read-only the
+-- memory is a ROM, and rom_style keeps it in BRAM.
 --
 -- The memory uses the lower address bits for indexing.  The instantiating
 -- level is responsible for address decoding.  SIZE_BYTES must be
@@ -71,8 +82,9 @@ entity tightly_coupled_memory is
   generic(
     SIZE_BYTES  : natural := 4096;
     INIT_FILE   : string  := "";
-    READ_ONLY   : boolean := false;
-    USE_NEGEDGE : boolean := false
+    READ_ONLY    : boolean := false;
+    PORT_B_WRITE : boolean := true;
+    USE_NEGEDGE  : boolean := false
   );
   port(
     clk   : in  std_logic;
@@ -86,7 +98,7 @@ entity tightly_coupled_memory is
     ready : out std_logic;
     fault : out std_logic;
 
-    -- Debug / JTAG port (port B) — ignores READ_ONLY
+    -- Debug / JTAG port (port B) — ignores READ_ONLY; writes need PORT_B_WRITE
     dbg_addr  : in  std_logic_vector(31 downto 0);
     dbg_wdata : in  std_logic_vector(31 downto 0);
     dbg_rdata : out std_logic_vector(31 downto 0);
@@ -509,28 +521,27 @@ architecture behavioral of tightly_coupled_memory is
   shared variable mem : mem_type := init_mem(INIT_FILE);
   attribute ram_style : string;
   attribute ram_style of mem : variable is "block";
+  attribute rom_style : string;
+  attribute rom_style of mem : variable is "block";
 
 begin
 
   ---------------------------------------------------------------------------
   -- True dual-port BRAM (two processes, UG901 pattern).
-  -- Port A = CPU, port B = debug/JTAG.
-  -- Separate processes required for Vivado BRAM inference.
-  -- CPU writes are suppressed when READ_ONLY is true.
+  -- Port A = CPU, port B = debug/JTAG.  Separate processes are required
+  -- for Vivado BRAM inference.  Each port has a read-write and a
+  -- read-only template; the generics pick one (see header).  Port A
+  -- also picks its clock edge from USE_NEGEDGE.  Reads are synchronous
+  -- and read-first.
   ---------------------------------------------------------------------------
-  -- Port A edge is selected by USE_NEGEDGE (see header).
-  gen_port_a_posedge : if not USE_NEGEDGE generate
+  gen_a_rw_pos : if not READ_ONLY and not USE_NEGEDGE generate
     port_a : process(clk)
       variable cpu_word_addr : natural;
     begin
       if rising_edge(clk) then
         cpu_word_addr := to_integer(unsigned(addr(ADDR_BITS - 1 downto 2)));
-
-        -- Port A: CPU read (synchronous, read-first)
         rdata <= mem(cpu_word_addr);
-
-        -- Port A: CPU write (suppressed when READ_ONLY)
-        if we = '1' and not READ_ONLY then
+        if we = '1' then
           if wstrb(0) = '1' then
             mem(cpu_word_addr)(7 downto 0) := wdata(7 downto 0);
           end if;
@@ -548,18 +559,14 @@ begin
     end process;
   end generate;
 
-  gen_port_a_negedge : if USE_NEGEDGE generate
+  gen_a_rw_neg : if not READ_ONLY and USE_NEGEDGE generate
     port_a : process(clk)
       variable cpu_word_addr : natural;
     begin
       if falling_edge(clk) then
         cpu_word_addr := to_integer(unsigned(addr(ADDR_BITS - 1 downto 2)));
-
-        -- Port A: CPU read (synchronous, read-first)
         rdata <= mem(cpu_word_addr);
-
-        -- Port A: CPU write (suppressed when READ_ONLY)
-        if we = '1' and not READ_ONLY then
+        if we = '1' then
           if wstrb(0) = '1' then
             mem(cpu_word_addr)(7 downto 0) := wdata(7 downto 0);
           end if;
@@ -577,32 +584,63 @@ begin
     end process;
   end generate;
 
-  port_b : process(clk)
-    variable dbg_word_addr : natural;
-  begin
-    if rising_edge(clk) then
-      dbg_word_addr := to_integer(unsigned(dbg_addr(ADDR_BITS - 1 downto 2)));
+  gen_a_ro_pos : if READ_ONLY and not USE_NEGEDGE generate
+    port_a : process(clk)
+      variable cpu_word_addr : natural;
+    begin
+      if rising_edge(clk) then
+        cpu_word_addr := to_integer(unsigned(addr(ADDR_BITS - 1 downto 2)));
+        rdata <= mem(cpu_word_addr);
+      end if;
+    end process;
+  end generate;
 
-      -- Port B: debug read (synchronous, read-first)
-      dbg_rdata <= mem(dbg_word_addr);
+  gen_a_ro_neg : if READ_ONLY and USE_NEGEDGE generate
+    port_a : process(clk)
+      variable cpu_word_addr : natural;
+    begin
+      if falling_edge(clk) then
+        cpu_word_addr := to_integer(unsigned(addr(ADDR_BITS - 1 downto 2)));
+        rdata <= mem(cpu_word_addr);
+      end if;
+    end process;
+  end generate;
 
-      -- Port B: debug write (always allowed)
-      if dbg_we = '1' then
-        if dbg_wstrb(0) = '1' then
-          mem(dbg_word_addr)(7 downto 0) := dbg_wdata(7 downto 0);
-        end if;
-        if dbg_wstrb(1) = '1' then
-          mem(dbg_word_addr)(15 downto 8) := dbg_wdata(15 downto 8);
-        end if;
-        if dbg_wstrb(2) = '1' then
-          mem(dbg_word_addr)(23 downto 16) := dbg_wdata(23 downto 16);
-        end if;
-        if dbg_wstrb(3) = '1' then
-          mem(dbg_word_addr)(31 downto 24) := dbg_wdata(31 downto 24);
+  gen_b_rw : if PORT_B_WRITE generate
+    port_b : process(clk)
+      variable dbg_word_addr : natural;
+    begin
+      if rising_edge(clk) then
+        dbg_word_addr := to_integer(unsigned(dbg_addr(ADDR_BITS - 1 downto 2)));
+        dbg_rdata <= mem(dbg_word_addr);
+        if dbg_we = '1' then
+          if dbg_wstrb(0) = '1' then
+            mem(dbg_word_addr)(7 downto 0) := dbg_wdata(7 downto 0);
+          end if;
+          if dbg_wstrb(1) = '1' then
+            mem(dbg_word_addr)(15 downto 8) := dbg_wdata(15 downto 8);
+          end if;
+          if dbg_wstrb(2) = '1' then
+            mem(dbg_word_addr)(23 downto 16) := dbg_wdata(23 downto 16);
+          end if;
+          if dbg_wstrb(3) = '1' then
+            mem(dbg_word_addr)(31 downto 24) := dbg_wdata(31 downto 24);
+          end if;
         end if;
       end if;
-    end if;
-  end process;
+    end process;
+  end generate;
+
+  gen_b_ro : if not PORT_B_WRITE generate
+    port_b : process(clk)
+      variable dbg_word_addr : natural;
+    begin
+      if rising_edge(clk) then
+        dbg_word_addr := to_integer(unsigned(dbg_addr(ADDR_BITS - 1 downto 2)));
+        dbg_rdata <= mem(dbg_word_addr);
+      end if;
+    end process;
+  end generate;
 
   -- TCM always responds in one clock cycle
   ready <= '1';

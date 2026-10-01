@@ -13,6 +13,10 @@ work="${TMPDIR:-/tmp}/tcm_ghdl_work"
 
 mkdir -p "$work"
 
+# The init images load at elaboration, relative to the current directory
+# unless INIT_DIR says otherwise, so run from this directory.
+cd "$here"
+
 # -frelaxed: BRAM inference needs a non-protected shared variable, which
 # VHDL-2008 makes a warning rather than an error under this flag.
 FLAGS="--std=08 -frelaxed --workdir=$work"

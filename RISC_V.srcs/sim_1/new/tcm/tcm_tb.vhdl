@@ -6,7 +6,8 @@
 --
 --   dut_pos  USE_NEGEDGE=false, initialised from tcm_tb_init.hex
 --   dut_neg  USE_NEGEDGE=true,  initialised from tcm_tb_init.hex
---   dut_coe  USE_NEGEDGE=false, READ_ONLY=true, from tcm_tb_init.coe
+--   dut_coe  USE_NEGEDGE=false, READ_ONLY=true, PORT_B_WRITE=false,
+--            initialised from tcm_tb_init.coe
 --
 -- The stimulus process drives every input just after a rising edge, the
 -- way a rising-edge pipeline register would.  Checks:
@@ -73,7 +74,8 @@ begin
 
     dut_coe : entity work.tightly_coupled_memory
         generic map (SIZE_BYTES => 1024, INIT_FILE => INIT_DIR & "tcm_tb_init.coe",
-                     READ_ONLY => true, USE_NEGEDGE => false)
+                     READ_ONLY => true, PORT_B_WRITE => false,
+                     USE_NEGEDGE => false)
         port map (clk => clk, addr => addr, wdata => wdata, rdata => rdata_coe,
                   we => we, wstrb => wstrb, ready => open, fault => fault_coe,
                   dbg_addr => dbg_addr, dbg_wdata => dbg_wdata,
