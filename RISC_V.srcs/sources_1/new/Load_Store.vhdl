@@ -17,6 +17,9 @@ entity Load_Store is
 		load_data_in : in slv(31 downto 0);
 		store_data_out : out slv(31 downto 0);
 		write_strobe : out slv(3 downto 0);
+		--byte-lane store mask with no address decode, for callers that
+		--decode the memory map themselves (RISC_V_TCM)
+		store_strobe : out slv(3 downto 0);
 		--custom io
 		sw_in : in slv(15 downto 0);
 		led_out : out slv(15 downto 0)
@@ -74,6 +77,7 @@ begin
 		"1111" when others;
 
 	write_strobe <= pre_mask when (load_store = '1' and ls_address_in > x"C0000000") else "0000";
+	store_strobe <= pre_mask when load_store = '1' else "0000";
 	--write_strobe <= pre_mask when load_store = '0' else "0000";
 
 	led <= led_next when rising_edge(clk);
