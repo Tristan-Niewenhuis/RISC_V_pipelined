@@ -24,7 +24,7 @@ entity io_interconnect is
         --bram out to test_controller
         io_d_addr : out std_logic_vector(D_BYTES_ADDR_BITS - 3 downto 0);
         io_d_data_out : out std_logic_vector(31 downto 0);
-        io_d_strobe : out std_logic_vector(3 downto 0);
+        io_d_strobe : out std_logic_vector(3 downto 0)
     );
 end io_interconnect;
 

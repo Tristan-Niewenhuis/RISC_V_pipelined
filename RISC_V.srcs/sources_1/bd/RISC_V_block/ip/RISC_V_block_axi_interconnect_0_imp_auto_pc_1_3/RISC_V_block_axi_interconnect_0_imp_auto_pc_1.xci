@@ -59,7 +59,7 @@
         "MANAGED": [ { "value": "TRUE" } ],
         "OUTPUTDIR": [ { "value": "../../../../../../RISC_V.gen/sources_1/bd/RISC_V_block/ip/RISC_V_block_axi_interconnect_0_imp_auto_pc_1" } ],
         "SELECTEDSIMMODEL": [ { "value": "rtl" } ],
-        "SHAREDDIR": [ { "value": "../../../../../../RISC_V/RISC_V.srcs/block/RISC_V_block/ipshared" } ],
+        "SHAREDDIR": [ { "value": "../../../../../../RISC_V_pipelined_private/RISC_V.srcs/block/RISC_V_block/ipshared" } ],
         "SWVERSION": [ { "value": "2026.1" } ],
         "SYNTHESISFLOW": [ { "value": "OUT_OF_CONTEXT" } ]
       }

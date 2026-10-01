@@ -7,6 +7,7 @@ entity test_controller is
     port(
         clk, resetn : in std_logic;
         CPU_resetn : out std_logic;
+        status_led : out std_logic;
         -- AXI4-Lite Slave Interface from PC throught JTAG->AXI
         -- Write address channel
         S_AXI_AWADDR : in std_logic_vector(4 downto 0);
@@ -33,7 +34,7 @@ entity test_controller is
         -- Memory maped IO from RISC_V CPU
         riscv_d_addr : in std_logic_vector(D_BYTES_ADDR_BITS - 3 downto 0);
         riscv_d_data_in : in std_logic_vector(31 downto 0);
-        riscv_d_strobe : in std_logic_vector(3 downto 0);
+        riscv_d_strobe : in std_logic_vector(3 downto 0)
     );
 end test_controller;
 
@@ -164,5 +165,7 @@ begin
             end if;
         end if;
     end process;
+
+    status_led <= done;
 
 end Behavioral;

@@ -30,7 +30,7 @@ create_clock -period 10.000 -name sys_clock -waveform {0.000 5.000} -add [get_po
 
 ## LEDs
 
-# set_property -dict {PACKAGE_PIN H17 IOSTANDARD LVCMOS33} [get_ports {led[0]}]
+set_property -dict {PACKAGE_PIN H17 IOSTANDARD LVCMOS33} [get_ports {status_led_0}]
 # set_property -dict {PACKAGE_PIN K15 IOSTANDARD LVCMOS33} [get_ports {led[1]}]
 # set_property -dict {PACKAGE_PIN J13 IOSTANDARD LVCMOS33} [get_ports {led[2]}]
 # set_property -dict {PACKAGE_PIN N14 IOSTANDARD LVCMOS33} [get_ports {led[3]}]
@@ -250,33 +250,3 @@ set_property -dict { PACKAGE_PIN N17   IOSTANDARD LVCMOS33 } [get_ports { resetn
 #set_property -dict { PACKAGE_PIN L14   IOSTANDARD LVCMOS33 } [get_ports { QSPI_DQ[2] }]; #IO_L2P_T0_D02_14 Sch=qspi_dq[2]
 #set_property -dict { PACKAGE_PIN M14   IOSTANDARD LVCMOS33 } [get_ports { QSPI_DQ[3] }]; #IO_L2N_T0_D03_14 Sch=qspi_dq[3]
 #set_property -dict { PACKAGE_PIN L13   IOSTANDARD LVCMOS33 } [get_ports { QSPI_CSN }]; #IO_L6P_T0_FCS_B_14 Sch=qspi_csn
-
-set src_sts [get_cells -hierarchical -filter { NAME =~ "*status_reg_datain_reg*" && ( PRIMITIVE_TYPE =~ FLOP_LATCH.flop.*   || PRIMITIVE_TYPE == RTL_REGISTER.flop.RTL_REG || PRIMITIVE_TYPE =~ REGISTER.SDR.*  ) }]
-set dest_sts [get_cells -hierarchical -filter { NAME =~ "*status_reg_datain_ff_reg*" && ( PRIMITIVE_TYPE =~ FLOP_LATCH.flop.*   || PRIMITIVE_TYPE == RTL_REGISTER.flop.RTL_REG || PRIMITIVE_TYPE =~ REGISTER.SDR.*  ) }]
-set_false_path -from $src_sts -to $dest_sts; 
-
-#set_max_delay -from $src_sts -to $dest_sts -datapath_only 40.0
-
-set src_wren [get_cells -hierarchical -filter { NAME =~ "*wr_axi_en_exec_reg*" && ( PRIMITIVE_TYPE =~ FLOP_LATCH.flop.*   || PRIMITIVE_TYPE == RTL_REGISTER.flop.RTL_REG || PRIMITIVE_TYPE =~ REGISTER.SDR.*  ) }]
-set dest_wren [get_cells -hierarchical -filter { NAME =~ "*wr_axi_en_exec_ff_reg*" && ( PRIMITIVE_TYPE =~ FLOP_LATCH.flop.*   || PRIMITIVE_TYPE == RTL_REGISTER.flop.RTL_REG || PRIMITIVE_TYPE =~ REGISTER.SDR.*  ) }] 
-set_false_path -from $src_wren -to $dest_wren;
-
-set src_rden [get_cells -hierarchical -filter { NAME =~ "*rd_axi_en_exec_reg*" && ( PRIMITIVE_TYPE =~ FLOP_LATCH.flop.*   || PRIMITIVE_TYPE == RTL_REGISTER.flop.RTL_REG || PRIMITIVE_TYPE =~ REGISTER.SDR.*  ) }]
-set dest_rden [get_cells -hierarchical -filter { NAME =~ "*rd_axi_en_exec_ff_reg*" && ( PRIMITIVE_TYPE =~ FLOP_LATCH.flop.*   || PRIMITIVE_TYPE == RTL_REGISTER.flop.RTL_REG || PRIMITIVE_TYPE =~ REGISTER.SDR.*  ) }]
-set_false_path -from $src_rden -to $dest_rden;
-
-set src_softrst [get_cells -hierarchical -filter { NAME =~ "*fifo_rst_reg*" && ( PRIMITIVE_TYPE =~ FLOP_LATCH.flop.*   || PRIMITIVE_TYPE == RTL_REGISTER.flop.RTL_REG || PRIMITIVE_TYPE =~ REGISTER.SDR.*  ) }]
-set dest_softrst [get_cells -hierarchical -filter { NAME =~ "*fifo_rst_ff1_reg*" && ( PRIMITIVE_TYPE =~ FLOP_LATCH.flop.*   || PRIMITIVE_TYPE == RTL_REGISTER.flop.RTL_REG || PRIMITIVE_TYPE =~ REGISTER.SDR.*  ) }]
-set_false_path -from $src_softrst -to $dest_softrst;
-
-set src_arstn [get_cells -hierarchical -filter { NAME =~ "*axi_aresetn_ff_reg*" && ( PRIMITIVE_TYPE =~ FLOP_LATCH.flop.*   || PRIMITIVE_TYPE == RTL_REGISTER.flop.RTL_REG || PRIMITIVE_TYPE =~ REGISTER.SDR.*  ) }]
-set dest_arstn [get_cells -hierarchical -filter { NAME =~ "*aresetn_xsdb_ff_reg*" && ( PRIMITIVE_TYPE =~ FLOP_LATCH.flop.*   || PRIMITIVE_TYPE == RTL_REGISTER.flop.RTL_REG || PRIMITIVE_TYPE =~ REGISTER.SDR.*  ) }]
-set_false_path -from $src_arstn -to $dest_arstn;
-
-set src_wrd [get_cells -hierarchical -filter { NAME =~ "*wr_cmd_fifowren_xsdb_reg*" && ( PRIMITIVE_TYPE =~ FLOP_LATCH.flop.*   || PRIMITIVE_TYPE == RTL_REGISTER.flop.RTL_REG || PRIMITIVE_TYPE =~ REGISTER.SDR.*  ) }]
-set dest_wrd [get_cells -hierarchical -filter { NAME =~ "*wr_cmd_fifowren_axi_reg*" && ( PRIMITIVE_TYPE =~ FLOP_LATCH.flop.*   || PRIMITIVE_TYPE == RTL_REGISTER.flop.RTL_REG || PRIMITIVE_TYPE =~ REGISTER.SDR.*  ) }]
-set_false_path -from $src_wrd -to $dest_wrd;
-
-set src_rdd [get_cells -hierarchical -filter { NAME =~ "*rd_cmd_fifowren_xsdb_reg*" && ( PRIMITIVE_TYPE =~ FLOP_LATCH.flop.*   || PRIMITIVE_TYPE == RTL_REGISTER.flop.RTL_REG || PRIMITIVE_TYPE =~ REGISTER.SDR.*  ) }]
-set dest_rdd [get_cells -hierarchical -filter { NAME =~ "*rd_cmd_fifowren_axi_reg*" && ( PRIMITIVE_TYPE =~ FLOP_LATCH.flop.*   || PRIMITIVE_TYPE == RTL_REGISTER.flop.RTL_REG || PRIMITIVE_TYPE =~ REGISTER.SDR.*  ) }]
-set_false_path -from $src_rdd -to $dest_rdd;
