@@ -16,7 +16,7 @@ entity Load_Store is
 		ls_address_out : out slv(D_BYTES_ADDR_BITS - 3 downto 0);
 		load_data_in : in slv(31 downto 0);
 		store_data_out : out slv(31 downto 0);
-		write_strobe : out slv(3 downto 0);
+		write_strobe : out slv(3 downto 0)
 	);
 end Load_Store;
 

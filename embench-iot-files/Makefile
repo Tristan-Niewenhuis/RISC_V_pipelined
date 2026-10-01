@@ -3,7 +3,7 @@
 
 BASENAME=embedded_iot
 EMBENCH_DIR=../../embench-iot
-BUILD_DIR_FROM_EMBENCH=../RISC_V/embench-iot-files
+BUILD_DIR_FROM_EMBENCH=../$(notdir $(abspath ..))/embench-iot-files
 STARTUP=harvard_startup
 
 # TOOLPATH=/opt/Xilinx/2025.1/gnu/riscv/lin/riscv64-unknown-elf/bin
