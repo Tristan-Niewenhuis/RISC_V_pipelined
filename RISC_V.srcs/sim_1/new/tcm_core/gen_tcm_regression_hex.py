@@ -4,7 +4,10 @@
 The program is the 37-check instruction regression from riscv_core_tb
 (RISC_V_AXI), retargeted to the RISC_V_TCM memory map: x31 holds the
 DTCM base 0x10000000, and one extra check loads ITCM word 0 through the
-data lane.  Edit PROGRAM here and rerun; do not edit the .hex files.
+data lane.  The block from 0x1CC exercises the AXI4-Lite peripheral
+port (x30 = 0x40000000): stores and loads that stall MEM, combined with
+load-use hazards, byte lanes, a DTCM store in EX during a peripheral
+load, and a jump after a peripheral store.  Edit PROGRAM here and rerun; do not edit the .hex files.
 """
 import os
 
@@ -127,7 +130,31 @@ PROGRAM = [
     (0x01c0, 0x087FA823),  # sw    x7, 0x90(x31)       ; expect 0
     (0x01c4, 0x00002083),  # lw    x1, 0(x0)           ; ITCM word 0 via the data lane
     (0x01c8, 0x081FAA23),  # sw    x1, 0x94(x31)       ; expect 10000FB7
-    (0x01cc, 0x0000006F),  # jal   x0, 0               ; spin
+    (0x01cc, 0x40000F37),  # lui x30, 0x40000  ; x30 = 0x40000000 (peripheral base)
+    (0x01d0, 0x05A00093),  # addi x1, x0, 0x5A
+    (0x01d4, 0x001F2023),  # sw x1, 0(x30)  ; peripheral store
+    (0x01d8, 0x000F2103),  # lw x2, 0(x30)  ; peripheral load, used next
+    (0x01dc, 0x082FAC23),  # sw x2, 0x98(x31)  ; expect 0000005A
+    (0x01e0, 0x001F03A3),  # sb x1, 7(x30)  ; byte lane 3 of word 4
+    (0x01e4, 0x007F4183),  # lbu x3, 7(x30)
+    (0x01e8, 0x083FAE23),  # sw x3, 0x9C(x31)  ; expect 0000005A
+    (0x01ec, 0x000F2203),  # lw x4, 0(x30)
+    (0x01f0, 0x00120213),  # addi x4, x4, 1
+    (0x01f4, 0x004F2423),  # sw x4, 8(x30)
+    (0x01f8, 0x008F2283),  # lw x5, 8(x30)
+    (0x01fc, 0x0A5FA023),  # sw x5, 0xA0(x31)  ; expect 0000005B
+    (0x0200, 0x000F2383),  # lw x7, 0(x30)  ; peripheral load in MEM ...
+    (0x0204, 0x0A1FA223),  # sw x1, 0xA4(x31)  ; ... while this DTCM store is in EX; expect 0000005A
+    (0x0208, 0x0A7FA423),  # sw x7, 0xA8(x31)  ; expect 0000005A
+    (0x020c, 0x00000493),  # addi x9, x0, 0
+    (0x0210, 0x001F2623),  # sw x1, 12(x30)  ; peripheral store, then a jump
+    (0x0214, 0x0080046F),  # jal x8, 1f  ; link = this pc + 4
+    (0x0218, 0x07700493),  # addi x9, x0, 0x77  ; must be skipped
+    (0x021c, 0x0A8FA623),  # sw x8, 0xAC(x31)  ; expect link
+    (0x0220, 0x0A9FA823),  # sw x9, 0xB0(x31)  ; expect 00000000
+    (0x0224, 0x004F2503),  # lw x10, 4(x30)  ; sb at offset 7 left word 4 = 5A000000
+    (0x0228, 0x0AAFAA23),  # sw x10, 0xB4(x31)  ; expect 5A000000
+    (0x022c, 0x0000006F),  # jal x0, 2b  ; spin
 ]
 
 # DTCM preload: (byte offset from the DTCM base, word).  The byte and
