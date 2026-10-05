@@ -52,7 +52,9 @@ ghdl -a $FLAGS \
     "$src/datapath.vhdl" \
     "$src/Load_Store.vhdl" \
     "$src/tightly_coupled_memory.vhdl" \
+    "$src/axi_lite_master.vhdl" \
     "$src/RISC_V_TCM.vhdl" \
+    "$sim/axi_mem_sim.vhdl" \
     "$sim/riscv_tcm_prog_tb.vhdl"
 
 # The init images load at elaboration, relative to the current directory.

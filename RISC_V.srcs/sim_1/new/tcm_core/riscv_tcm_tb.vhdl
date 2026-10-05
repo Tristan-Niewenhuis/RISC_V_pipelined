@@ -3,7 +3,8 @@
 --
 -- Self-checking instruction regression for RISC_V_TCM.  The program is
 -- the riscv_core_tb (RISC_V_AXI) regression retargeted to the TCM memory
--- map, plus one check that loads ITCM word 0 through the data lane.  It
+-- map, plus one check that loads ITCM word 0 through the data lane and
+-- eight that use the AXI4-Lite peripheral port.  It
 -- is listed in gen_tcm_regression_hex.py, which writes itcm.hex and
 -- dtcm.hex.
 --
@@ -14,9 +15,12 @@
 -- expected values.
 --
 -- Generics
---   USE_NEGEDGE  passed to RISC_V_TCM; run_tcm_core_tb.sh runs both.
---   INIT_DIR     directory holding itcm.hex and dtcm.hex, with a
---                trailing '/'.
+--   USE_NEGEDGE     passed to RISC_V_TCM
+--   INIT_DIR        directory holding itcm.hex and dtcm.hex, with a
+--                   trailing '/'
+--   PERIPH_LATENCY  read latency of the axi_mem_sim peripheral at
+--                   0x40000000, in extra cycles
+-- run_tcm_core_tb.sh runs both timing modes at latencies 0 and 3.
 --------------------------------------------------------------------------------
 
 library ieee;
@@ -26,8 +30,10 @@ use work.RISCV_package.all;
 
 entity riscv_tcm_tb is
     generic (
-        USE_NEGEDGE : boolean := false;
-        INIT_DIR    : string  := "./"
+        USE_NEGEDGE    : boolean := false;
+        INIT_DIR       : string  := "./";
+        -- extra cycles before the peripheral's first read-data beat
+        PERIPH_LATENCY : natural := 0
     );
 end entity riscv_tcm_tb;
 
@@ -38,8 +44,14 @@ architecture sim of riscv_tcm_tb is
     signal clk    : sl := '0';
     signal resetn : sl := '0';
     signal stop   : boolean := false;
-    signal sw     : slv(15 downto 0) := (others => '0');
-    signal led    : slv(15 downto 0);
+
+    -- AXI4-Lite peripheral bus, served by axi_mem_sim at 0x40000000
+    signal awaddr, wdata, araddr, rdata : slv(31 downto 0);
+    signal awprot, arprot : slv(2 downto 0);
+    signal wstrb : slv(3 downto 0);
+    signal bresp, rresp : slv(1 downto 0);
+    signal awvalid, awready, wvalid, wready, bvalid, bready : sl;
+    signal arvalid, arready, rvalid, rready : sl;
 
     -- Shadow of the first 1 KB of DTCM, filled by the store monitor
     type shadow_t is array (0 to 255) of slv(31 downto 0);
@@ -55,7 +67,34 @@ begin
             DTCM_INIT_FILE => INIT_DIR & "dtcm.hex",
             USE_NEGEDGE    => USE_NEGEDGE
         )
-        port map (clk => clk, resetn => resetn, sw => sw, led => led);
+        port map (clk => clk, resetn => resetn,
+                  m_axi_awaddr => awaddr, m_axi_awprot => awprot,
+                  m_axi_awvalid => awvalid, m_axi_awready => awready,
+                  m_axi_wdata => wdata, m_axi_wstrb => wstrb,
+                  m_axi_wvalid => wvalid, m_axi_wready => wready,
+                  m_axi_bresp => bresp, m_axi_bvalid => bvalid, m_axi_bready => bready,
+                  m_axi_araddr => araddr, m_axi_arprot => arprot,
+                  m_axi_arvalid => arvalid, m_axi_arready => arready,
+                  m_axi_rdata => rdata, m_axi_rresp => rresp,
+                  m_axi_rvalid => rvalid, m_axi_rready => rready);
+
+    periph : entity work.axi_mem_sim
+        generic map (SIZE_BYTES => 4096, BASE_ADDR => X"40000000", ID_WIDTH => 1,
+                     READ_LATENCY => PERIPH_LATENCY)
+        port map (
+            clk => clk, rst => not resetn,
+            s_axi_awaddr => awaddr, s_axi_awlen => X"00", s_axi_awsize => "010",
+            s_axi_awburst => "01", s_axi_awid => "0", s_axi_awvalid => awvalid,
+            s_axi_awready => awready,
+            s_axi_wdata => wdata, s_axi_wstrb => wstrb, s_axi_wlast => '1',
+            s_axi_wvalid => wvalid, s_axi_wready => wready,
+            s_axi_bid => open, s_axi_bresp => bresp, s_axi_bvalid => bvalid,
+            s_axi_bready => bready,
+            s_axi_araddr => araddr, s_axi_arlen => X"00", s_axi_arsize => "010",
+            s_axi_arburst => "01", s_axi_arid => "0", s_axi_arvalid => arvalid,
+            s_axi_arready => arready,
+            s_axi_rid => open, s_axi_rdata => rdata, s_axi_rresp => rresp,
+            s_axi_rlast => open, s_axi_rvalid => rvalid, s_axi_rready => rready);
 
     -- Passive: copies every DTCM port B write into the shadow
     monitor : process
@@ -109,7 +148,8 @@ begin
         wait for 20 us;
 
         report "==== RISC_V_TCM regression, USE_NEGEDGE="
-             & boolean'image(USE_NEGEDGE) & " ====";
+             & boolean'image(USE_NEGEDGE) & ", PERIPH_LATENCY="
+             & integer'image(PERIPH_LATENCY) & " ====";
         chk("sll   x3,x1,x2  ", 16#10000000#, X"00000F00");
         chk("srl   x4,x1,x2  ", 16#10000004#, X"0000000F");
         chk("addi  x5,x0,-2048", 16#10000008#, X"FFFFF800");
@@ -148,6 +188,14 @@ begin
         chk("backward loop   ", 16#1000008C#, X"0000000F");
         chk("all 6 branches  ", 16#10000090#, X"00000000");
         chk("lw from ITCM    ", 16#10000094#, X"10000FB7");
+        chk("periph sw, lw   ", 16#10000098#, X"0000005A");
+        chk("periph sb, lbu  ", 16#1000009C#, X"0000005A");
+        chk("periph lw/add/sw", 16#100000A0#, X"0000005B");
+        chk("DTCM sw during periph lw", 16#100000A4#, X"0000005A");
+        chk("periph lw value ", 16#100000A8#, X"0000005A");
+        chk("jal after periph sw, link", 16#100000AC#, X"00000218");
+        chk("jal after periph sw, skip", 16#100000B0#, X"00000000");
+        chk("periph byte lane 3", 16#100000B4#, X"5A000000");
 
         report "==== " & integer'image(passes) & " passed, "
              & integer'image(fails) & " failed ====";
