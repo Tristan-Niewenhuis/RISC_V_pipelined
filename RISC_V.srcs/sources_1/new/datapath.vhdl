@@ -4,10 +4,21 @@ use IEEE.numeric_std.all;
 use work.RISCV_package.all;
 
 entity Datapath is
+    generic(
+        -- Instruction memory byte-address width (PC width + 2).
+        I_ADDR_BITS : integer := I_BYTES_ADDR_BITS;
+        -- Instruction memory read edge.  false: the BRAM latches
+        -- pc_next on the rising edge.  true: the BRAM latches the
+        -- registered pc on the falling edge (tightly_coupled_memory
+        -- USE_NEGEDGE).  Both deliver the instruction for pc during
+        -- the same cycle, so CPI is unchanged; only the timing path
+        -- into the BRAM address differs.
+        BRAM_NEGEDGE : boolean := false
+    );
     port(
         clk, reset : in sl;
         --
-        fetch_address : out slv(I_BYTES_ADDR_BITS - 3 downto 0);
+        fetch_address : out slv(I_ADDR_BITS - 3 downto 0);
         inst : in slv(31 downto 0);
         --
         ls_ctrl : out sl;
@@ -21,32 +32,32 @@ end Datapath;
 
 architecture Behavioral of Datapath is
     --if
-    signal pc_next, pc : slv(I_BYTES_ADDR_BITS - 3 downto 0);
+    signal pc_next, pc : slv(I_ADDR_BITS - 3 downto 0);
     signal pc_incr : sl;
     signal cw_decoded : control_word_if_id;
 
     --if_id
     signal if_id_cw : control_word_if_id;
-    signal if_id_pc : slv(I_BYTES_ADDR_BITS - 3 downto 0);
+    signal if_id_pc : slv(I_ADDR_BITS - 3 downto 0);
 
     --id
     signal a_out, b_out : slv(XLEN - 1 downto 0);
 
     --id_ex
     signal id_ex_cw : control_word_id_ex;
-    signal id_ex_pc : slv(I_BYTES_ADDR_BITS - 3 downto 0);
+    signal id_ex_pc : slv(I_ADDR_BITS - 3 downto 0);
     signal id_ex_a, id_ex_b : slv(XLEN - 1 downto 0);
 
     --ex
     signal a_bus, b_bus, alu_out, csr_d, csr_q : slv(XLEN - 1 downto 0);
     signal BTU_out : sl;
     signal branch_correct, branch_take : sl;
-    signal pc_d, pc_base : slv(I_BYTES_ADDR_BITS - 3 downto 0);
+    signal pc_d, pc_base : slv(I_ADDR_BITS - 3 downto 0);
     signal pc_latch : sl;
 
     --ex_mem
     signal ex_mem_cw : control_word_ex_mem;
-    signal ex_mem_pc : slv(I_BYTES_ADDR_BITS - 3 downto 0);
+    signal ex_mem_pc : slv(I_ADDR_BITS - 3 downto 0);
     signal ex_mem_alu_out, ex_mem_csr_q : slv(XLEN - 1 downto 0);
 
     --mem
@@ -54,7 +65,7 @@ architecture Behavioral of Datapath is
 
     --mem_wb
     signal mem_wb_cw : control_word_mem_wb;
-    signal mem_wb_pc : slv(I_BYTES_ADDR_BITS - 3 downto 0);
+    signal mem_wb_pc : slv(I_ADDR_BITS - 3 downto 0);
     signal mem_wb_load_data, mem_wb_data_out : slv(XLEN - 1 downto 0);
 
     --wb
@@ -70,12 +81,12 @@ begin
     branch_correct <= '1' when pc_d = if_id_pc else '0';
     branch_take <= id_ex_cw.PCle or BTU_out;
 
-    pc_base <= id_ex_pc when id_ex_cw.PCAsel = '1' else id_ex_a(I_BYTES_ADDR_BITS - 1 downto 2);
-    pc_d <= slv(signed(pc_base) + signed(id_ex_cw.IMM(I_BYTES_ADDR_BITS - 1 downto 2))); --unsigned or signed add, doesn't matter. same logic under the hood
+    pc_base <= id_ex_pc when id_ex_cw.PCAsel = '1' else id_ex_a(I_ADDR_BITS - 1 downto 2);
+    pc_d <= slv(signed(pc_base) + signed(id_ex_cw.IMM(I_ADDR_BITS - 1 downto 2))); --unsigned or signed add, doesn't matter. same logic under the hood
     pc_latch <= branch_take and (not branch_correct);
     pc_incr <= (not if_id_stall and not branch_hazard);
     Program_Counter : entity work.generic_counter(Behavioral)
-        generic map(bits => I_BYTES_ADDR_BITS - 2)
+        generic map(bits => I_ADDR_BITS - 2)
         port map(clk => clk,
                  reset => reset,
                  latch => pc_latch,
@@ -85,7 +96,7 @@ begin
                  next_count_out => pc_next
                 );
 
-    fetch_address <= pc_next;
+    fetch_address <= pc when BRAM_NEGEDGE else pc_next;
 
     Instruction_Decoder : entity work.Instruction_Decoder(Behavioral)
         port map(
@@ -111,7 +122,7 @@ begin
         end if;
     end process;
 
-    PC_d_in <= ((31 downto I_BYTES_ADDR_BITS => '0') & slv(unsigned(mem_wb_pc) + 1) & "00");
+    PC_d_in <= ((31 downto I_ADDR_BITS => '0') & slv(unsigned(mem_wb_pc) + 1) & "00");
     d_in <= mem_wb_load_data when mem_wb_cw.LoadDsel = '1' else
             PC_d_in when mem_wb_cw.PCDsel = '1' else
             mem_wb_data_out;
@@ -149,7 +160,7 @@ begin
     end process;
 
     --TODO: can move this to id if not meeting timing
-    a_bus <= ((31 downto I_BYTES_ADDR_BITS => '0') & id_ex_pc & "00") when id_ex_cw.PCAsel = '1' else
+    a_bus <= ((31 downto I_ADDR_BITS => '0') & id_ex_pc & "00") when id_ex_cw.PCAsel = '1' else
              id_ex_a;
     b_bus <= id_ex_cw.IMM when id_ex_cw.IMMBsel = '1' else
              id_ex_b;
