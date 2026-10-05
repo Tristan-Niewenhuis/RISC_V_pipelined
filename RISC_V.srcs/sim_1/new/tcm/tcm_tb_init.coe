@@ -1,0 +1,6 @@
+; tcm_tb: COE init image (radix 16)
+memory_initialization_radix=16;
+memory_initialization_vector=
+A5A5A5A5,
+0BADF00D,
+00C0FFEE;
