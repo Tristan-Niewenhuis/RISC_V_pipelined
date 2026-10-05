@@ -6,8 +6,8 @@ use work.RISCV_package.all;
 entity test_controller is
     port(
         clk, resetn : in std_logic;
-        CPU_resetn : out std_logic;
-        status_led : out std_logic;
+        CPU_resetn : out std_logic := '0';
+        status_led : out std_logic := '0';
         -- AXI4-Lite Slave Interface from PC throught JTAG->AXI
         -- Write address channel
         S_AXI_AWADDR : in std_logic_vector(4 downto 0);
@@ -131,15 +131,15 @@ begin
         if rising_edge(clk) then
             if (resetn = '0') then
                 cycle_lo <= (others => '0');
-                cycle_hi <= (others => '0');
+                cycle_hi <= X"12349876"; --test data (others => '0'); 
                 instret_lo <= (others => '0');
                 instret_hi <= (others => '0');
                 done <= '0';
-                resetn_reg <= '1';
-                CPU_resetn <= '1';
+                resetn_reg <= '0';
+                CPU_resetn <= '0';
             else
                 --axi write
-                if (axi_w_address = "10100" and S_AXI_WSTRB(0) = '1') then
+                if (axi_w_address = "10100" and axi_w_data_trans = '1' and S_AXI_WSTRB(0) = '1') then
                     resetn_reg <= S_AXI_WDATA(0);
                 end if;
 
@@ -160,11 +160,11 @@ begin
                             null;
                     end case;
                 end if;
-
-                CPU_resetn <= resetn and resetn_reg;
             end if;
         end if;
     end process;
+
+    CPU_resetn <= resetn and resetn_reg;
 
     status_led <= done;
 
