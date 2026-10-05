@@ -8,11 +8,15 @@
 -- Memory map
 --   ITCM  0x00000000 .. ITCM_BYTES-1        code, and read-only data
 --   DTCM  DTCM_BASE  .. DTCM_BASE+DTCM_BYTES-1
---   0x40000000 LEDs (store), 0x40010000 switches (load), decoded in
---   Load_Store as in RISC_V.  These move to an AXI peripheral port in a
---   later change.
---   Stores outside the DTCM are dropped; loads outside both TCMs return
---   zero (except the switch register).
+--   everything else  peripherals, through the AXI4-Lite master port
+--   (the board puts AXI GPIO for the LEDs at 0x40000000 and for the
+--   switches at 0x40010000, the addresses RISC_V decodes locally)
+--
+-- Peripheral accesses run from the MEM stage.  The EX-stage address,
+-- formatted store data, and byte lanes are registered into MEM; while
+-- the AXI transaction is outstanding, mem_stall holds IF through MEM
+-- and these registers, and MEM/WB takes a bubble.  Stores to the ITCM
+-- are dropped.
 --
 -- Port use
 --   ITCM port A  instruction fetch (read only, edge set by USE_NEGEDGE)
@@ -47,9 +51,27 @@ entity RISC_V_TCM is
     USE_NEGEDGE    : boolean          := false
   );
   port(
-    clk, resetn : in  std_logic;
-    sw          : in  std_logic_vector(15 downto 0);
-    led         : out std_logic_vector(15 downto 0)
+    clk, resetn   : in  std_logic;
+    -- AXI4-Lite master for peripherals
+    m_axi_awaddr  : out std_logic_vector(31 downto 0);
+    m_axi_awprot  : out std_logic_vector(2 downto 0);
+    m_axi_awvalid : out std_logic;
+    m_axi_awready : in  std_logic;
+    m_axi_wdata   : out std_logic_vector(31 downto 0);
+    m_axi_wstrb   : out std_logic_vector(3 downto 0);
+    m_axi_wvalid  : out std_logic;
+    m_axi_wready  : in  std_logic;
+    m_axi_bresp   : in  std_logic_vector(1 downto 0);
+    m_axi_bvalid  : in  std_logic;
+    m_axi_bready  : out std_logic;
+    m_axi_araddr  : out std_logic_vector(31 downto 0);
+    m_axi_arprot  : out std_logic_vector(2 downto 0);
+    m_axi_arvalid : out std_logic;
+    m_axi_arready : in  std_logic;
+    m_axi_rdata   : in  std_logic_vector(31 downto 0);
+    m_axi_rresp   : in  std_logic_vector(1 downto 0);
+    m_axi_rvalid  : in  std_logic;
+    m_axi_rready  : out std_logic
   );
 end RISC_V_TCM;
 
@@ -62,7 +84,7 @@ architecture Behavioral of RISC_V_TCM is
   -- datapath <-> Load_Store
   signal fetch_address          : slv(ITCM_ADDR_BITS - 3 downto 0);
   signal inst                   : slv(31 downto 0);
-  signal ls_ctrl                : sl;
+  signal ls_ctrl, ls_valid       : sl;
   signal store_type, load_type  : slv(2 downto 0);
   signal ls_address             : slv(31 downto 0);
   signal store_data, load_data  : slv(XLEN - 1 downto 0);
@@ -74,6 +96,15 @@ architecture Behavioral of RISC_V_TCM is
   signal in_itcm, in_dtcm       : boolean;
   signal region, region_q       : slv(1 downto 0);
   signal ls_address_q           : slv(31 downto 0);
+
+  -- peripheral access in MEM
+  signal mem_stall, mem_advance : sl;
+  signal periph, periph_q       : slv(0 downto 0);
+  signal is_store, is_store_q   : slv(0 downto 0);
+  signal st_data_q              : slv(31 downto 0);
+  signal st_strb_q              : slv(3 downto 0);
+  signal axi_done               : sl;
+  signal axi_rdata              : slv(31 downto 0);
 
   -- TCM ports
   signal itcm_fetch_addr        : slv(31 downto 0);
@@ -100,10 +131,13 @@ begin
       load_type     => load_type,
       ls_address    => ls_address,
       store_data    => store_data,
-      load_data     => load_data
+      load_data     => load_data,
+      ls_valid      => ls_valid,
+      mem_stall     => mem_stall
     );
 
   Load_Store_inst : entity work.Load_Store
+    generic map(LOCAL_IO => false)
     port map(
       clk            => clk,
       reset          => reset,
@@ -118,8 +152,8 @@ begin
       store_data_out => st_data,
       write_strobe   => open,
       store_strobe   => st_strb,
-      sw_in          => sw,
-      led_out        => led
+      led_out        => open,
+      hold           => mem_stall
     );
 
   ----------------------------------------------------------------------------
@@ -131,20 +165,64 @@ begin
              "01" when in_itcm else
              "00";
 
-  -- EX-stage region and address, registered into the MEM stage
+  -- EX-stage region and address, registered into the MEM stage and held
+  -- while MEM is stalled
+  mem_advance <= not mem_stall;
+
   region_reg : entity work.generic_register
     generic map(bits => 2)
-    port map(clk => clk, reset => reset, enable => '1', d => region, q => region_q);
+    port map(clk => clk, reset => reset, enable => mem_advance, d => region, q => region_q);
 
   ls_address_reg : entity work.generic_register
     generic map(bits => 32)
-    port map(clk => clk, reset => reset, enable => '1', d => ls_address, q => ls_address_q);
+    port map(clk => clk, reset => reset, enable => mem_advance, d => ls_address, q => ls_address_q);
 
-  -- MEM-stage load data
+  -- MEM-stage load data: DTCM, ITCM, or the peripheral read
   with region_q select mem_rdata <=
     dtcm_ld_rdata   when "10",
     itcm_ld_rdata   when "01",
-    (others => '0') when others;
+    axi_rdata       when others;
+
+  ----------------------------------------------------------------------------
+  -- Peripheral accesses (AXI4-Lite), run from MEM
+  ----------------------------------------------------------------------------
+  periph_reg : entity work.generic_register
+    generic map(bits => 1)
+    port map(clk => clk, reset => reset, enable => mem_advance, d => periph, q => periph_q);
+  periph(0) <= '1' when ls_valid = '1' and not in_itcm and not in_dtcm else '0';
+
+  is_store_reg : entity work.generic_register
+    generic map(bits => 1)
+    port map(clk => clk, reset => reset, enable => mem_advance, d => is_store, q => is_store_q);
+  is_store(0) <= ls_ctrl;
+
+  st_data_reg : entity work.generic_register
+    generic map(bits => 32)
+    port map(clk => clk, reset => reset, enable => mem_advance, d => st_data, q => st_data_q);
+
+  st_strb_reg : entity work.generic_register
+    generic map(bits => 4)
+    port map(clk => clk, reset => reset, enable => mem_advance, d => st_strb, q => st_strb_q);
+
+  mem_stall <= periph_q(0) and not axi_done;
+
+  axi_master : entity work.axi_lite_master
+    port map(
+      clk => clk, reset => reset,
+      start => periph_q(0), write => is_store_q(0), addr => ls_address_q,
+      wdata => st_data_q, wstrb => st_strb_q, done => axi_done,
+      rdata => axi_rdata, error => open,
+      m_axi_awaddr => m_axi_awaddr, m_axi_awprot => m_axi_awprot,
+      m_axi_awvalid => m_axi_awvalid, m_axi_awready => m_axi_awready,
+      m_axi_wdata => m_axi_wdata, m_axi_wstrb => m_axi_wstrb,
+      m_axi_wvalid => m_axi_wvalid, m_axi_wready => m_axi_wready,
+      m_axi_bresp => m_axi_bresp, m_axi_bvalid => m_axi_bvalid,
+      m_axi_bready => m_axi_bready,
+      m_axi_araddr => m_axi_araddr, m_axi_arprot => m_axi_arprot,
+      m_axi_arvalid => m_axi_arvalid, m_axi_arready => m_axi_arready,
+      m_axi_rdata => m_axi_rdata, m_axi_rresp => m_axi_rresp,
+      m_axi_rvalid => m_axi_rvalid, m_axi_rready => m_axi_rready
+    );
 
   ----------------------------------------------------------------------------
   -- ITCM

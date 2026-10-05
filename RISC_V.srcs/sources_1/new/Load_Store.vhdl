@@ -4,6 +4,12 @@ use ieee.numeric_std.all;
 use work.RISCV_package.all;
 
 entity Load_Store is
+	generic(
+		--true: LEDs at 0x40000000 and switches at 0x40010000 are decoded
+		--here (RISC_V).  false: no local I/O; those addresses go to the
+		--caller's peripheral bus (RISC_V_TCM).
+		LOCAL_IO : boolean := true
+	);
 	port(
 		clk, reset : in sl;
 		load_store : in sl; --1 is store, 0 is load
@@ -21,8 +27,11 @@ entity Load_Store is
 		--decode the memory map themselves (RISC_V_TCM)
 		store_strobe : out slv(3 downto 0);
 		--custom io
-		sw_in : in slv(15 downto 0);
-		led_out : out slv(15 downto 0)
+		sw_in : in slv(15 downto 0) := (others => '0');
+		led_out : out slv(15 downto 0);
+		--hold the registered load address while MEM is stalled, so a
+		--load waiting in MEM is aligned with its own address
+		hold : in sl := '0'
 	);
 end Load_Store;
 
@@ -36,9 +45,9 @@ architecture implementation of Load_Store is
 
 begin
 	ls_address_out <= ls_address_in(D_BYTES_ADDR_BITS - 1 downto 2);
-	ls_address_prev <= ls_address_in when rising_edge(clk);
+	ls_address_prev <= ls_address_in when rising_edge(clk) and hold = '0';
 	--format load_store_out
-	sw_load_data <= x"0000" & sw_in when ls_address_prev = x"40010000" else load_data_in;
+	sw_load_data <= x"0000" & sw_in when (LOCAL_IO and ls_address_prev = x"40010000") else load_data_in;
 	with ls_address_prev(1 downto 0) select pre_load_data <=
 		(31 downto 8 => '0') & sw_load_data(15 downto 8) when "01",
 		(31 downto 8 => '0') & sw_load_data(31 downto 24) when "11",
@@ -82,7 +91,7 @@ begin
 
 	led <= led_next when rising_edge(clk);
 	led_next <= (others => '0') when reset = '1' else
-	            store_data(15 downto 0) when (ls_address_in = x"40000000" and pre_mask /= "0000" and load_store = '1') else
+	            store_data(15 downto 0) when (LOCAL_IO and ls_address_in = x"40000000" and pre_mask /= "0000" and load_store = '1') else
 	            led;
 
 	led_out <= led;
