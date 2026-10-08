@@ -5,6 +5,9 @@ use ieee.math_real.log2;
 use ieee.math_real.ceil;
 
 package RISCV_package is
+  subtype sl is std_logic;
+  subtype slv is std_logic_vector;
+
   constant DEBUG : boolean := TRUE;
   constant XLEN_BITS : integer := 5;
   constant XLEN : integer := 2 ** XLEN_BITS;
@@ -12,10 +15,17 @@ package RISCV_package is
   constant I_BYTES_ADDR_BITS : integer := 16;
   constant D_BYTES_ADDR_BITS : integer := 16;
   constant PRE_FETCH_BURST_SIZE : integer := 4;
-  constant D_MEM_SIZE : integer := 16#FFE0#;
 
-  subtype sl is std_logic;
-  subtype slv is std_logic_vector;
+  constant I_MEM_BASE : slv(31 downto 0) := x"00000000";
+  constant I_MEM_SIZE_LOGICAL : integer := 16#10000#;
+  constant I_MEM_BYTES_REAL : integer := 16#10000#; --must be power of 2
+  constant I_MEM_INIT_FILE : string := "";
+  constant D_MEM_BASE : slv(31 downto 0) := x"80000000";
+  constant D_MEM_SIZE_LOGICAL : integer := 16#FFE0#;
+  constant D_MEM_BYTES_REAL : integer := 16#10000#; --must be power of 2
+  constant D_MEM_INIT_FILE : string := "";
+  constant D_IO_BASE : integer := 16#C0000000#;
+  constant USE_NEGEDGE : boolean := true;
 
   -- Function to create a vector from a bit
   function to_boolean(x : sl) return boolean;
