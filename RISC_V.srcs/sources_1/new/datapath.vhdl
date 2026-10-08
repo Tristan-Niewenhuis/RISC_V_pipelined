@@ -88,7 +88,7 @@ begin
                  next_count_out => pc_next
                 );
 
-    fetch_address <= pc when USE_BRAM_NEGEDGE else pc_next;
+    fetch_address <= pc when USE_NEGEDGE else pc_next;
 
     Instruction_Decoder : entity work.Instruction_Decoder(Behavioral)
         port map(

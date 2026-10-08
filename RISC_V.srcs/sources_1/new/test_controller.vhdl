@@ -34,7 +34,8 @@ entity test_controller is
         -- Memory maped IO from RISC_V CPU
         riscv_d_addr : in std_logic_vector(D_BYTES_ADDR_BITS - 3 downto 0);
         riscv_d_data_in : in std_logic_vector(31 downto 0);
-        riscv_d_strobe : in std_logic_vector(3 downto 0)
+        riscv_d_strobe : in std_logic_vector(3 downto 0);
+        mem_hazard : out std_logic
     );
 end test_controller;
 
@@ -56,6 +57,10 @@ architecture Behavioral of test_controller is
     signal axi_r_addr_trans, axi_r_data_trans : sl;
     signal axi_r_address, axi_r_address_next : slv(4 downto 0);
 
+    --pipeline registers
+    signal riscv_d_data_in_1 : std_logic_vector(31 downto 0);
+    signal riscv_d_addr_1 : std_logic_vector(D_BYTES_ADDR_BITS - 3 downto 0);
+    signal riscv_d_strobe_1 : std_logic_vector(3 downto 0);
     --storage of variables
     signal cycle_lo, cycle_hi, instret_lo, instret_hi : slv(31 downto 0);
     signal done, resetn_reg : sl;
@@ -126,6 +131,34 @@ begin
     axi_r_addr_trans <= S_AXI_ARVALID and arready;
     axi_r_data_trans <= rvalid and S_AXI_RREADY;
 
+    --Pipeline CPU inputs and mem_hazard logic
+    pipeline : process(clk) is
+    begin
+        if rising_edge(clk) then
+            if (resetn = '0') then
+                riscv_d_data_in_1 <= (others => '0');
+                riscv_d_addr_1 <= (others => '0');
+                riscv_d_strobe_1 <= (others => '0');
+                mem_hazard <= '0';
+            else
+                riscv_d_data_in_1 <= riscv_d_data_in;
+                riscv_d_addr_1 <= riscv_d_addr;
+                riscv_d_strobe_1 <= riscv_d_strobe;
+
+                if (riscv_d_strobe /= "0000") then --not sure this will work
+                    if (mem_hazard = '0') then
+                        mem_hazard <= '1';
+                    else
+                        mem_hazard <= '0';
+                    end if;
+                else
+                    mem_hazard <= '0';
+                end if;
+            end if;
+        end if;
+    end process pipeline;
+
+    --Registers
     read_regs : process(clk) is
     begin
         if rising_edge(clk) then
@@ -144,18 +177,18 @@ begin
                 end if;
 
                 --bram interface
-                if (riscv_d_strobe = "1111") then
-                    case riscv_d_addr(4 downto 2) is
+                if (riscv_d_strobe_1 = "1111") then
+                    case riscv_d_addr_1(4 downto 2) is
                         when "000" =>
-                            cycle_lo <= riscv_d_data_in;
+                            cycle_lo <= riscv_d_data_in_1;
                         when "001" =>
-                            cycle_hi <= riscv_d_data_in;
+                            cycle_hi <= riscv_d_data_in_1;
                         when "010" =>
-                            instret_lo <= riscv_d_data_in;
+                            instret_lo <= riscv_d_data_in_1;
                         when "011" =>
-                            instret_hi <= riscv_d_data_in;
+                            instret_hi <= riscv_d_data_in_1;
                         when "100" =>
-                            done <= riscv_d_data_in(0);
+                            done <= riscv_d_data_in_1(0);
                         when others =>
                             null;
                     end case;
@@ -166,6 +199,6 @@ begin
 
     CPU_resetn <= resetn and resetn_reg;
 
-    status_led <= done;
+    status_led <= resetn_reg;
 
 end Behavioral;
