@@ -12,7 +12,13 @@ package RISCV_package is
   constant I_BYTES_ADDR_BITS : integer := 16;
   constant D_BYTES_ADDR_BITS : integer := 16;
   constant PRE_FETCH_BURST_SIZE : integer := 4;
+
+  constant I_MEM_BASE : integer := 16#00000000#;
+  constant I_MEM_SIZE : integer := 16#10000#;
+  constant D_MEM_BASE : integer := 16#80000000#;
   constant D_MEM_SIZE : integer := 16#FFE0#;
+  constant D_IO_BASE : integer := 16#C0000000#;
+  constant USE_BRAM_NEGEDGE : boolean := true;
 
   subtype sl is std_logic;
   subtype slv is std_logic_vector;
