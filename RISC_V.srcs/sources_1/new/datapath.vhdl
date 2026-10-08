@@ -10,12 +10,14 @@ entity Datapath is
         fetch_address : out slv(I_BYTES_ADDR_BITS - 3 downto 0);
         inst : in slv(31 downto 0);
         --
+        ls_valid : out sl;
         ls_ctrl : out sl;
         store_type : out slv(2 downto 0);
         load_type : out slv(2 downto 0);
         ls_address : out slv(31 downto 0);
         store_data : out slv(XLEN - 1 downto 0);
-        load_data : in slv(XLEN - 1 downto 0)
+        load_data : in slv(XLEN - 1 downto 0);
+        mem_hazard : in sl;
     );
 end Datapath;
 
@@ -63,6 +65,7 @@ architecture Behavioral of Datapath is
 
     signal if_id_stall, id_ex_stall, ex_mem_stall, mem_wb_stall : sl;
     signal if_id_nop, id_ex_nop, ex_mem_nop, mem_wb_nop : sl;
+    signal if_id_clr, id_ex_clr, ex_mem_clr, mem_wb_clr : sl;
     signal id_ex_a_hazard, id_ex_b_hazard, ex_mem_a_hazard, ex_mem_b_hazard, raw_hazard : sl;
     signal branch_hazard : sl;
 begin
@@ -85,7 +88,7 @@ begin
                  next_count_out => pc_next
                 );
 
-    fetch_address <= pc_next;
+    fetch_address <= pc when USE_BRAM_NEGEDGE else pc_next;
 
     Instruction_Decoder : entity work.Instruction_Decoder(Behavioral)
         port map(
@@ -98,7 +101,7 @@ begin
     IF_ID_proc : process(clk) is
     begin
         if rising_edge(clk) then
-            if (reset = '1' or (if_id_nop = '1')) then
+            if (reset = '1' or if_id_clr = '1' or (if_id_nop = '1' and if_id_stall = '0')) then
                 if_id_pc <= (others => '0');
                 if_id_cw <= CONTROL_WORD_IF_ID_NOP;
             else
@@ -131,7 +134,7 @@ begin
     ID_EX_proc : process(clk) is
     begin
         if rising_edge(clk) then
-            if (reset = '1' or (id_ex_nop = '1')) then
+            if (reset = '1' or id_ex_clr = '1' or (id_ex_nop = '1' and id_ex_stall = '0')) then
                 id_ex_pc <= (others => '0');
                 id_ex_a <= (others => '0');
                 id_ex_b <= (others => '0');
@@ -168,6 +171,7 @@ begin
                  BTU_out => BTU_out);
 
     --load/store addr goes in now, so data is ready by the time the mem stage happens
+    ls_valid <= id_ex_cm.is_load or id_ex_cw.is_store;
     ls_ctrl <= id_ex_cw.is_store;
     store_type <= id_ex_cw.BRcond_LStype;
     ls_address <= slv(unsigned(id_ex_a) + unsigned(id_ex_cw.IMM)); --slv(unsigned(id_ex_a(D_ADDR_BITS - 1 downto 0)) + unsigned(id_ex_cw.IMM(D_ADDR_BITS - 1 downto 0)));
@@ -191,7 +195,7 @@ begin
     EX_MEM_proc : process(clk) is
     begin
         if rising_edge(clk) then
-            if (reset = '1' or (ex_mem_nop = '1')) then
+            if (reset = '1' or ex_mem_clr = '1' or (ex_mem_nop = '1' and ex_mem_stall = '0')) then
                 ex_mem_alu_out <= (others => '0');
                 ex_mem_pc <= (others => '0');
                 ex_mem_cw <= CONTROL_WORD_EX_MEM_NOP;
@@ -214,7 +218,7 @@ begin
     MEM_WB_proc : process(clk) is
     begin
         if rising_edge(clk) then
-            if (reset = '1' or (mem_wb_nop = '1')) then
+            if (reset = '1' or mem_wb_clr = '1' or (mem_wb_nop = '1' and mem_wb_stall = '0')) then
                 mem_wb_load_data <= (others => '0');
                 mem_wb_data_out <= (others => '0');
                 mem_wb_pc <= (others => '0');
@@ -267,15 +271,20 @@ begin
     branch_hazard <= '1' when (branch_take = '1' and branch_correct = '0') else '0';
 
     --pipeline register bubbles
-    if_id_nop <= branch_hazard;
-    id_ex_nop <= raw_hazard or branch_hazard;
+    if_id_clr <= branch_hazard;
+    id_ex_clr <= branch_hazard;
+    ex_mem_clr <= '0';
+    mem_wb_clr <= '0';
+
+    if_id_nop <= '0';
+    id_ex_nop <= raw_hazard;
     ex_mem_nop <= '0';
-    mem_wb_nop <= '0';
+    mem_wb_nop <= mem_hazard;
 
     --pipeline register enable
     if_id_stall <= id_ex_stall or raw_hazard;
     id_ex_stall <= ex_mem_stall;
-    ex_mem_stall <= mem_wb_stall;
+    ex_mem_stall <= mem_wb_stall or mem_hazard;
     mem_wb_stall <= '0';
 
     -- DEBUG_SIGNALS : if DEBUG generate

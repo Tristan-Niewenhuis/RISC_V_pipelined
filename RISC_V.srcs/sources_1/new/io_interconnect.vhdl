@@ -31,7 +31,7 @@ end io_interconnect;
 architecture Behavioral of io_interconnect is
     signal d_me_msel : sl;
 begin
-    d_me_msel <= '1' when to_integer(unsigned(in_d_addr)) < D_MEM_SIZE else '0';
+    d_me_msel <= '1' when to_integer(unsigned(in_d_addr)) < D_MEM_SIZE_LOGICAL else '0';
 
     out_d_addr <= in_d_addr;
     in_d_data_in <= out_d_data_in when d_me_msel = '1' else
