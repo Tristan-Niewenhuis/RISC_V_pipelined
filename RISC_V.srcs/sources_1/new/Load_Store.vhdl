@@ -17,7 +17,7 @@ entity Load_Store is
 		load_data_in : in slv(31 downto 0);
 		store_data_out : out slv(31 downto 0);
 		store_strobe : out slv(3 downto 0);
-		mem_hazard : in sl;
+		mem_hazard : in sl
 	);
 end Load_Store;
 

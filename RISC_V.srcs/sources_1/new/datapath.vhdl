@@ -10,14 +10,13 @@ entity Datapath is
         fetch_address : out slv(I_BYTES_ADDR_BITS - 3 downto 0);
         inst : in slv(31 downto 0);
         --
-        ls_valid : out sl;
         ls_ctrl : out sl;
         store_type : out slv(2 downto 0);
         load_type : out slv(2 downto 0);
         ls_address : out slv(31 downto 0);
         store_data : out slv(XLEN - 1 downto 0);
         load_data : in slv(XLEN - 1 downto 0);
-        mem_hazard : in sl;
+        mem_hazard : in sl
     );
 end Datapath;
 
@@ -88,7 +87,7 @@ begin
                  next_count_out => pc_next
                 );
 
-    fetch_address <= pc when USE_BRAM_NEGEDGE else pc_next;
+    fetch_address <= pc when USE_NEGEDGE else pc_next;
 
     Instruction_Decoder : entity work.Instruction_Decoder(Behavioral)
         port map(
@@ -171,7 +170,6 @@ begin
                  BTU_out => BTU_out);
 
     --load/store addr goes in now, so data is ready by the time the mem stage happens
-    ls_valid <= id_ex_cm.is_load or id_ex_cw.is_store;
     ls_ctrl <= id_ex_cw.is_store;
     store_type <= id_ex_cw.BRcond_LStype;
     ls_address <= slv(unsigned(id_ex_a) + unsigned(id_ex_cw.IMM)); --slv(unsigned(id_ex_a(D_ADDR_BITS - 1 downto 0)) + unsigned(id_ex_cw.IMM(D_ADDR_BITS - 1 downto 0)));
