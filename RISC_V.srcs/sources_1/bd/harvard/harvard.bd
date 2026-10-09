@@ -1,7 +1,7 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0x91F2B1DA9EC72BF",
+      "boundary_crc": "0x91F2B1D22871AAE",
       "device": "xc7a100tcsg324-1",
       "gen_directory": "../../../../RISC_V.gen/sources_1/bd/harvard",
       "name": "harvard",
@@ -452,8 +452,8 @@
             "value_src": "const_prop"
           },
           "SUPPORTS_NARROW_BURST": {
-            "value": "1",
-            "value_src": "default"
+            "value": "0",
+            "value_src": "user_prop"
           },
           "WUSER_BITS_PER_BYTE": {
             "value": "0",
@@ -1306,10 +1306,6 @@
                 "value": "AXI4LITE",
                 "value_src": "constant"
               },
-              "FREQ_HZ": {
-                "value": "80000000",
-                "value_src": "ip_prop"
-              },
               "ID_WIDTH": {
                 "value": "0",
                 "value_src": "constant"
@@ -1393,30 +1389,6 @@
               "MAX_BURST_LENGTH": {
                 "value": "1",
                 "value_src": "auto"
-              },
-              "PHASE": {
-                "value": "0.0",
-                "value_src": "ip_prop"
-              },
-              "CLK_DOMAIN": {
-                "value": "/clk_wiz_0_clk_out1",
-                "value_src": "ip_prop"
-              },
-              "NUM_READ_THREADS": {
-                "value": "1",
-                "value_src": "user_prop"
-              },
-              "NUM_WRITE_THREADS": {
-                "value": "1",
-                "value_src": "user_prop"
-              },
-              "RUSER_BITS_PER_BYTE": {
-                "value": "0",
-                "value_src": "user_prop"
-              },
-              "WUSER_BITS_PER_BYTE": {
-                "value": "0",
-                "value_src": "user_prop"
               }
             },
             "memory_map_ref": "S_AXI",
@@ -1518,18 +1490,6 @@
               "ASSOCIATED_RESET": {
                 "value": "resetn",
                 "value_src": "constant"
-              },
-              "FREQ_HZ": {
-                "value": "80000000",
-                "value_src": "ip_prop"
-              },
-              "PHASE": {
-                "value": "0.0",
-                "value_src": "ip_prop"
-              },
-              "CLK_DOMAIN": {
-                "value": "/clk_wiz_0_clk_out1",
-                "value_src": "ip_prop"
               }
             }
           },
@@ -1570,6 +1530,9 @@
             "direction": "I",
             "left": "3",
             "right": "0"
+          },
+          "mem_hazard": {
+            "direction": "O"
           }
         }
       },
