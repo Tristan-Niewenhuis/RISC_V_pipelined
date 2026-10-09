@@ -4,8 +4,8 @@ ENTRY(_start)
 
 MEMORY
 {
-    ROM (rx)  : ORIGIN = 0x80000000, LENGTH = 0x00010000
-    RAM (rwx) : ORIGIN = 0x00000000, LENGTH = 0x0000FFE0
+    ROM (rx)  : ORIGIN = 0x00000000, LENGTH = 0x00010000
+    RAM (rwx) : ORIGIN = 0x00010000, LENGTH = 0x0000FFE0
 }
 
 SECTIONS
@@ -64,6 +64,7 @@ SECTIONS
         . = ALIGN(4);
 
         __bss_start__ = .;
+        *(.sbss*)
         *(.bss*)
         *(COMMON)
         . = ALIGN(4);

@@ -91,6 +91,5 @@ sigasi-doc/
 nlviewcommon.logfile
 *.wcfg
 *.o
-*.exe
 *.dis
 *.dblite
