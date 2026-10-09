@@ -173,7 +173,6 @@ begin
                 instret_hi <= (others => '0');
                 done <= '0';
                 resetn_reg <= '0';
-                CPU_resetn <= '0';
             else
                 --axi write
                 if (axi_w_address = "10100" and axi_w_data_trans = '1' and S_AXI_WSTRB(0) = '1') then

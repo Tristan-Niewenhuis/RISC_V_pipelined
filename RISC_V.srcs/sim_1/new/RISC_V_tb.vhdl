@@ -287,82 +287,75 @@ begin
         end procedure;
 
         variable read_data : std_logic_vector(31 downto 0);
-
+        variable poll_count : natural := 0;
     begin
         ----------------------------------------------------------------
         -- Reset
         ----------------------------------------------------------------
         resetn <= '0';
 
-        -- Keep unused AXI master interface from getting stuck
         M_AXI_0_arready <= '0';
         M_AXI_0_awready <= '0';
         M_AXI_0_wready <= '0';
 
         wait for 100 ns;
-
         resetn <= '1';
 
         wait for 1000 ns;
-
         wait until rising_edge(test_rig_clk_out);
         wait until rising_edge(test_rig_clk_out);
 
         ----------------------------------------------------------------
-        -- 1. Write 1 to C000_0014
+        -- 1. Clear benchmark control register
+        ----------------------------------------------------------------
+        report "Writing 0 to C000_0014";
+        axi_write(x"C0000014", x"00000000");
+
+        wait for 100 ns;
+
+        ----------------------------------------------------------------
+        -- 2. Start benchmark
         ----------------------------------------------------------------
         report "Writing 1 to C000_0014";
-
-        axi_write(
-            x"C0000014",
-            x"00000001"
-        );
+        axi_write(x"C0000014", x"00000001");
 
         ----------------------------------------------------------------
-        -- 2. Read C000_0004
+        -- 3. Poll C000_0010 until done = 1
         ----------------------------------------------------------------
-        report "Reading C000_0004";
+        report "Polling C000_0010 for completion";
 
-        axi_read(
-            x"C0000004",
-            read_data
-        );
+        loop
+            axi_read(x"C0000010", read_data);
 
-        report "Read C000_0004 = " & to_hstring(to_bitvector(read_data));
+            exit when read_data = x"00000001";
 
-        ----------------------------------------------------------------
-        -- 3. Write 89674523 to 8000_0050
-        ----------------------------------------------------------------
-        report "Writing 89674523 to 8000_0050";
+            poll_count := poll_count + 1;
 
-        axi_write(
-            x"80000050",
-            x"89674523"
-        );
+            assert poll_count < 100000
+            report "TIMEOUT: Benchmark did not complete"
+            severity failure;
+        end loop;
+
+        report "Benchmark complete";
 
         ----------------------------------------------------------------
-        -- 4. Read 8000_0050
+        -- 4. Read and report result registers
         ----------------------------------------------------------------
-        report "Reading 8000_0050";
+        axi_read(x"C000000C", read_data);
+        report "C000_000C = " & to_hstring(to_bitvector(read_data));
 
-        axi_read(
-            x"80000050",
-            read_data
-        );
+        axi_read(x"C0000008", read_data);
+        report "C000_0008 = " & to_hstring(to_bitvector(read_data));
 
-        report "Read 8000_0050 = " & to_hstring(to_bitvector(read_data));
+        axi_read(x"C0000004", read_data);
+        report "C000_0004 = " & to_hstring(to_bitvector(read_data));
 
-        ----------------------------------------------------------------
-        -- Check expected value
-        ----------------------------------------------------------------
-        assert read_data = x"89674523"
-        report "ERROR: 8000_0050 did not return 89674523"
-        severity error;
+        axi_read(x"C0000000", read_data);
+        report "C000_0000 = " & to_hstring(to_bitvector(read_data));
 
-        report "AXI test completed successfully.";
+        report "Benchmark test completed successfully.";
 
         wait;
-
     end process;
 
 end Behavioral;

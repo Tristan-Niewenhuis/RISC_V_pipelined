@@ -1,7 +1,7 @@
 import re
 
-infile = "cylon_test.dis"
-outfile = "cylon_test_with_words.dis"
+infile = "build/src/fake_test/fake_test.dis"
+outfile = "build/src/fake_test/fake_test_with_div_4.dis"
 
 with open(infile, "r") as fin, open(outfile, "w") as fout:
     for line in fin:

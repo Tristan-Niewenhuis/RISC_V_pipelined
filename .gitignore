@@ -91,7 +91,6 @@ sigasi-doc/
 nlviewcommon.logfile
 *.wcfg
 *.o
-*.exe
 *.dis
 *.dblite
 # proprietary IP: track everything, including .xml and object files
