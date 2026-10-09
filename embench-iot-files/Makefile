@@ -19,7 +19,7 @@ OBJDUMP=riscv64-unknown-elf-objdump
 CFLAGS="-O2 -ffunction-sections -fdata-sections -march=rv32i_zicsr_zicntr -mabi=ilp32"
 LDFLAGS="-O2 -march=rv32i_zicsr_zicntr -mabi=ilp32 -Wl,--gc-sections -Wl,--no-warn-rwx-segments -static -nostartfiles $(BUILD_DIR_FROM_EMBENCH)/$(STARTUP).o -T ${BUILD_DIR_FROM_EMBENCH}/link.ld"
 
-all: elf dis coe
+all: elf dis coe images
 
 #set gsf to about #MHZ
 elf:
@@ -38,6 +38,10 @@ dis: elf
 
 coe: elf
 	powershell -NoProfile -ExecutionPolicy Bypass -File .\make_coe.ps1
+
+# Export raw little-endian binaries and one-32-bit-word-per-line hex files.
+images: elf
+	powershell -NoProfile -ExecutionPolicy Bypass -File .\make_images.ps1
 
 clean:
 	if exist "./build" rmdir /S /Q "./build" 
