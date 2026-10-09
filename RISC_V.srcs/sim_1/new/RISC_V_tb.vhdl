@@ -106,7 +106,7 @@ architecture Behavioral of RISC_V_tb is
     signal S00_AXI_0_wstrb : std_logic_vector(3 downto 0) := "1111";
     signal S00_AXI_0_wvalid : std_logic := '0';
 
-    signal clk_out : std_logic;
+    signal cpu_clk_out, test_rig_clk_out : std_logic;
     signal status_led_0 : std_logic;
 
 begin
@@ -114,7 +114,7 @@ begin
     --------------------------------------------------------------------
     -- DUT
     --------------------------------------------------------------------
-    uut : entity work.harvard_wrapper
+    uut : entity work.TCM_wrapper
         port map(
             M_AXI_0_araddr => M_AXI_0_araddr,
             M_AXI_0_arburst => M_AXI_0_arburst,
@@ -190,7 +190,8 @@ begin
             S00_AXI_0_wready => S00_AXI_0_wready,
             S00_AXI_0_wstrb => S00_AXI_0_wstrb,
             S00_AXI_0_wvalid => S00_AXI_0_wvalid,
-            clk_out => clk_out,
+            cpu_clk_out => cpu_clk_out,
+            test_rig_clk_out => test_rig_clk_out,
             resetn => resetn,
             status_led_0 => status_led_0,
             sys_clock => sys_clock
@@ -222,10 +223,10 @@ begin
 
             -- Wait until both address and data have been accepted.
             while (S00_AXI_0_awready = '0' or S00_AXI_0_wready = '0') loop
-                wait until rising_edge(sys_clock);
+                wait until rising_edge(test_rig_clk_out);
             end loop;
 
-            wait until rising_edge(sys_clock);
+            wait until rising_edge(test_rig_clk_out);
 
             S00_AXI_0_awvalid <= '0';
             S00_AXI_0_wvalid <= '0';
@@ -234,14 +235,14 @@ begin
             S00_AXI_0_bready <= '1';
 
             while S00_AXI_0_bvalid = '0' loop
-                wait until rising_edge(sys_clock);
+                wait until rising_edge(test_rig_clk_out);
             end loop;
 
             assert S00_AXI_0_bresp = "00"
             report "AXI write returned an error"
             severity error;
 
-            wait until rising_edge(sys_clock);
+            wait until rising_edge(test_rig_clk_out);
 
             S00_AXI_0_bready <= '0';
 
@@ -259,10 +260,10 @@ begin
 
             -- Wait for address handshake
             while S00_AXI_0_arready = '0' loop
-                wait until rising_edge(sys_clock);
+                wait until rising_edge(test_rig_clk_out);
             end loop;
 
-            wait until rising_edge(sys_clock);
+            wait until rising_edge(test_rig_clk_out);
 
             S00_AXI_0_arvalid <= '0';
 
@@ -270,7 +271,7 @@ begin
             S00_AXI_0_rready <= '1';
 
             while S00_AXI_0_rvalid = '0' loop
-                wait until rising_edge(sys_clock);
+                wait until rising_edge(test_rig_clk_out);
             end loop;
 
             data := S00_AXI_0_rdata;
@@ -279,7 +280,7 @@ begin
             report "AXI read returned an error"
             severity error;
 
-            wait until rising_edge(sys_clock);
+            wait until rising_edge(test_rig_clk_out);
 
             S00_AXI_0_rready <= '0';
 
@@ -304,8 +305,8 @@ begin
 
         wait for 1000 ns;
 
-        wait until rising_edge(sys_clock);
-        wait until rising_edge(sys_clock);
+        wait until rising_edge(test_rig_clk_out);
+        wait until rising_edge(test_rig_clk_out);
 
         ----------------------------------------------------------------
         -- 1. Write 1 to C000_0014

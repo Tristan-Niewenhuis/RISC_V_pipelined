@@ -24,7 +24,7 @@ package RISCV_package is
   constant D_MEM_SIZE_LOGICAL : integer := 16#FFE0#;
   constant D_MEM_BYTES_REAL : integer := 16#10000#; --must be power of 2
   constant D_MEM_INIT_FILE : string := "";
-  constant D_IO_BASE : integer := 16#C0000000#;
+  constant D_IO_BASE : slv(31 downto 0) := x"C0000000";
   constant USE_NEGEDGE : boolean := true;
 
   -- Function to create a vector from a bit
