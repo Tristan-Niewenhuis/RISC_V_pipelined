@@ -20,12 +20,13 @@ package RISCV_package is
   constant I_MEM_SIZE_LOGICAL : integer := 16#10000#;
   constant I_MEM_BYTES_REAL : integer := 16#10000#; --must be power of 2
   constant I_MEM_INIT_FILE : string := "C:/RISC_V_research/RISC_V_pipelined_private/embench-iot-files/build/src/fake_test/fake_test_rom.coe";
+  constant I_USE_NEGEDGE : boolean := true;
   constant D_MEM_BASE : slv(31 downto 0) := x"80000000";
   constant D_MEM_SIZE_LOGICAL : integer := 16#FFE0#;
   constant D_MEM_BYTES_REAL : integer := 16#10000#; --must be power of 2
   constant D_MEM_INIT_FILE : string := "C:/RISC_V_research/RISC_V_pipelined_private/embench-iot-files/build/src/fake_test/fake_test_ram.coe";
   constant D_IO_BASE : slv(31 downto 0) := x"C0000000";
-  constant USE_NEGEDGE : boolean := true;
+  constant D_USE_NEGEDGE : boolean := false;
 
   -- Function to create a vector from a bit
   function to_boolean(x : sl) return boolean;

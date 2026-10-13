@@ -15,8 +15,8 @@ entity Datapath is
         load_type : out slv(2 downto 0);
         ls_address : out slv(31 downto 0);
         store_data : out slv(XLEN - 1 downto 0);
-        load_data : in slv(XLEN - 1 downto 0);
-        mem_hazard : in sl
+        load_data : in slv(XLEN - 1 downto 0)
+        --mem_hazard : in sl
     );
 end Datapath;
 
@@ -87,7 +87,7 @@ begin
                  next_count_out => pc_next
                 );
 
-    fetch_address <= pc when USE_NEGEDGE else pc_next;
+    fetch_address <= pc when I_USE_NEGEDGE else pc_next;
 
     Instruction_Decoder : entity work.Instruction_Decoder(Behavioral)
         port map(
@@ -277,12 +277,12 @@ begin
     if_id_nop <= '0';
     id_ex_nop <= raw_hazard;
     ex_mem_nop <= '0';
-    mem_wb_nop <= mem_hazard;
+    mem_wb_nop <= '0'; --mem_hazard;
 
     --pipeline register enable
     if_id_stall <= id_ex_stall or raw_hazard;
     id_ex_stall <= ex_mem_stall;
-    ex_mem_stall <= mem_wb_stall or mem_hazard;
+    ex_mem_stall <= mem_wb_stall; -- or mem_hazard;
     mem_wb_stall <= '0';
 
     -- DEBUG_SIGNALS : if DEBUG generate
