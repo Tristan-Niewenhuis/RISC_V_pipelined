@@ -16,8 +16,8 @@ entity RISC_V_TCM is
        --io ports
        io_addr : out std_logic_vector(D_BYTES_ADDR_BITS - 3 downto 0);
        io_s_data : out std_logic_vector(31 downto 0);
-       io_s_strobe : out std_logic_vector(3 downto 0);
-       mem_hazard : in std_logic
+       io_s_strobe : out std_logic_vector(3 downto 0)
+       --mem_hazard : in std_logic
       );
 end RISC_V_TCM;
 
@@ -46,8 +46,8 @@ begin
       load_type => load_type,
       ls_address => ls_address,
       store_data => store_data,
-      load_data => load_data,
-      mem_hazard => mem_hazard
+      load_data => load_data
+      --mem_hazard => mem_hazard
     );
 
   Load_Store_inst : entity work.Load_Store
@@ -63,11 +63,11 @@ begin
       ls_address_out => d_addr_v,
       load_data_in => d_l_data_v,
       store_data_out => d_s_data_v,
-      store_strobe => d_s_strobe_v,
-      mem_hazard => mem_hazard
+      store_strobe => d_s_strobe_v
+      --mem_hazard => mem_hazard
     );
 
-  d_me_msel <= '1' when to_integer(unsigned(d_addr_v)) < D_MEM_SIZE_LOGICAL else '0';
+  d_me_msel <= '1' when to_integer(unsigned(d_addr_v)) < D_MEM_SIZE_LOGICAL / 4 else '0';
 
   d_addr_p <= d_addr_v;
   d_l_data_v <= d_l_data_p when d_me_msel = '1' else
@@ -81,7 +81,7 @@ begin
   io_s_strobe <= d_s_strobe_v when d_me_msel = '0' else
                  (others => '0');
 
-  NEGEDGE : if USE_NEGEDGE generate
+  NEGEDGE : if D_USE_NEGEDGE generate
   begin
     delay : process(clk) is
     begin
@@ -111,7 +111,7 @@ begin
       INIT_FILE => I_MEM_INIT_FILE,
       READ_ONLY => true,
       PORT_B_WRITE => true,
-      USE_NEGEDGE => USE_NEGEDGE
+      USE_NEGEDGE => I_USE_NEGEDGE
     )
     port map(
       clk => clk,
@@ -132,19 +132,19 @@ begin
   ----------------------------------------------------------------------------
   -- DTCM
   ----------------------------------------------------------------------------
-  d_addr_p_f <= (31 downto D_BYTES_ADDR_BITS => '0') & d_addr_p_1 & "00" when USE_NEGEDGE else
+  d_addr_p_f <= (31 downto D_BYTES_ADDR_BITS => '0') & d_addr_p_1 & "00" when D_USE_NEGEDGE else
                 (31 downto D_BYTES_ADDR_BITS => '0') & d_addr_p & "00";
-  d_s_data_p_f <= d_s_data_p1 when USE_NEGEDGE else d_s_data_p;
-  d_s_strobe_f <= d_s_strobe_p1 when USE_NEGEDGE else d_s_strobe_p;
+  d_s_data_p_f <= d_s_data_p1 when D_USE_NEGEDGE else d_s_data_p;
+  d_s_strobe_f <= d_s_strobe_p1 when D_USE_NEGEDGE else d_s_strobe_p;
   d_dbg_addr_f <= (31 downto D_BYTES_ADDR_BITS => '0') & d_dgb_addr & "00";
 
   dtcm : entity work.tightly_coupled_memory
     generic map(
       SIZE_BYTES => D_MEM_BYTES_REAL,
       INIT_FILE => D_MEM_INIT_FILE,
-      READ_ONLY => true,
+      READ_ONLY => false,
       PORT_B_WRITE => true,
-      USE_NEGEDGE => USE_NEGEDGE
+      USE_NEGEDGE => D_USE_NEGEDGE
     )
     port map(
       clk => clk,
