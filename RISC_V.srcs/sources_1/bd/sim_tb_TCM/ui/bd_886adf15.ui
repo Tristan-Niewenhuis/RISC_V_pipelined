@@ -1,0 +1,27 @@
+{
+   "ActiveEmotionalView":"Default View",
+   "Default View_ScaleFactor":"1.25",
+   "Default View_TopLeft":"-244,-65",
+   "ExpandedHierarchyInLayout":"",
+   "guistr":"# # String gsaved with Nlview 7.8.0 2024-04-26 e1825d835c VDI=44 GEI=38 GUI=JA:24.0
+#  -string -flagsOSRD
+preplace port S00_AXI_0 -pg 1 -lvl 0 -x -10 -y 80 -defaultsOSRD
+preplace port port-id_pc_asserted_1 -pg 1 -lvl 2 -x 380 -y 140 -defaultsOSRD
+preplace port port-id_resetn -pg 1 -lvl 0 -x -10 -y 110 -defaultsOSRD
+preplace port port-id_status_led_0 -pg 1 -lvl 2 -x 380 -y 110 -defaultsOSRD
+preplace port port-id_sys_clock -pg 1 -lvl 0 -x -10 -y 140 -defaultsOSRD
+preplace port port-id_clk_out2_0 -pg 1 -lvl 2 -x 380 -y 50 -defaultsOSRD
+preplace port port-id_locked_0 -pg 1 -lvl 2 -x 380 -y 80 -defaultsOSRD
+preplace inst TCM_axi_slave -pg 1 -lvl 1 -x 230 -y 100 -defaultsOSRD
+preplace netloc sys_clock_1 1 0 1 10J 120n
+preplace netloc resetn_1 1 0 1 10J 100n
+preplace netloc TCM_axi_slave_pc_asserted_1 1 1 1 NJ 140
+preplace netloc TCM_axi_slave_status_led_0 1 1 1 360J 110n
+preplace netloc TCM_axi_slave_clk_out2 1 1 1 360J 50n
+preplace netloc TCM_axi_slave_locked 1 1 1 NJ 80
+preplace netloc S00_AXI_0_1 1 0 1 NJ 80
+levelinfo -pg 1 -10 230 380
+pagesize -pg 1 -db -bbox -sgen -130 -10 1710 1350
+"
+}
+
