@@ -2,10 +2,10 @@
 
 import csv
 import os
+import re
 import struct
 import subprocess
 import sys
-import tempfile
 import time
 from pathlib import Path
 
@@ -16,7 +16,7 @@ from pathlib import Path
 
 # Vivado executable.
 # If "vivado" is already in PATH, leave this as "vivado".
-VIVADO = "vivado"
+VIVADO = "C:\\AMDDesignTools\\2026.1\\Vivado\\bin\\vivado.bat"
 
 # ------------------------------------------------------------
 # FPGA / JTAG configuration
@@ -54,7 +54,7 @@ HW_DEVICE = None
 IRAM_AXI_BASE = 0x00000000
 
 # AXI address where DRAM is visible through JTAG-to-AXI.
-DRAM_AXI_BASE = 0x00010000
+DRAM_AXI_BASE = 0x80000000
 
 # Test controller addresses.
 #
@@ -97,7 +97,7 @@ DONE_MASK = 0x00000001
 AXI_BURST_WORDS = 256
 
 # How often to poll DONE.
-DONE_POLL_INTERVAL = 0.05
+DONE_POLL_INTERVAL = 0.25
 
 # Maximum time to wait for a benchmark.
 # Increase this for long-running benchmarks.
@@ -113,8 +113,8 @@ DONE_TIMEOUT_SECONDS = 60.0
 # Each test needs:
 #
 #   name      - name that will appear in the results CSV
-#   iram_file - binary image for instruction memory
-#   dram_file - binary image for data memory
+#   iram_file - word-per-line .hex image or raw little-endian .bin for instruction memory
+#   dram_file - word-per-line .hex image or raw little-endian .bin for data memory
 #
 # You can add other fields later if you need them.
 #
@@ -135,15 +135,15 @@ DONE_TIMEOUT_SECONDS = 60.0
 
 TESTS = [
     {
-        "name": "TEST_1",
-        "iram_file": r"C:\PUT\YOUR\PATH\HERE\iram.bin",
-        "dram_file": r"C:\PUT\YOUR\PATH\HERE\dram.bin",
+        "name": "empty_test",
+        "iram_file": r"C:\RISC_V_research\RISC_V_pipelined_private\embench-iot-files\build\src\fake_test\fake_test_rom.hex",
+        "dram_file": r"C:\RISC_V_research\RISC_V_pipelined_private\embench-iot-files\build\src\fake_test\fake_test_ram.hex",
     },
 
     {
-        "name": "TEST_2",
-        "iram_file": r"C:\PUT\YOUR\PATH\HERE\iram.bin",
-        "dram_file": r"C:\PUT\YOUR\PATH\HERE\dram.bin",
+        "name": "crc32",
+        "iram_file": r"C:\RISC_V_research\RISC_V_pipelined_private\embench-iot-files\build\src\crc32\crc32_rom.hex",
+        "dram_file": r"C:\RISC_V_research\RISC_V_pipelined_private\embench-iot-files\build\src\crc32\crc32_ram.hex",
     },
 
     # Add more tests here.
@@ -171,11 +171,19 @@ def tcl_data_word(value):
     return f"{value & 0xFFFFFFFF:08X}"
 
 
-def load_binary_words(filename):
+def load_memory_words(filename):
     """
-    Load a raw binary file as little-endian 32-bit words.
+    Load a memory image as 32-bit words.
 
-    The file is padded with zero bytes to a 4-byte boundary.
+    Supported formats:
+      - .hex / .mem / .txt: one 32-bit hexadecimal word per line,
+        e.g. 00020117. Each line is the numeric word value; words are
+        written to consecutive AXI addresses in increasing order.
+      - Other extensions (including .bin): raw bytes grouped into
+        little-endian 32-bit words.
+
+    Text files may contain blank lines, whole-line comments starting
+    with # or //, and trailing comments after a word.
     """
 
     filename = Path(filename)
@@ -183,12 +191,38 @@ def load_binary_words(filename):
     if not filename.exists():
         raise FileNotFoundError(f"Memory image does not exist: {filename}")
 
-    data = filename.read_bytes()
+    if filename.suffix.lower() in {".hex", ".mem", ".txt"}:
+        words = []
+        for line_number, raw_line in enumerate(
+            filename.read_text(encoding="utf-8-sig").splitlines(), start=1
+        ):
+            line = raw_line.strip()
 
-    if len(data) == 0:
+            if not line or line.startswith("#") or line.startswith("//"):
+                continue
+
+            line = re.split(r"\s+#|\s+//", line, maxsplit=1)[0].strip()
+            if not line:
+                continue
+
+            if line.lower().startswith("0x"):
+                line = line[2:]
+
+            if not re.fullmatch(r"[0-9a-fA-F]{1,8}", line):
+                raise ValueError(
+                    f"Invalid hex word in {filename}, line {line_number}: "
+                    f"{raw_line!r}. Expected one 32-bit hex word per line."
+                )
+
+            words.append(int(line, 16))
+
+        return words
+
+    # Raw binary: four bytes per word, little-endian.
+    data = filename.read_bytes()
+    if not data:
         return []
 
-    # Pad to a complete 32-bit word.
     if len(data) % 4 != 0:
         padding = 4 - (len(data) % 4)
         print(
@@ -197,14 +231,10 @@ def load_binary_words(filename):
         )
         data += b"\x00" * padding
 
-    words = []
-
-    for offset in range(0, len(data), 4):
-        word = struct.unpack_from("<I", data, offset)[0]
-        words.append(word)
-
-    return words
-
+    return [
+        struct.unpack_from("<I", data, offset)[0]
+        for offset in range(0, len(data), 4)
+    ]
 
 def validate_test(test):
     required = ["name", "iram_file", "dram_file"]
@@ -264,7 +294,7 @@ def generate_memory_load_tcl(prefix, base_address, words):
     ):
         chunk = words[start:start + AXI_BURST_WORDS]
 
-        address = base_address + start * 4
+        address = base_address + start
 
         transaction_name = (
             f"{prefix}_{chunk_number}"
@@ -373,8 +403,8 @@ def generate_tcl_script(tests):
 
         name = test["name"]
 
-        iram_words = load_binary_words(test["iram_file"])
-        dram_words = load_binary_words(test["dram_file"])
+        iram_words = load_memory_words(test["iram_file"])
+        dram_words = load_memory_words(test["dram_file"])
 
         print(
             f"Preparing {name}: "
@@ -753,79 +783,75 @@ def main():
     # Results file is written in the current directory.
     results_path = Path(RESULTS_FILE).resolve()
 
-    # Generate temporary Tcl script.
-    with tempfile.TemporaryDirectory() as temp_dir:
+    # Generate Tcl script.
+    tcl_path = Path.cwd() / "run_embench.tcl"
 
-        temp_dir = Path(temp_dir)
+    tcl_script = generate_tcl_script(TESTS)
 
-        tcl_path = temp_dir / "run_embench.tcl"
+    # Replace result-file placeholder.
+    #
+    # Tcl uses forward slashes on Windows reliably.
+    result_tcl_path = str(results_path).replace("\\", "/")
 
-        tcl_script = generate_tcl_script(TESTS)
+    tcl_script = tcl_script.replace(
+        "__RESULT_FILE__",
+        result_tcl_path,
+    )
 
-        # Replace result-file placeholder.
-        #
-        # Tcl uses forward slashes on Windows reliably.
-        result_tcl_path = str(results_path).replace("\\", "/")
+    tcl_path.write_text(
+        tcl_script,
+        encoding="utf-8",
+    )
 
-        tcl_script = tcl_script.replace(
-            "__RESULT_FILE__",
-            result_tcl_path,
+    print()
+    print("============================================================")
+    print("Starting Vivado")
+    print("============================================================")
+    print()
+    print(f"Vivado : {VIVADO}")
+    print(f"Tcl    : {tcl_path}")
+    print(f"Output : {results_path}")
+    print()
+
+    # --------------------------------------------------------
+    # Start Vivado in Tcl batch mode.
+    # --------------------------------------------------------
+
+    command = [
+        VIVADO,
+        "-mode",
+        "batch",
+        "-source",
+        str(tcl_path),
+    ]
+
+    try:
+        process = subprocess.run(
+            command,
+            check=False,
         )
 
-        tcl_path.write_text(
-            tcl_script,
-            encoding="utf-8",
+    except FileNotFoundError:
+        print(
+            f"ERROR: Could not find Vivado executable '{VIVADO}'."
         )
+        print(
+            "Set VIVADO above to the full path to vivado.bat "
+            "if necessary."
+        )
+        sys.exit(1)
 
-        print()
-        print("============================================================")
-        print("Starting Vivado")
-        print("============================================================")
-        print()
-        print(f"Vivado : {VIVADO}")
-        print(f"Tcl    : {tcl_path}")
-        print(f"Output : {results_path}")
-        print()
+    print()
+    print("============================================================")
+    print("Vivado finished")
+    print("============================================================")
+    print()
 
-        # --------------------------------------------------------
-        # Start Vivado in Tcl batch mode.
-        # --------------------------------------------------------
-
-        command = [
-            VIVADO,
-            "-mode",
-            "batch",
-            "-source",
-            str(tcl_path),
-        ]
-
-        try:
-            process = subprocess.run(
-                command,
-                check=False,
-            )
-
-        except FileNotFoundError:
-            print(
-                f"ERROR: Could not find Vivado executable '{VIVADO}'."
-            )
-            print(
-                "Set VIVADO above to the full path to vivado.bat "
-                "if necessary."
-            )
-            sys.exit(1)
-
-        print()
-        print("============================================================")
-        print("Vivado finished")
-        print("============================================================")
-        print()
-
-        if process.returncode != 0:
-            print(
-                f"Vivado exited with error code {process.returncode}"
-            )
-            sys.exit(process.returncode)
+    if process.returncode != 0:
+        print(
+            f"Vivado exited with error code {process.returncode}"
+        )
+        sys.exit(process.returncode)
 
     if results_path.exists():
         print(f"Results written to:")
