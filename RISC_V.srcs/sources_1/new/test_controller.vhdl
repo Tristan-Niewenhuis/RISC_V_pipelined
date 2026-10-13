@@ -42,12 +42,18 @@ end test_controller;
 architecture Behavioral of test_controller is
     type state_t is (ACCEPTING, RESPONSE);
     --axi write
-    signal w_cur_state, w_next_state_i, w_next_state_final : state_t;
-    signal w_ACCEPTING_next, w_RESPONSE_next : state_t;
+    signal aw_captured : std_logic := '0';
+    signal w_captured : std_logic := '0';
+    signal bvalid_reg : std_logic := '0';
 
-    signal awready, wready, bvalid : sl;
-    signal axi_w_addr_trans, axi_w_data_trans, axi_b_resp_trans : sl;
-    signal axi_w_address, axi_w_address_next : slv(4 downto 0);
+    signal awaddr_reg : std_logic_vector(4 downto 0) := (others => '0');
+    signal wdata_reg : std_logic_vector(31 downto 0) := (others => '0');
+    signal wstrb_reg : std_logic_vector(3 downto 0) := (others => '0');
+
+    signal awready_i : std_logic;
+    signal wready_i : std_logic;
+
+    signal write_commit : std_logic;
 
     --axi read
     signal r_cur_state, r_next_state_i, r_next_state_final : state_t;
@@ -61,42 +67,66 @@ architecture Behavioral of test_controller is
     signal riscv_d_data_in_1 : std_logic_vector(31 downto 0);
     signal riscv_d_addr_1 : std_logic_vector(D_BYTES_ADDR_BITS - 3 downto 0);
     signal riscv_d_strobe_1 : std_logic_vector(3 downto 0);
-    signal mem_hazard_i : sl;
 
     --storage of variables
     signal cycle_lo, cycle_hi, instret_lo, instret_hi : slv(31 downto 0);
     signal done, resetn_reg : sl;
+
 begin
-    --AXI write intrface (only for reset)
-    w_cur_state <= w_next_state_final when rising_edge(clk);
-    w_next_state_final <= ACCEPTING when resetn = '0' else w_next_state_i;
-    --next state
-    with w_cur_state select w_next_state_i <=
-        w_ACCEPTING_next when ACCEPTING,
-        w_RESPONSE_next when RESPONSE;
 
-    w_ACCEPTING_next <= RESPONSE when axi_w_data_trans = '1' else
-                        ACCEPTING;
-    w_RESPONSE_next <= ACCEPTING when axi_b_resp_trans = '1' else
-                       RESPONSE;
+    awready_i <= '1' when resetn = '1' and aw_captured = '0' and bvalid_reg = '0' else
+                 '0';
 
-    --AXI write outputs
-    awready <= '1';
-    wready <= '1';
-    bvalid <= '1' when w_cur_state = RESPONSE else '0';
-    S_AXI_AWREADY <= awready;
-    S_AXI_WREADY <= wready;
-    S_AXI_BVALID <= bvalid;
-    S_AXI_BRESP <= "00";
+    wready_i <= '1' when resetn = '1' and w_captured = '0' and bvalid_reg = '0' else
+                '0';
 
-    axi_w_address <= axi_w_address_next when rising_edge(clk);
-    axi_w_address_next <= (others => '0') when resetn = '0' else
-                          S_AXI_AWADDR when axi_w_addr_trans = '1' else
-                          axi_w_address;
+    S_AXI_AWREADY <= awready_i;
+    S_AXI_WREADY <= wready_i;
 
-    axi_w_addr_trans <= S_AXI_AWVALID and awready;
-    axi_w_data_trans <= S_AXI_WVALID and wready;
-    axi_b_resp_trans <= bvalid and S_AXI_BREADY;
+    S_AXI_BVALID <= bvalid_reg;
+    S_AXI_BRESP <= "00"; -- OKAY
+
+    -- Commit once both current/prior channel transfers are available.
+    write_commit <= '1' when bvalid_reg = '0' and (aw_captured = '1' or (S_AXI_AWVALID = '1' and awready_i = '1')) and (w_captured = '1' or (S_AXI_WVALID = '1' and wready_i = '1')) else
+                    '0';
+
+    axi_write_proc : process(clk)
+    begin
+        if rising_edge(clk) then
+            if resetn = '0' then
+                aw_captured <= '0';
+                w_captured <= '0';
+                bvalid_reg <= '0';
+
+                awaddr_reg <= (others => '0');
+                wdata_reg <= (others => '0');
+                wstrb_reg <= (others => '0');
+
+            else
+                -- Capture address independently.
+                if S_AXI_AWVALID = '1' and awready_i = '1' then
+                    awaddr_reg <= S_AXI_AWADDR;
+                    aw_captured <= '1';
+                end if;
+
+                -- Capture data and byte strobes independently.
+                if S_AXI_WVALID = '1' and wready_i = '1' then
+                    wdata_reg <= S_AXI_WDATA;
+                    wstrb_reg <= S_AXI_WSTRB;
+                    w_captured <= '1';
+                end if;
+
+                -- Issue the response once the write is committed.
+                if write_commit = '1' then
+                    bvalid_reg <= '1';
+                elsif bvalid_reg = '1' and S_AXI_BREADY = '1' then
+                    bvalid_reg <= '0';
+                    aw_captured <= '0';
+                    w_captured <= '0';
+                end if;
+            end if;
+        end if;
+    end process;
 
     --AXI read intrface
     r_cur_state <= r_next_state_final when rising_edge(clk);
@@ -141,26 +171,15 @@ begin
                 riscv_d_data_in_1 <= (others => '0');
                 riscv_d_addr_1 <= (others => '0');
                 riscv_d_strobe_1 <= (others => '0');
-                mem_hazard_i <= '0';
             else
                 riscv_d_data_in_1 <= riscv_d_data_in;
                 riscv_d_addr_1 <= riscv_d_addr;
                 riscv_d_strobe_1 <= riscv_d_strobe;
-
-                if (riscv_d_strobe /= "0000") then --not sure this will work
-                    if (mem_hazard_i = '0') then
-                        mem_hazard_i <= '1';
-                    else
-                        mem_hazard_i <= '0';
-                    end if;
-                else
-                    mem_hazard_i <= '0';
-                end if;
             end if;
         end if;
     end process pipeline;
 
-    mem_hazard <= mem_hazard_i;
+    --mem_hazard <= riscv_d_strobe_1 = "1111";
 
     --Registers
     read_regs : process(clk) is
@@ -175,27 +194,27 @@ begin
                 resetn_reg <= '0';
             else
                 --axi write
-                if (axi_w_address = "10100" and axi_w_data_trans = '1' and S_AXI_WSTRB(0) = '1') then
-                    resetn_reg <= S_AXI_WDATA(0);
+                if (write_commit = '1' and awaddr_reg = "10100" and wstrb_reg(0) = '1') then
+                    resetn_reg <= wdata_reg(0);
                 end if;
+            end if;
 
-                --bram interface
-                if (riscv_d_strobe_1 = "1111") then
-                    case riscv_d_addr_1(4 downto 2) is
-                        when "000" =>
-                            cycle_lo <= riscv_d_data_in_1;
-                        when "001" =>
-                            cycle_hi <= riscv_d_data_in_1;
-                        when "010" =>
-                            instret_lo <= riscv_d_data_in_1;
-                        when "011" =>
-                            instret_hi <= riscv_d_data_in_1;
-                        when "100" =>
-                            done <= riscv_d_data_in_1(0);
-                        when others =>
-                            null;
-                    end case;
-                end if;
+            --bram interface
+            if (riscv_d_strobe_1 = "1111") then
+                case riscv_d_addr_1(2 downto 0) is
+                    when "000" =>
+                        cycle_lo <= riscv_d_data_in_1;
+                    when "001" =>
+                        cycle_hi <= riscv_d_data_in_1;
+                    when "010" =>
+                        instret_lo <= riscv_d_data_in_1;
+                    when "011" =>
+                        instret_hi <= riscv_d_data_in_1;
+                    when "100" =>
+                        done <= riscv_d_data_in_1(0);
+                    when others =>
+                        null;
+                end case;
             end if;
         end if;
     end process;

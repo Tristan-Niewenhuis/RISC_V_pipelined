@@ -16,8 +16,8 @@ entity Load_Store is
 		ls_address_out : out slv(D_BYTES_ADDR_BITS - 3 downto 0);
 		load_data_in : in slv(31 downto 0);
 		store_data_out : out slv(31 downto 0);
-		store_strobe : out slv(3 downto 0);
-		mem_hazard : in sl
+		store_strobe : out slv(3 downto 0)
+		--mem_hazard : in sl
 	);
 end Load_Store;
 
@@ -27,7 +27,7 @@ architecture implementation of Load_Store is
 
 begin
 	ls_address_out <= ls_address_in(D_BYTES_ADDR_BITS - 1 downto 2);
-	ls_address_prev <= ls_address_in when rising_edge(clk) and mem_hazard = '0';
+	ls_address_prev <= ls_address_in when rising_edge(clk); -- and mem_hazard = '0';
 	--format load_store_out
 	with ls_address_prev(1 downto 0) select pre_load_data <=
 		(31 downto 8 => '0') & load_data_in(15 downto 8) when "01",
