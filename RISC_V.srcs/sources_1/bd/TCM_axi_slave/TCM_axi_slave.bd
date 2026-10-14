@@ -498,7 +498,7 @@
           },
           "i_dgb_addr": {
             "direction": "I",
-            "left": "13",
+            "left": "15",
             "right": "0"
           },
           "i_dgb_wdata": {
@@ -511,7 +511,7 @@
           },
           "d_dgb_addr": {
             "direction": "I",
-            "left": "13",
+            "left": "15",
             "right": "0"
           },
           "d_dgb_wdata": {
@@ -1345,10 +1345,10 @@
           "axi_clock_converter_0/m_axi_aclk",
           "axi_clock_converter_1/m_axi_aclk",
           "axi_clock_converter_2/m_axi_aclk",
-          "test_controller_1/clk",
           "proc_sys_reset_0/slowest_sync_clk",
+          "proc_sys_reset_2/slowest_sync_clk",
           "RISC_V_TCM_0/clk",
-          "proc_sys_reset_2/slowest_sync_clk"
+          "test_controller_1/clk"
         ]
       },
       "clk_wiz_0_locked": {
@@ -1378,23 +1378,33 @@
           "RISC_V_TCM_0/resetn"
         ]
       },
+      "proc_sys_reset_2_interconnect_aresetn": {
+        "ports": [
+          "proc_sys_reset_2/interconnect_aresetn",
+          "axi_clock_converter_2/m_axi_aresetn",
+          "axi_clock_converter_1/m_axi_aresetn",
+          "axi_clock_converter_0/m_axi_aresetn"
+        ]
+      },
       "proc_sys_reset_2_peripheral_aresetn": {
         "ports": [
           "proc_sys_reset_2/peripheral_aresetn",
-          "axi_clock_converter_0/m_axi_aresetn",
-          "axi_clock_converter_2/m_axi_aresetn",
-          "axi_clock_converter_1/m_axi_aresetn",
-          "test_controller_1/resetn",
           "axi_bram_ctrl_1/s_axi_aresetn",
-          "axi_bram_ctrl_0/s_axi_aresetn"
+          "axi_bram_ctrl_0/s_axi_aresetn",
+          "test_controller_1/resetn"
+        ]
+      },
+      "proc_sys_reset_3_interconnect_aresetn": {
+        "ports": [
+          "proc_sys_reset_3/interconnect_aresetn",
+          "axi_clock_converter_2/s_axi_aresetn",
+          "axi_clock_converter_1/s_axi_aresetn",
+          "axi_clock_converter_0/s_axi_aresetn"
         ]
       },
       "proc_sys_reset_3_peripheral_aresetn": {
         "ports": [
           "proc_sys_reset_3/peripheral_aresetn",
-          "axi_clock_converter_0/s_axi_aresetn",
-          "axi_clock_converter_1/s_axi_aresetn",
-          "axi_clock_converter_2/s_axi_aresetn",
           "axi_protocol_checker_0/aresetn",
           "slow_clk_restn"
         ]
@@ -1441,12 +1451,12 @@
               "SEG_axi_bram_ctrl_0_Mem0": {
                 "address_block": "/axi_bram_ctrl_0/S_AXI/Mem0",
                 "offset": "0x00000000",
-                "range": "16K"
+                "range": "64K"
               },
               "SEG_axi_bram_ctrl_1_Mem0": {
                 "address_block": "/axi_bram_ctrl_1/S_AXI/Mem0",
                 "offset": "0x80000000",
-                "range": "16K"
+                "range": "64K"
               },
               "SEG_test_controller_1_reg0": {
                 "address_block": "/test_controller_1/S_AXI/reg0",

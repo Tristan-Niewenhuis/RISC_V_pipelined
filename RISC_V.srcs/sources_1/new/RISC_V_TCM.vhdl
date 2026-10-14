@@ -6,11 +6,11 @@ use work.RISCV_package.all;
 entity RISC_V_TCM is
   Port(clk, resetn : in std_logic;
        --fetch unit port
-       i_dgb_addr : in std_logic_vector(I_BYTES_ADDR_BITS - 3 downto 0);
+       i_dgb_addr : in std_logic_vector(I_BYTES_ADDR_BITS - 1 downto 0);
        i_dgb_wdata : in std_logic_vector(31 downto 0);
        i_dgb_we : in std_logic;
        --load store unit ports    
-       d_dgb_addr : in std_logic_vector(I_BYTES_ADDR_BITS - 3 downto 0);
+       d_dgb_addr : in std_logic_vector(I_BYTES_ADDR_BITS - 1 downto 0);
        d_dgb_wdata : in std_logic_vector(31 downto 0);
        d_dgb_we : in std_logic;
        --io ports
@@ -103,7 +103,7 @@ begin
   -- ITCM
   ----------------------------------------------------------------------------
   i_addr_f <= (31 downto I_BYTES_ADDR_BITS => '0') & i_addr & "00"; --NEGEDGE accounted for in datapath
-  i_dbg_addr_f <= (31 downto I_BYTES_ADDR_BITS => '0') & i_dgb_addr & "00";
+  i_dbg_addr_f <= (31 downto I_BYTES_ADDR_BITS => '0') & i_dgb_addr;
 
   itcm : entity work.tightly_coupled_memory
     generic map(
@@ -136,7 +136,7 @@ begin
                 (31 downto D_BYTES_ADDR_BITS => '0') & d_addr_p & "00";
   d_s_data_p_f <= d_s_data_p1 when D_USE_NEGEDGE else d_s_data_p;
   d_s_strobe_f <= d_s_strobe_p1 when D_USE_NEGEDGE else d_s_strobe_p;
-  d_dbg_addr_f <= (31 downto D_BYTES_ADDR_BITS => '0') & d_dgb_addr & "00";
+  d_dbg_addr_f <= (31 downto D_BYTES_ADDR_BITS => '0') & d_dgb_addr;
 
   dtcm : entity work.tightly_coupled_memory
     generic map(

@@ -7,7 +7,8 @@
       "name": "TCM",
       "rev_ctrl_bd_flag": "RevCtrlBdOff",
       "synth_flow_mode": "None",
-      "tool_version": "2026.1"
+      "tool_version": "2026.1",
+      "validated": "true"
     },
     "design_tree": {
       "jtag_axi_0": "",
@@ -18,6 +19,10 @@
         "type": "rst",
         "direction": "I",
         "parameters": {
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
           "POLARITY": {
             "value": "ACTIVE_LOW"
           }
@@ -30,8 +35,20 @@
         "type": "clk",
         "direction": "I",
         "parameters": {
+          "CLK_DOMAIN": {
+            "value": "TCM_sys_clock",
+            "value_src": "default"
+          },
           "FREQ_HZ": {
             "value": "100000000"
+          },
+          "FREQ_TOLERANCE_HZ": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
           },
           "PHASE": {
             "value": "0.0"
@@ -101,6 +118,10 @@
           },
           "LOCK_PROPAGATE": {
             "value": "0"
+          },
+          "TRAINING_MODULE": {
+            "value": "TCM_axi_slave.bd",
+            "value_src": "auto"
           }
         },
         "interface_ports": {
@@ -111,19 +132,19 @@
             "parameters": {
               "ADDR_WIDTH": {
                 "value": "32",
-                "value_src": "strong"
+                "value_src": "auto_prop"
               },
               "ARUSER_WIDTH": {
                 "value": "0",
-                "value_src": "strong"
+                "value_src": "const_prop"
               },
               "AWUSER_WIDTH": {
                 "value": "0",
-                "value_src": "strong"
+                "value_src": "const_prop"
               },
               "BUSER_WIDTH": {
                 "value": "0",
-                "value_src": "strong"
+                "value_src": "const_prop"
               },
               "CLK_DOMAIN": {
                 "value": "/TCM_axi_slave/clk_wiz_0_clk_out1",
@@ -131,51 +152,51 @@
               },
               "DATA_WIDTH": {
                 "value": "32",
-                "value_src": "strong"
+                "value_src": "auto_prop"
               },
               "FREQ_HZ": {
                 "value": "30000000",
-                "value_src": "strong"
+                "value_src": "ip_prop"
               },
               "HAS_BRESP": {
                 "value": "1",
-                "value_src": "strong"
+                "value_src": "const_prop"
               },
               "HAS_BURST": {
                 "value": "1",
-                "value_src": "strong"
+                "value_src": "const_prop"
               },
               "HAS_CACHE": {
                 "value": "1",
-                "value_src": "strong"
+                "value_src": "auto_prop"
               },
               "HAS_LOCK": {
                 "value": "1",
-                "value_src": "strong"
+                "value_src": "auto_prop"
               },
               "HAS_PROT": {
                 "value": "1",
-                "value_src": "strong"
+                "value_src": "const_prop"
               },
               "HAS_QOS": {
                 "value": "1",
-                "value_src": "strong"
+                "value_src": "auto_prop"
               },
               "HAS_REGION": {
                 "value": "0",
-                "value_src": "strong"
+                "value_src": "const_prop"
               },
               "HAS_RRESP": {
                 "value": "1",
-                "value_src": "strong"
+                "value_src": "const_prop"
               },
               "HAS_WSTRB": {
                 "value": "1",
-                "value_src": "strong"
+                "value_src": "const_prop"
               },
               "ID_WIDTH": {
                 "value": "1",
-                "value_src": "strong"
+                "value_src": "auto_prop"
               },
               "INSERT_VIP": {
                 "value": "0",
@@ -183,7 +204,7 @@
               },
               "MAX_BURST_LENGTH": {
                 "value": "256",
-                "value_src": "strong"
+                "value_src": "user_prop"
               },
               "NUM_READ_OUTSTANDING": {
                 "value": "2",
@@ -191,7 +212,7 @@
               },
               "NUM_READ_THREADS": {
                 "value": "1",
-                "value_src": "strong"
+                "value_src": "default_prop"
               },
               "NUM_WRITE_OUTSTANDING": {
                 "value": "2",
@@ -199,39 +220,39 @@
               },
               "NUM_WRITE_THREADS": {
                 "value": "1",
-                "value_src": "strong"
+                "value_src": "default_prop"
               },
               "PHASE": {
                 "value": "0.0",
-                "value_src": "strong"
+                "value_src": "ip_prop"
               },
               "PROTOCOL": {
                 "value": "AXI4",
-                "value_src": "strong"
+                "value_src": "auto_prop"
               },
               "READ_WRITE_MODE": {
                 "value": "READ_WRITE",
-                "value_src": "strong"
+                "value_src": "const_prop"
               },
               "RUSER_BITS_PER_BYTE": {
                 "value": "0",
-                "value_src": "strong"
+                "value_src": "default_prop"
               },
               "RUSER_WIDTH": {
                 "value": "0",
-                "value_src": "strong"
+                "value_src": "const_prop"
               },
               "SUPPORTS_NARROW_BURST": {
-                "value": "1",
-                "value_src": "strong"
+                "value": "0",
+                "value_src": "user_prop"
               },
               "WUSER_BITS_PER_BYTE": {
                 "value": "0",
-                "value_src": "strong"
+                "value_src": "default_prop"
               },
               "WUSER_WIDTH": {
                 "value": "0",
-                "value_src": "strong"
+                "value_src": "const_prop"
               }
             },
             "bd_attributes": {
@@ -451,7 +472,33 @@
         "ports": {
           "clk_out2": {
             "type": "clk",
-            "direction": "O"
+            "direction": "O",
+            "parameters": {
+              "ASSOCIATED_BUSIF": {
+                "value": "S00_AXI",
+                "value_src": "strong"
+              },
+              "CLK_DOMAIN": {
+                "value": "/TCM_axi_slave/clk_wiz_0_clk_out1",
+                "value_src": "ip_prop"
+              },
+              "FREQ_HZ": {
+                "value": "30000000",
+                "value_src": "ip_prop"
+              },
+              "FREQ_TOLERANCE_HZ": {
+                "value": "0",
+                "value_src": "strong"
+              },
+              "INSERT_VIP": {
+                "value": "0",
+                "value_src": "strong"
+              },
+              "PHASE": {
+                "value": "0.0",
+                "value_src": "ip_prop"
+              }
+            }
           },
           "locked": {
             "direction": "O"
@@ -461,14 +508,50 @@
           },
           "resetn": {
             "type": "rst",
-            "direction": "I"
+            "direction": "I",
+            "parameters": {
+              "INSERT_VIP": {
+                "value": "0",
+                "value_src": "strong"
+              },
+              "POLARITY": {
+                "value": "ACTIVE_LOW",
+                "value_src": "user_prop"
+              }
+            }
           },
           "status_led_0": {
             "direction": "O"
           },
           "sys_clock": {
             "type": "clk",
-            "direction": "I"
+            "direction": "I",
+            "parameters": {
+              "ASSOCIATED_RESET": {
+                "value": "resetn",
+                "value_src": "strong"
+              },
+              "CLK_DOMAIN": {
+                "value": "TCM_sys_clock",
+                "value_src": "default_prop"
+              },
+              "FREQ_HZ": {
+                "value": "100000000",
+                "value_src": "user_prop"
+              },
+              "FREQ_TOLERANCE_HZ": {
+                "value": "0",
+                "value_src": "strong"
+              },
+              "INSERT_VIP": {
+                "value": "0",
+                "value_src": "strong"
+              },
+              "PHASE": {
+                "value": "0.0",
+                "value_src": "user_prop"
+              }
+            }
           },
           "pc_asserted_1": {
             "direction": "O"
@@ -477,7 +560,17 @@
             "type": "rst",
             "direction": "O",
             "left": "0",
-            "right": "0"
+            "right": "0",
+            "parameters": {
+              "INSERT_VIP": {
+                "value": "0",
+                "value_src": "strong"
+              },
+              "POLARITY": {
+                "value": "ACTIVE_LOW",
+                "value_src": "const_prop"
+              }
+            }
           }
         },
         "post_compiled_compname": "TCM_axi_slave_inst_0",
@@ -485,7 +578,7 @@
         "variant_info": {
           "TCM_axi_slave.bd": {
             "scoped_diagram": "TCM_axi_slave_inst_0.bd",
-            "design_checksum": "0x6C789F0DA634385D",
+            "design_checksum": "0xCF9D3E5095358F01",
             "ref_name": "TCM_axi_slave",
             "ref_subinst_path": "TCM_TCM_axi_slave_0",
             "ref_type": "Block Design",
@@ -554,12 +647,12 @@
               "SEG_axi_bram_ctrl_0_Mem0": {
                 "address_block": "/TCM_axi_slave/axi_bram_ctrl_0/S_AXI/Mem0",
                 "offset": "0x00000000",
-                "range": "16K"
+                "range": "64K"
               },
               "SEG_axi_bram_ctrl_1_Mem0": {
                 "address_block": "/TCM_axi_slave/axi_bram_ctrl_1/S_AXI/Mem0",
                 "offset": "0x80000000",
-                "range": "16K"
+                "range": "64K"
               },
               "SEG_test_controller_1_reg0": {
                 "address_block": "/TCM_axi_slave/test_controller_1/S_AXI/reg0",

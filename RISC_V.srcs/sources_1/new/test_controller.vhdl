@@ -53,7 +53,7 @@ architecture Behavioral of test_controller is
     signal awready_i : std_logic;
     signal wready_i : std_logic;
 
-    signal write_commit : std_logic;
+    signal write_commit, write_commit_reg : std_logic;
 
     --axi read
     signal r_cur_state, r_next_state_i, r_next_state_final : state_t;
@@ -101,6 +101,7 @@ begin
                 awaddr_reg <= (others => '0');
                 wdata_reg <= (others => '0');
                 wstrb_reg <= (others => '0');
+                write_commit_reg <= '0';
 
             else
                 -- Capture address independently.
@@ -125,6 +126,7 @@ begin
                     w_captured <= '0';
                 end if;
             end if;
+            write_commit_reg <= write_commit;
         end if;
     end process;
 
@@ -194,7 +196,7 @@ begin
                 resetn_reg <= '0';
             else
                 --axi write
-                if (write_commit = '1' and awaddr_reg = "10100" and wstrb_reg(0) = '1') then
+                if (write_commit_reg = '1' and awaddr_reg = "10100" and wstrb_reg(0) = '1') then
                     resetn_reg <= wdata_reg(0);
                 end if;
             end if;
