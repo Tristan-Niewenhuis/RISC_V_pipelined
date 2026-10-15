@@ -31,7 +31,7 @@ elf:
 		cflags=$(CFLAGS)\
 		ldflags=$(LDFLAGS) \
 		user_libs=m \
-		gsf=1
+		gsf=100
 
 dis: elf
 	powershell -NoProfile -ExecutionPolicy Bypass -File .\disassemble.ps1

@@ -1,2 +1,6 @@
 name,cycle_low,cycle_high,cycles,instret_low,instret_high,instret,elapsed_seconds
-empty_test,TIMEOUT
+aha-mont64,734,0,734,319,0,319,0
+crc32,734,0,734,319,0,319,0
+depthconv,734,0,734,319,0,319,0
+edn,734,0,734,319,0,319,0
+fake_test,734,0,734,319,0,319,0

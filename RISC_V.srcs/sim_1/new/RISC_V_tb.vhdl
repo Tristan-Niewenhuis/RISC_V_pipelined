@@ -9,7 +9,7 @@ architecture Behavioral of RISC_V_tb is
 
     -- Clock / reset
     signal sys_clock : std_logic := '0';
-    signal resetn : std_logic := '0';
+    signal reset : std_logic := '0';
 
     -- AXI slave: read address channel
     signal S00_AXI_araddr : std_logic_vector(31 downto 0) := (others => '0');
@@ -114,7 +114,7 @@ begin
             locked => locked,
             mem_hazard => mem_hazard,
             pc_asserted_1 => pc_asserted_1,
-            resetn => resetn,
+            reset => reset,
             slow_clk_restn => slow_clk_restn,
             status_led_0 => status_led_0,
             sys_clock => sys_clock
@@ -211,13 +211,116 @@ begin
 
         variable read_data : std_logic_vector(31 downto 0);
         variable poll_count : natural := 0;
+        type word_array_t is array (natural range <>) of std_logic_vector(31 downto 0);
+        constant iram_program : word_array_t(0 to 99) := (
+            0 => x"00020117",
+            1 => x"FE010113",
+            2 => x"00010297",
+            3 => x"FF828293",
+            4 => x"00010317",
+            5 => x"01030313",
+            6 => x"0062D863",
+            7 => x"0002A023",
+            8 => x"00428293",
+            9 => x"FF5FF06F",
+            10 => x"034000EF",
+            11 => x"0000006F",
+            12 => x"00008067",
+            13 => x"00008067",
+            14 => x"06400793",
+            15 => x"00000013",
+            16 => x"FFF78793",
+            17 => x"FE079CE3",
+            18 => x"0BE00513",
+            19 => x"00008067",
+            20 => x"F4250513",
+            21 => x"00153513",
+            22 => x"00008067",
+            23 => x"FE010113",
+            24 => x"00112E23",
+            25 => x"038000EF",
+            26 => x"FC9FF0EF",
+            27 => x"00100513",
+            28 => x"FC5FF0EF",
+            29 => x"030000EF",
+            30 => x"FC1FF0EF",
+            31 => x"00A12623",
+            32 => x"058000EF",
+            33 => x"00C12503",
+            34 => x"FC9FF0EF",
+            35 => x"01C12083",
+            36 => x"00153513",
+            37 => x"02010113",
+            38 => x"00008067",
+            39 => x"00000513",
+            40 => x"00008067",
+            41 => x"C0002773",
+            42 => x"000107B7",
+            43 => x"00E7AC23",
+            44 => x"C8002773",
+            45 => x"000107B7",
+            46 => x"00E7AE23",
+            47 => x"C0202773",
+            48 => x"000107B7",
+            49 => x"00E7A423",
+            50 => x"C8202773",
+            51 => x"000107B7",
+            52 => x"00E7A623",
+            53 => x"00008067",
+            54 => x"C00027F3",
+            55 => x"00010637",
+            56 => x"00F62823",
+            57 => x"C80027F3",
+            58 => x"00010737",
+            59 => x"00F72A23",
+            60 => x"C02027F3",
+            61 => x"000106B7",
+            62 => x"00F6A023",
+            63 => x"C82025F3",
+            64 => x"000107B7",
+            65 => x"00B7A223",
+            66 => x"000105B7",
+            67 => x"01C5AE03",
+            68 => x"000105B7",
+            69 => x"0185A503",
+            70 => x"01472703",
+            71 => x"01062583",
+            72 => x"00010637",
+            73 => x"00C62303",
+            74 => x"00010637",
+            75 => x"00862603",
+            76 => x"0047A783",
+            77 => x"0006A683",
+            78 => x"40A58533",
+            79 => x"00A5B5B3",
+            80 => x"000108B7",
+            81 => x"41C70733",
+            82 => x"FEA8A023",
+            83 => x"40B70733",
+            84 => x"40C68633",
+            85 => x"00010837",
+            86 => x"FEE82223",
+            87 => x"00010537",
+            88 => x"00C6B6B3",
+            89 => x"406787B3",
+            90 => x"FEC52423",
+            91 => x"40D787B3",
+            92 => x"000105B7",
+            93 => x"FEF5A623",
+            94 => x"00010737",
+            95 => x"00100793",
+            96 => x"FEF72823",
+            97 => x"00000013",
+            98 => x"00000013",
+            99 => x"FF9FF06F"
+        );
     begin
         ----------------------------------------------------------------
         -- Reset
         ----------------------------------------------------------------
-        resetn <= '0';
+        reset <= '1';
         wait for 100 ns;
-        resetn <= '1';
+        reset <= '0';
 
         if locked /= '1' then
             wait until locked = '1';
@@ -231,12 +334,18 @@ begin
         axi_write(x"C0000014", x"00000000");
 
         ----------------------------------------------------------------
-        -- 1.5. Mock writing program
+        -- 1.5. Load the 100-word benchmark program into IRAM.
+        -- AXI addresses are byte addresses, so each 32-bit word advances
+        -- the address by four bytes. CPU remains in reset during loading.
         ----------------------------------------------------------------
-        axi_write(x"0000FFFC", x"DEADBEEF");
-        wait for 1000 ns;
-        axi_write(x"8000FFFC", x"DEADBEE5");
-        wait for 1000 ns;
+        for i in iram_program'range loop
+            axi_write(
+                std_logic_vector(to_unsigned(i * 4, 32)),
+                iram_program(i)
+            );
+        end loop;
+
+        report "Loaded " & integer'image(iram_program'length) & " words into IRAM.";
 
         ----------------------------------------------------------------
         -- 2. Start benchmark
