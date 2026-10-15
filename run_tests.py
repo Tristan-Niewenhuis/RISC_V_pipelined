@@ -268,9 +268,7 @@ def tcl_write_transaction(name, axi_address, words):
 # Write {len(words)} words at {tcl_hex(axi_address)}
 # ------------------------------------------------------------
 
-delete_hw_axi_txn -quiet [{{
-    get_hw_axi_txns {name}
-}}]
+delete_hw_axi_txn -quiet [get_hw_axi_txns {name}]
 
 create_hw_axi_txn {name} [get_hw_axis {HW_AXI}] \\
     -type WRITE \\
@@ -516,14 +514,16 @@ def generate_tcl_script(tests):
             f"set poll_start_{test_number} [clock seconds]"
         )
 
+        # Create this transaction once. Recreate-on-each-poll causes
+        # Labtools error 27-1991 because the transaction name already exists.
         lines.append(
-            f"while {{!$done_{test_number}}} {{"
+            f"create_hw_axi_txn status_{test_number} "
+            f"$hw_axi -type READ "
+            f"-address {tcl_hex(STATUS_ADDR)}"
         )
 
         lines.append(
-            f"    create_hw_axi_txn status_{test_number} "
-            f"$hw_axi -type READ "
-            f"-address {tcl_hex(STATUS_ADDR)}"
+            f"while {{!$done_{test_number}}} {{"
         )
 
         lines.append(
@@ -536,8 +536,7 @@ def generate_tcl_script(tests):
         )
 
         lines.append(
-            f"    set status_value_{test_number} "
-            f"[expr {{0x$status_data_{test_number}}}]"
+            f"    scan $status_data_{test_number} %x status_value_{test_number}"
         )
 
         lines.append(
@@ -616,8 +615,12 @@ def generate_tcl_script(tests):
         )
 
         lines.append(
-            f"set cycle_lo_{test_number} "
-            f"[expr {{0x[get_property DATA [get_hw_axi_txns cycle_lo_{test_number}]]}}]"
+            f"set cycle_lo_data_{test_number} "
+            f"[get_property DATA [get_hw_axi_txns cycle_lo_{test_number}]]"
+        )
+
+        lines.append(
+            f"scan $cycle_lo_data_{test_number} %x cycle_lo_{test_number}"
         )
 
         lines.append("")
@@ -634,8 +637,12 @@ def generate_tcl_script(tests):
         )
 
         lines.append(
-            f"set cycle_hi_{test_number} "
-            f"[expr {{0x[get_property DATA [get_hw_axi_txns cycle_hi_{test_number}]]}}]"
+            f"set cycle_hi_data_{test_number} "
+            f"[get_property DATA [get_hw_axi_txns cycle_hi_{test_number}]]"
+        )
+
+        lines.append(
+            f"scan $cycle_hi_data_{test_number} %x cycle_hi_{test_number}"
         )
 
         # --------------------------------------------------------
@@ -656,8 +663,12 @@ def generate_tcl_script(tests):
         )
 
         lines.append(
-            f"set instret_lo_{test_number} "
-            f"[expr {{0x[get_property DATA [get_hw_axi_txns instret_lo_{test_number}]]}}]"
+            f"set instret_lo_data_{test_number} "
+            f"[get_property DATA [get_hw_axi_txns instret_lo_{test_number}]]"
+        )
+
+        lines.append(
+            f"scan $instret_lo_data_{test_number} %x instret_lo_{test_number}"
         )
 
         lines.append("")
@@ -674,8 +685,12 @@ def generate_tcl_script(tests):
         )
 
         lines.append(
-            f"set instret_hi_{test_number} "
-            f"[expr {{0x[get_property DATA [get_hw_axi_txns instret_hi_{test_number}]]}}]"
+            f"set instret_hi_data_{test_number} "
+            f"[get_property DATA [get_hw_axi_txns instret_hi_{test_number}]]"
+        )
+
+        lines.append(
+            f"scan $instret_hi_data_{test_number} %x instret_hi_{test_number}"
         )
 
         # --------------------------------------------------------

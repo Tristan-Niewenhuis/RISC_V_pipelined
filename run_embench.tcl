@@ -32,9 +32,7 @@ run_hw_axi [get_hw_axi_txns reset_cpu_0]
 # Write 100 words at 00000000
 # ------------------------------------------------------------
 
-delete_hw_axi_txn -quiet [{
-    get_hw_axi_txns iram_0_0
-}]
+delete_hw_axi_txn -quiet [get_hw_axi_txns iram_0_0]
 
 create_hw_axi_txn iram_0_0 [get_hw_axis hw_axi_1] \
     -type WRITE \
@@ -55,11 +53,11 @@ run_hw_axi [get_hw_axi_txns release_cpu_0]
 # Poll STATUS until DONE = 1
 set done_0 0
 set poll_start_0 [clock seconds]
+create_hw_axi_txn status_0 $hw_axi -type READ -address C0000010
 while {!$done_0} {
-    create_hw_axi_txn status_0 $hw_axi -type READ -address C0000010
     run_hw_axi [get_hw_axi_txns status_0]
     set status_data_0 [get_property DATA [get_hw_axi_txns status_0]]
-    set status_value_0 [expr {0x$status_data_0}]
+    scan $status_data_0 %x status_value_0
     if {($status_value_0 & 1) != 0} {
         set done_0 1
     }
@@ -79,22 +77,26 @@ while {!$done_0} {
 # Read cycle low
 create_hw_axi_txn cycle_lo_0 $hw_axi -type READ -address C0000000
 run_hw_axi [get_hw_axi_txns cycle_lo_0]
-set cycle_lo_0 [expr {0x[get_property DATA [get_hw_axi_txns cycle_lo_0]]}]
+set cycle_lo_data_0 [get_property DATA [get_hw_axi_txns cycle_lo_0]]
+scan $cycle_lo_data_0 %x cycle_lo_0
 
 # Read cycle high
 create_hw_axi_txn cycle_hi_0 $hw_axi -type READ -address C0000004
 run_hw_axi [get_hw_axi_txns cycle_hi_0]
-set cycle_hi_0 [expr {0x[get_property DATA [get_hw_axi_txns cycle_hi_0]]}]
+set cycle_hi_data_0 [get_property DATA [get_hw_axi_txns cycle_hi_0]]
+scan $cycle_hi_data_0 %x cycle_hi_0
 
 # Read retired instructions low
 create_hw_axi_txn instret_lo_0 $hw_axi -type READ -address C0000008
 run_hw_axi [get_hw_axi_txns instret_lo_0]
-set instret_lo_0 [expr {0x[get_property DATA [get_hw_axi_txns instret_lo_0]]}]
+set instret_lo_data_0 [get_property DATA [get_hw_axi_txns instret_lo_0]]
+scan $instret_lo_data_0 %x instret_lo_0
 
 # Read retired instructions high
 create_hw_axi_txn instret_hi_0 $hw_axi -type READ -address C000000C
 run_hw_axi [get_hw_axi_txns instret_hi_0]
-set instret_hi_0 [expr {0x[get_property DATA [get_hw_axi_txns instret_hi_0]]}]
+set instret_hi_data_0 [get_property DATA [get_hw_axi_txns instret_hi_0]]
+scan $instret_hi_data_0 %x instret_hi_0
 
 # Combine 32-bit halves into 64-bit values
 set cycles_0 [expr {($cycle_hi_0 << 32) | $cycle_lo_0}]
@@ -124,9 +126,7 @@ run_hw_axi [get_hw_axi_txns reset_cpu_1]
 # Write 180 words at 00000000
 # ------------------------------------------------------------
 
-delete_hw_axi_txn -quiet [{
-    get_hw_axi_txns iram_1_0
-}]
+delete_hw_axi_txn -quiet [get_hw_axi_txns iram_1_0]
 
 create_hw_axi_txn iram_1_0 [get_hw_axis hw_axi_1] \
     -type WRITE \
@@ -143,9 +143,7 @@ run_hw_axi [get_hw_axi_txns iram_1_0]
 # Write 256 words at 80000000
 # ------------------------------------------------------------
 
-delete_hw_axi_txn -quiet [{
-    get_hw_axi_txns dram_1_0
-}]
+delete_hw_axi_txn -quiet [get_hw_axi_txns dram_1_0]
 
 create_hw_axi_txn dram_1_0 [get_hw_axis hw_axi_1] \
     -type WRITE \
@@ -163,11 +161,11 @@ run_hw_axi [get_hw_axi_txns release_cpu_1]
 # Poll STATUS until DONE = 1
 set done_1 0
 set poll_start_1 [clock seconds]
+create_hw_axi_txn status_1 $hw_axi -type READ -address C0000010
 while {!$done_1} {
-    create_hw_axi_txn status_1 $hw_axi -type READ -address C0000010
     run_hw_axi [get_hw_axi_txns status_1]
     set status_data_1 [get_property DATA [get_hw_axi_txns status_1]]
-    set status_value_1 [expr {0x$status_data_1}]
+    scan $status_data_1 %x status_value_1
     if {($status_value_1 & 1) != 0} {
         set done_1 1
     }
@@ -187,22 +185,26 @@ while {!$done_1} {
 # Read cycle low
 create_hw_axi_txn cycle_lo_1 $hw_axi -type READ -address C0000000
 run_hw_axi [get_hw_axi_txns cycle_lo_1]
-set cycle_lo_1 [expr {0x[get_property DATA [get_hw_axi_txns cycle_lo_1]]}]
+set cycle_lo_data_1 [get_property DATA [get_hw_axi_txns cycle_lo_1]]
+scan $cycle_lo_data_1 %x cycle_lo_1
 
 # Read cycle high
 create_hw_axi_txn cycle_hi_1 $hw_axi -type READ -address C0000004
 run_hw_axi [get_hw_axi_txns cycle_hi_1]
-set cycle_hi_1 [expr {0x[get_property DATA [get_hw_axi_txns cycle_hi_1]]}]
+set cycle_hi_data_1 [get_property DATA [get_hw_axi_txns cycle_hi_1]]
+scan $cycle_hi_data_1 %x cycle_hi_1
 
 # Read retired instructions low
 create_hw_axi_txn instret_lo_1 $hw_axi -type READ -address C0000008
 run_hw_axi [get_hw_axi_txns instret_lo_1]
-set instret_lo_1 [expr {0x[get_property DATA [get_hw_axi_txns instret_lo_1]]}]
+set instret_lo_data_1 [get_property DATA [get_hw_axi_txns instret_lo_1]]
+scan $instret_lo_data_1 %x instret_lo_1
 
 # Read retired instructions high
 create_hw_axi_txn instret_hi_1 $hw_axi -type READ -address C000000C
 run_hw_axi [get_hw_axi_txns instret_hi_1]
-set instret_hi_1 [expr {0x[get_property DATA [get_hw_axi_txns instret_hi_1]]}]
+set instret_hi_data_1 [get_property DATA [get_hw_axi_txns instret_hi_1]]
+scan $instret_hi_data_1 %x instret_hi_1
 
 # Combine 32-bit halves into 64-bit values
 set cycles_1 [expr {($cycle_hi_1 << 32) | $cycle_lo_1}]
