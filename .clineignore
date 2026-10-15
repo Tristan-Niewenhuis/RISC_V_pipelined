@@ -1,0 +1,14 @@
+*.runs/
+*.gen/
+*.cache/
+*.hw/
+*.ip_user_files/
+*.sim/
+*.jou
+*.log
+*.str
+*.pb
+*.wdb
+*.backup
+*.dmp
+*.rpt
