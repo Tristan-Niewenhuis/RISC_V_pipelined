@@ -1,1 +1,2 @@
 name,cycle_low,cycle_high,cycles,instret_low,instret_high,instret,elapsed_seconds
+empty_test,TIMEOUT

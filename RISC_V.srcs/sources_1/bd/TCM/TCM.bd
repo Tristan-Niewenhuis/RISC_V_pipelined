@@ -1,7 +1,7 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0x6640CF61241FAE05",
+      "boundary_crc": "0xF98DA0781AF19F59",
       "device": "xc7a100tcsg324-1",
       "gen_directory": "../../../../RISC_V.gen/sources_1/bd/TCM",
       "name": "TCM",
@@ -15,7 +15,7 @@
       "TCM_axi_slave": ""
     },
     "ports": {
-      "resetn": {
+      "reset": {
         "type": "rst",
         "direction": "I",
         "parameters": {
@@ -24,7 +24,7 @@
             "value_src": "default"
           },
           "POLARITY": {
-            "value": "ACTIVE_LOW"
+            "value": "ACTIVE_HIGH"
           }
         }
       },
@@ -243,8 +243,8 @@
                 "value_src": "const_prop"
               },
               "SUPPORTS_NARROW_BURST": {
-                "value": "0",
-                "value_src": "user_prop"
+                "value": "1",
+                "value_src": "default_prop"
               },
               "WUSER_BITS_PER_BYTE": {
                 "value": "0",
@@ -506,20 +506,6 @@
           "mem_hazard": {
             "direction": "O"
           },
-          "resetn": {
-            "type": "rst",
-            "direction": "I",
-            "parameters": {
-              "INSERT_VIP": {
-                "value": "0",
-                "value_src": "strong"
-              },
-              "POLARITY": {
-                "value": "ACTIVE_LOW",
-                "value_src": "user_prop"
-              }
-            }
-          },
           "status_led_0": {
             "direction": "O"
           },
@@ -528,7 +514,7 @@
             "direction": "I",
             "parameters": {
               "ASSOCIATED_RESET": {
-                "value": "resetn",
+                "value": "reset",
                 "value_src": "strong"
               },
               "CLK_DOMAIN": {
@@ -571,6 +557,20 @@
                 "value_src": "const_prop"
               }
             }
+          },
+          "reset": {
+            "type": "rst",
+            "direction": "I",
+            "parameters": {
+              "INSERT_VIP": {
+                "value": "0",
+                "value_src": "strong"
+              },
+              "POLARITY": {
+                "value": "ACTIVE_HIGH",
+                "value_src": "user_prop"
+              }
+            }
           }
         },
         "post_compiled_compname": "TCM_axi_slave_inst_0",
@@ -578,7 +578,7 @@
         "variant_info": {
           "TCM_axi_slave.bd": {
             "scoped_diagram": "TCM_axi_slave_inst_0.bd",
-            "design_checksum": "0xCF9D3E5095358F01",
+            "design_checksum": "0xBF0ADFB93D60D97",
             "ref_name": "TCM_axi_slave",
             "ref_subinst_path": "TCM_TCM_axi_slave_0",
             "ref_type": "Block Design",
@@ -617,8 +617,8 @@
       },
       "resetn_1": {
         "ports": [
-          "resetn",
-          "TCM_axi_slave/resetn"
+          "reset",
+          "TCM_axi_slave/reset"
         ]
       },
       "sys_clock_1": {

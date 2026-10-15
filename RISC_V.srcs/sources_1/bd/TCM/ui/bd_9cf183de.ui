@@ -1,71 +1,26 @@
 {
    "ActiveEmotionalView":"Default View",
-   "Default View_ScaleFactor":"1.25",
-   "Default View_TopLeft":"363,-165",
+   "Default View_ScaleFactor":"0.769465",
+   "Default View_TopLeft":"-838,1",
    "ExpandedHierarchyInLayout":"",
    "guistr":"# # String gsaved with Nlview 7.8.0 2024-04-26 e1825d835c VDI=44 GEI=38 GUI=JA:24.0
 #  -string -flagsOSRD
-preplace port port-id_resetn -pg 1 -lvl 0 -x 0 -y 170 -defaultsOSRD
-preplace port port-id_status_led_0 -pg 1 -lvl 3 -x 1810 -y 120 -defaultsOSRD
+preplace port port-id_reset -pg 1 -lvl 0 -x 0 -y 170 -defaultsOSRD
+preplace port port-id_status_led_0 -pg 1 -lvl 3 -x 610 -y 120 -defaultsOSRD
 preplace port port-id_sys_clock -pg 1 -lvl 0 -x 0 -y 200 -defaultsOSRD
-preplace port port-id_pc_asserted_1 -pg 1 -lvl 3 -x 1810 -y 150 -defaultsOSRD
+preplace port port-id_pc_asserted_1 -pg 1 -lvl 3 -x 610 -y 150 -defaultsOSRD
 preplace inst jtag_axi_0 -pg 1 -lvl 1 -x 120 -y 100 -defaultsOSRD
-preplace inst TCM_axi_slave -pg 1 -lvl 2 -x 450 -y 122 -defaultsOSRD
-preplace inst TCM_axi_slave|RISC_V_TCM_0 -pg 1 -lvl 2 -x 1000 -y 372 -defaultsOSRD
-preplace inst TCM_axi_slave|axi_bram_ctrl_0 -pg 1 -lvl 3 -x 1410 -y 142 -defaultsOSRD
-preplace inst TCM_axi_slave|axi_bram_ctrl_1 -pg 1 -lvl 3 -x 1410 -y 812 -defaultsOSRD
-preplace inst TCM_axi_slave|axi_clock_converter_0 -pg 1 -lvl 2 -x 1000 -y 1022 -defaultsOSRD
-preplace inst TCM_axi_slave|axi_clock_converter_1 -pg 1 -lvl 2 -x 1000 -y 822 -defaultsOSRD
-preplace inst TCM_axi_slave|axi_clock_converter_2 -pg 1 -lvl 2 -x 1000 -y 1202 -defaultsOSRD
-preplace inst TCM_axi_slave|clk_wiz_0 -pg 1 -lvl 2 -x 1000 -y 632 -defaultsOSRD
-preplace inst TCM_axi_slave|proc_sys_reset_0 -pg 1 -lvl 1 -x 570 -y 612 -defaultsOSRD
-preplace inst TCM_axi_slave|proc_sys_reset_2 -pg 1 -lvl 1 -x 570 -y 812 -defaultsOSRD
-preplace inst TCM_axi_slave|smartconnect_0 -pg 1 -lvl 1 -x 570 -y 1002 -defaultsOSRD
-preplace inst TCM_axi_slave|test_controller_1 -pg 1 -lvl 3 -x 1410 -y 392 -defaultsOSRD
-preplace inst TCM_axi_slave|axi_protocol_checker_0 -pg 1 -lvl 3 -x 1410 -y 1002 -defaultsOSRD
-preplace inst TCM_axi_slave|proc_sys_reset_3 -pg 1 -lvl 2 -x 1000 -y 1402 -defaultsOSRD
-preplace netloc TCM_axi_slave_pc_asserted_1 1 2 1 1790J 150n
-preplace netloc TCM_axi_slave_slow_clk_restn 1 0 3 20 230 220J 1534 1770
-preplace netloc clk_wiz_1_clk_out1 1 0 3 20 10 NJ 10 1770
-preplace netloc resetn_1 1 0 2 NJ 170 240J
+preplace inst TCM_axi_slave -pg 1 -lvl 2 -x 450 -y 120 -defaultsOSRD
+preplace netloc TCM_axi_slave_pc_asserted_1 1 2 1 NJ 150
+preplace netloc TCM_axi_slave_slow_clk_restn 1 0 3 20 230 NJ 230 590
+preplace netloc clk_wiz_1_clk_out1 1 0 3 20 10 NJ 10 590
+preplace netloc resetn_1 1 0 2 NJ 170 220
 preplace netloc sys_clock_1 1 0 2 NJ 200 230J
-preplace netloc test_controller_1_mem_hazard 1 2 1 N 922
-preplace netloc test_controller_1_status_led 1 2 1 1780J 120n
-preplace netloc jtag_axi_0_M_AXI 1 1 1 250 100n
-preplace netloc TCM_axi_slave|RISC_V_TCM_0_io_addr 1 2 1 1250 352n
-preplace netloc TCM_axi_slave|RISC_V_TCM_0_io_s_data 1 2 1 1220 372n
-preplace netloc TCM_axi_slave|RISC_V_TCM_0_io_s_strobe 1 2 1 1200 392n
-preplace netloc TCM_axi_slave|axi_bram_ctrl_0_bram_addr_a 1 1 3 820 52 NJ 52 1570
-preplace netloc TCM_axi_slave|axi_bram_ctrl_0_bram_we_a 1 1 3 790 232 NJ 232 1570
-preplace netloc TCM_axi_slave|axi_bram_ctrl_0_bram_wrdata_a 1 1 3 830 242 NJ 242 1610
-preplace netloc TCM_axi_slave|axi_bram_ctrl_1_bram_addr_a 1 1 3 830 502 NJ 502 1580
-preplace netloc TCM_axi_slave|axi_bram_ctrl_1_bram_we_a 1 1 3 790 532 NJ 532 1590
-preplace netloc TCM_axi_slave|axi_bram_ctrl_1_bram_wrdata_a 1 1 3 820 522 NJ 522 1570
-preplace netloc TCM_axi_slave|axi_protocol_checker_0_pc_asserted 1 3 1 N 1022
-preplace netloc TCM_axi_slave|clk_wiz_0_clk_out1 1 0 3 390 502 780 542 1230
-preplace netloc TCM_axi_slave|clk_wiz_0_locked 1 0 4 400 912 790 712 1170 902 NJ
-preplace netloc TCM_axi_slave|clk_wiz_1_clk_out1 1 0 4 400 1392 810 722 1180 912 1620J
-preplace netloc TCM_axi_slave|proc_sys_reset_0_peripheral_aresetn 1 1 1 740 322n
-preplace netloc TCM_axi_slave|proc_sys_reset_2_peripheral_aresetn 1 1 2 750 552 1240
-preplace netloc TCM_axi_slave|proc_sys_reset_3_peripheral_aresetn 1 2 2 1250 1082 NJ
-preplace netloc TCM_axi_slave|resetn_1 1 0 2 370 1382 N
-preplace netloc TCM_axi_slave|sys_clock_1 1 0 2 NJ 712 760
-preplace netloc TCM_axi_slave|test_controller_1_CPU_resetn 1 0 4 400 512 NJ 512 NJ 512 1570
-preplace netloc TCM_axi_slave|test_controller_1_mem_hazard 1 3 1 1600 412n
-preplace netloc TCM_axi_slave|test_controller_1_status_led 1 3 1 1610 392n
-preplace netloc TCM_axi_slave|proc_sys_reset_3_interconnect_aresetn 1 1 2 830 1302 1170
-preplace netloc TCM_axi_slave|proc_sys_reset_2_interconnect_aresetn 1 1 1 760 832n
-preplace netloc TCM_axi_slave|axi_clock_converter_0_M_AXI 1 2 1 1190 122n
-preplace netloc TCM_axi_slave|axi_clock_converter_1_M_AXI 1 2 1 1200 792n
-preplace netloc TCM_axi_slave|axi_clock_converter_2_M_AXI 1 2 1 1210 342n
-preplace netloc TCM_axi_slave|jtag_axi_0_M_AXI 1 0 4 380 922 NJ 922 NJ 922 1580
-preplace netloc TCM_axi_slave|smartconnect_0_M00_AXI 1 1 1 N 982
-preplace netloc TCM_axi_slave|smartconnect_0_M01_AXI 1 1 1 800 782n
-preplace netloc TCM_axi_slave|smartconnect_0_M02_AXI 1 1 1 770 1022n
-levelinfo -pg 1 0 120 450 1810
-levelinfo -hier TCM_axi_slave * 570 1000 1410 *
-pagesize -pg 1 -db -bbox -sgen -110 0 1950 1550
-pagesize -hier TCM_axi_slave -db -bbox -sgen 340 42 1650 1502
+preplace netloc test_controller_1_mem_hazard 1 2 1 N 110
+preplace netloc test_controller_1_status_led 1 2 1 590J 120n
+preplace netloc jtag_axi_0_M_AXI 1 1 1 N 100
+levelinfo -pg 1 0 120 450 610
+pagesize -pg 1 -db -bbox -sgen -110 0 2220 1550
 "
 }
 0

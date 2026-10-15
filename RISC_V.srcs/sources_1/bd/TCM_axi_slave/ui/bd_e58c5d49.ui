@@ -1,64 +1,66 @@
 {
    "ActiveEmotionalView":"Default View",
-   "Default View_ScaleFactor":"1.09347",
-   "Default View_TopLeft":"132,187",
+   "Default View_ScaleFactor":"0.717936",
+   "Default View_TopLeft":"-301,891",
    "ExpandedHierarchyInLayout":"",
    "guistr":"# # String gsaved with Nlview 7.8.0 2024-04-26 e1825d835c VDI=44 GEI=38 GUI=JA:24.0
 #  -string -flagsOSRD
-preplace port S00_AXI -pg 1 -lvl 0 -x 0 -y 710 -defaultsOSRD
-preplace port port-id_clk_out2 -pg 1 -lvl 4 -x 1230 -y 1120 -defaultsOSRD
-preplace port port-id_locked -pg 1 -lvl 4 -x 1230 -y 1370 -defaultsOSRD
-preplace port port-id_mem_hazard -pg 1 -lvl 4 -x 1230 -y 1020 -defaultsOSRD
-preplace port port-id_resetn -pg 1 -lvl 0 -x 0 -y 1420 -defaultsOSRD
-preplace port port-id_status_led_0 -pg 1 -lvl 4 -x 1230 -y 990 -defaultsOSRD
-preplace port port-id_sys_clock -pg 1 -lvl 0 -x 0 -y 1120 -defaultsOSRD
-preplace port port-id_pc_asserted_1 -pg 1 -lvl 4 -x 1230 -y 1310 -defaultsOSRD
-preplace portBus slow_clk_restn -pg 1 -lvl 4 -x 1230 -y 1400 -defaultsOSRD
-preplace inst RISC_V_TCM_0 -pg 1 -lvl 2 -x 630 -y 350 -defaultsOSRD
-preplace inst axi_bram_ctrl_0 -pg 1 -lvl 3 -x 1020 -y 100 -defaultsOSRD
-preplace inst axi_bram_ctrl_1 -pg 1 -lvl 3 -x 1020 -y 780 -defaultsOSRD
-preplace inst axi_clock_converter_0 -pg 1 -lvl 2 -x 630 -y 580 -defaultsOSRD
-preplace inst axi_clock_converter_1 -pg 1 -lvl 2 -x 630 -y 760 -defaultsOSRD
-preplace inst axi_clock_converter_2 -pg 1 -lvl 2 -x 630 -y 940 -defaultsOSRD
-preplace inst clk_wiz_0 -pg 1 -lvl 2 -x 630 -y 1120 -defaultsOSRD
-preplace inst proc_sys_reset_0 -pg 1 -lvl 1 -x 210 -y 1310 -defaultsOSRD
-preplace inst proc_sys_reset_2 -pg 1 -lvl 1 -x 210 -y 1520 -defaultsOSRD
-preplace inst smartconnect_0 -pg 1 -lvl 1 -x 210 -y 720 -defaultsOSRD
-preplace inst test_controller_1 -pg 1 -lvl 3 -x 1020 -y 990 -defaultsOSRD
-preplace inst axi_protocol_checker_0 -pg 1 -lvl 3 -x 1020 -y 1290 -defaultsOSRD
-preplace inst proc_sys_reset_3 -pg 1 -lvl 2 -x 630 -y 1440 -defaultsOSRD
-preplace netloc RISC_V_TCM_0_io_addr 1 2 1 860 330n
-preplace netloc RISC_V_TCM_0_io_s_data 1 2 1 830 350n
-preplace netloc RISC_V_TCM_0_io_s_strobe 1 2 1 810 370n
-preplace netloc axi_bram_ctrl_0_bram_addr_a 1 1 3 460 10 NJ 10 1180
-preplace netloc axi_bram_ctrl_0_bram_we_a 1 1 3 410 180 860J 190 1180
-preplace netloc axi_bram_ctrl_0_bram_wrdata_a 1 1 3 430 200 NJ 200 1210
-preplace netloc axi_bram_ctrl_1_bram_addr_a 1 1 3 440 210 NJ 210 1210
-preplace netloc axi_bram_ctrl_1_bram_we_a 1 1 3 450 220 NJ 220 1200
-preplace netloc axi_bram_ctrl_1_bram_wrdata_a 1 1 3 420 190 850J 230 1180
-preplace netloc axi_protocol_checker_0_pc_asserted 1 3 1 NJ 1310
-preplace netloc clk_wiz_0_clk_out1 1 0 3 30 960 400 170 840
-preplace netloc clk_wiz_0_locked 1 0 4 40 1410 450 1340 830 1370 NJ
-preplace netloc clk_wiz_1_clk_out1 1 0 4 40 800 420 1220 860 1120 NJ
-preplace netloc proc_sys_reset_0_peripheral_aresetn 1 1 1 380 300n
-preplace netloc proc_sys_reset_2_peripheral_aresetn 1 1 2 440J 1040 800
-preplace netloc proc_sys_reset_3_peripheral_aresetn 1 2 2 860 1400 NJ
-preplace netloc resetn_1 1 0 2 20 1420 N
-preplace netloc sys_clock_1 1 0 2 NJ 1120 NJ
-preplace netloc test_controller_1_CPU_resetn 1 0 4 40 1210 NJ 1210 NJ 1210 1180
-preplace netloc test_controller_1_mem_hazard 1 3 1 1210J 1010n
-preplace netloc test_controller_1_status_led 1 3 1 NJ 990
-preplace netloc proc_sys_reset_3_interconnect_aresetn 1 1 2 460 1200 800
-preplace netloc proc_sys_reset_2_interconnect_aresetn 1 1 1 430 620n
-preplace netloc axi_clock_converter_0_M_AXI 1 2 1 820 80n
-preplace netloc axi_clock_converter_1_M_AXI 1 2 1 N 760
-preplace netloc axi_clock_converter_2_M_AXI 1 2 1 N 940
-preplace netloc jtag_axi_0_M_AXI 1 0 4 40 480 NJ 480 NJ 480 1190
-preplace netloc smartconnect_0_M00_AXI 1 1 1 390 540n
-preplace netloc smartconnect_0_M01_AXI 1 1 1 N 720
-preplace netloc smartconnect_0_M02_AXI 1 1 1 410 740n
-levelinfo -pg 1 0 210 630 1020 1230
-pagesize -pg 1 -db -bbox -sgen -110 0 1400 1620
+preplace port S00_AXI -pg 1 -lvl 0 -x -10 -y 710 -defaultsOSRD
+preplace port port-id_clk_out2 -pg 1 -lvl 5 -x 1770 -y 1120 -defaultsOSRD
+preplace port port-id_locked -pg 1 -lvl 5 -x 1770 -y 1370 -defaultsOSRD
+preplace port port-id_mem_hazard -pg 1 -lvl 5 -x 1770 -y 1020 -defaultsOSRD
+preplace port port-id_reset -pg 1 -lvl 0 -x -10 -y 1420 -defaultsOSRD
+preplace port port-id_status_led_0 -pg 1 -lvl 5 -x 1770 -y 990 -defaultsOSRD
+preplace port port-id_sys_clock -pg 1 -lvl 0 -x -10 -y 1120 -defaultsOSRD
+preplace port port-id_pc_asserted_1 -pg 1 -lvl 5 -x 1770 -y 1310 -defaultsOSRD
+preplace portBus slow_clk_restn -pg 1 -lvl 5 -x 1770 -y 1400 -defaultsOSRD
+preplace inst RISC_V_TCM_0 -pg 1 -lvl 3 -x 1180 -y 350 -defaultsOSRD
+preplace inst axi_bram_ctrl_0 -pg 1 -lvl 4 -x 1560 -y 100 -defaultsOSRD
+preplace inst axi_bram_ctrl_1 -pg 1 -lvl 4 -x 1560 -y 780 -defaultsOSRD
+preplace inst axi_clock_converter_0 -pg 1 -lvl 3 -x 1180 -y 580 -defaultsOSRD
+preplace inst axi_clock_converter_1 -pg 1 -lvl 3 -x 1180 -y 760 -defaultsOSRD
+preplace inst axi_clock_converter_2 -pg 1 -lvl 3 -x 1180 -y 940 -defaultsOSRD
+preplace inst clk_wiz_0 -pg 1 -lvl 3 -x 1180 -y 1120 -defaultsOSRD
+preplace inst proc_sys_reset_0 -pg 1 -lvl 2 -x 770 -y 1310 -defaultsOSRD
+preplace inst proc_sys_reset_2 -pg 1 -lvl 2 -x 770 -y 1520 -defaultsOSRD
+preplace inst smartconnect_0 -pg 1 -lvl 2 -x 770 -y 720 -defaultsOSRD
+preplace inst test_controller_1 -pg 1 -lvl 4 -x 1560 -y 990 -defaultsOSRD
+preplace inst axi_protocol_checker_0 -pg 1 -lvl 4 -x 1560 -y 1290 -defaultsOSRD
+preplace inst proc_sys_reset_3 -pg 1 -lvl 3 -x 1180 -y 1440 -defaultsOSRD
+preplace inst ilvector_logic_0 -pg 1 -lvl 1 -x 430 -y 1350 -defaultsOSRD
+preplace netloc RISC_V_TCM_0_io_addr 1 3 1 1400 330n
+preplace netloc RISC_V_TCM_0_io_s_data 1 3 1 1390 350n
+preplace netloc RISC_V_TCM_0_io_s_strobe 1 3 1 1370 370n
+preplace netloc axi_bram_ctrl_0_bram_addr_a 1 2 3 950 0 NJ 0 1720
+preplace netloc axi_bram_ctrl_0_bram_we_a 1 2 3 970 10 NJ 10 1750
+preplace netloc axi_bram_ctrl_0_bram_wrdata_a 1 2 3 980 190 NJ 190 1720
+preplace netloc axi_bram_ctrl_1_bram_addr_a 1 2 3 990 200 NJ 200 1720
+preplace netloc axi_bram_ctrl_1_bram_we_a 1 2 3 1010 220 NJ 220 1750
+preplace netloc axi_bram_ctrl_1_bram_wrdata_a 1 2 3 1000 210 NJ 210 1740
+preplace netloc axi_protocol_checker_0_pc_asserted 1 4 1 NJ 1310
+preplace netloc clk_wiz_0_clk_out1 1 1 3 580 960 960 180 1380
+preplace netloc clk_wiz_0_locked 1 1 4 590 1410 1010 1340 1380 1370 NJ
+preplace netloc clk_wiz_1_clk_out1 1 1 4 590 800 980 1220 1400 1120 NJ
+preplace netloc proc_sys_reset_0_peripheral_aresetn 1 2 1 940 300n
+preplace netloc proc_sys_reset_2_interconnect_aresetn 1 2 1 990 620n
+preplace netloc proc_sys_reset_2_peripheral_aresetn 1 2 2 1000J 1040 1360
+preplace netloc proc_sys_reset_3_interconnect_aresetn 1 1 3 600 640 1010 1200 1350
+preplace netloc proc_sys_reset_3_peripheral_aresetn 1 3 2 1400 1400 NJ
+preplace netloc sys_clock_1 1 0 3 NJ 1120 N 1120 NJ
+preplace netloc test_controller_1_CPU_resetn 1 1 4 600 1210 NJ 1210 NJ 1210 1720
+preplace netloc test_controller_1_mem_hazard 1 4 1 1750J 1010n
+preplace netloc test_controller_1_status_led 1 4 1 NJ 990
+preplace netloc ilvector_logic_0_Res 1 1 2 570J 1420 N
+preplace netloc reset_1 1 0 1 10 1350n
+preplace netloc axi_clock_converter_0_M_AXI 1 3 1 1350 80n
+preplace netloc axi_clock_converter_1_M_AXI 1 3 1 N 760
+preplace netloc axi_clock_converter_2_M_AXI 1 3 1 N 940
+preplace netloc jtag_axi_0_M_AXI 1 0 5 N 710 580 480 NJ 480 NJ 480 1730
+preplace netloc smartconnect_0_M00_AXI 1 2 1 950 540n
+preplace netloc smartconnect_0_M01_AXI 1 2 1 N 720
+preplace netloc smartconnect_0_M02_AXI 1 2 1 970 740n
+levelinfo -pg 1 -10 430 770 1180 1560 1770
+pagesize -pg 1 -db -bbox -sgen -120 -10 1940 1620
 "
 }
 0

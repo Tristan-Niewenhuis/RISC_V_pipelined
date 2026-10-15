@@ -8,6 +8,12 @@ package RISCV_package is
   subtype sl is std_logic;
   subtype slv is std_logic_vector;
 
+  --NONE just stalls
+  --PARTIAL only forwards from EX_MEM back to alu
+  --FULL is both EX_MEM and MEM_WB to alu
+  type forwarding_t is (NONE, PARTIAL, FULL);
+  constant FORWARDING_AMOUNT : forwarding_t := NONE;
+
   constant DEBUG : boolean := TRUE;
   constant XLEN_BITS : integer := 5;
   constant XLEN : integer := 2 ** XLEN_BITS;
