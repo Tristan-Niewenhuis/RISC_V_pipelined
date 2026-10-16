@@ -81,7 +81,7 @@ begin
     --all the functions that need a add
     force_add <= (not is_R and not is_I and not is_CSR) or is_JALR or is_LOAD or is_ADDI;
 
-    control_word_out.Asel <= "00000" when is_LUI = '1' else inst(19 downto 15);
+    control_word_out.Asel_CSRuimm <= "00000" when is_LUI = '1' else inst(19 downto 15);
     control_word_out.Aused <= not (is_JAL or is_AUIPC or is_LUI or is_system) or (is_CSR and not inst(14));
     control_word_out.Bsel <= inst(24 downto 20);
     control_word_out.Bused <= is_B or is_S or is_R;

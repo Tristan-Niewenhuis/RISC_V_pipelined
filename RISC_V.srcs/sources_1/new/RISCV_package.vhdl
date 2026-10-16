@@ -49,7 +49,7 @@ package RISCV_package is
   type slv_array_32 is array (natural range <>) of slv(31 downto 0);
 
   type control_word_if_id is record
-    Asel : slv(4 downto 0);
+    Asel_CSRuimm : slv(4 downto 0);
     Aused : sl;
     Bsel : slv(4 downto 0);
     Bused : sl;
@@ -71,7 +71,7 @@ package RISCV_package is
   end record control_word_if_id;
 
   constant CONTROL_WORD_IF_ID_NOP : control_word_if_id := (
-    Asel => (others => '0'),
+    Asel_CSRuimm => (others => '0'),
     Aused => '0',
     Bsel => (others => '0'),
     Bused => '0',
@@ -93,7 +93,10 @@ package RISCV_package is
   );
 
   type control_word_id_ex is record
-    CSRuimm : slv(4 downto 0);
+    Asel_CSRuimm : slv(4 downto 0);
+    Aused : sl;
+    Bsel : slv(4 downto 0);
+    Bused : sl;
     PCAsel : sl;
     IMMBsel : sl;
     PCle : sl;
@@ -112,7 +115,10 @@ package RISCV_package is
   end record control_word_id_ex;
 
   constant CONTROL_WORD_ID_EX_NOP : control_word_id_ex := (
-    CSRuimm => (others => '0'),
+    Asel_CSRuimm => (others => '0'),
+    Aused => '0',
+    Bsel => (others => '0'),
+    Bused => '0',
     PCAsel => '0',
     IMMBsel => '0',
     PCle => '0',
@@ -211,7 +217,10 @@ package body RISCV_package is
   function if_id_to_id_ex(if_id : control_word_if_id) return control_word_id_ex is
     variable id_ex : control_word_id_ex;
   begin
-    id_ex.CSRuimm := if_id.Asel;
+    id_ex.Asel_CSRuimm := if_id.Asel_CSRuimm;
+    id_ex.Aused := if_id.Aused;
+    id_ex.Bsel := if_id.Bsel;
+    id_ex.Bused := if_id.Bused;
     id_ex.PCAsel := if_id.PCAsel;
     id_ex.IMMBsel := if_id.IMMBsel;
     id_ex.PCle := if_id.PCle;

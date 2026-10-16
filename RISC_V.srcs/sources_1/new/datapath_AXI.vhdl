@@ -129,7 +129,7 @@ begin
                  write_en => mem_wb_cw.Dlen,
                  d_addr => mem_wb_cw.Dsel,
                  d_in => d_in,
-                 a_addr => if_id_cw.Asel,
+                 a_addr => if_id_cw.Asel_CSRuimm,
                  a_out => a_out,
                  b_addr => if_id_cw.Bsel,
                  b_out => b_out);
@@ -225,8 +225,8 @@ begin
     ----control logic----
     --RAW hazard (just stall)
     -- @formatter:off
-    id_ex_a_hazard <= '1' when (if_id_cw.Asel = id_ex_cw.Dsel and 
-                                if_id_cw.Asel /= "00000" and 
+    id_ex_a_hazard <= '1' when (if_id_cw.Asel_CSRuimm = id_ex_cw.Dsel and 
+                                if_id_cw.Asel_CSRuimm /= "00000" and 
                                 if_id_cw.Aused = '1' and 
                                 id_ex_cw.Dlen = '1') else
                                 '0';
@@ -237,8 +237,8 @@ begin
                                 id_ex_cw.Dlen = '1') else
                                 '0';
 
-    ex_mem_a_hazard <= '1' when (if_id_cw.Asel = ex_mem_cw.Dsel and 
-                                if_id_cw.Asel /= "00000" and 
+    ex_mem_a_hazard <= '1' when (if_id_cw.Asel_CSRuimm = ex_mem_cw.Dsel and 
+                                if_id_cw.Asel_CSRuimm /= "00000" and 
                                 if_id_cw.Aused = '1' and 
                                 ex_mem_cw.Dlen = '1') else
                                 '0';

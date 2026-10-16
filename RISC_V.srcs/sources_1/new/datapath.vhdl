@@ -39,7 +39,7 @@ architecture Behavioral of Datapath is
     signal id_ex_a, id_ex_b : slv(XLEN - 1 downto 0);
 
     --ex
-    signal a_bus, b_bus, alu_out, csr_d, csr_q : slv(XLEN - 1 downto 0);
+    signal a_pre, b_pre, a_bus, b_bus, alu_out, csr_d, csr_q : slv(XLEN - 1 downto 0);
     signal BTU_out : sl;
     signal branch_correct, branch_take : sl;
     signal pc_d, pc_base : slv(I_BYTES_ADDR_BITS - 3 downto 0);
@@ -48,9 +48,10 @@ architecture Behavioral of Datapath is
     --ex_mem
     signal ex_mem_cw : control_word_ex_mem;
     signal ex_mem_pc : slv(I_BYTES_ADDR_BITS - 3 downto 0);
-    signal ex_mem_alu_out, ex_mem_csr_q : slv(XLEN - 1 downto 0);
+    signal ex_mem_data_out : slv(XLEN - 1 downto 0);
 
     --mem
+    signal mem_d_in, mem_PC_d_in : slv(XLEN - 1 downto 0);
     signal data_out : slv(XLEN - 1 downto 0);
 
     --mem_wb
@@ -59,14 +60,18 @@ architecture Behavioral of Datapath is
     signal mem_wb_load_data, mem_wb_data_out : slv(XLEN - 1 downto 0);
 
     --wb
-    signal d_in, PC_d_in : slv(XLEN - 1 downto 0);
+    signal wb_d_in, wb_PC_d_in : slv(XLEN - 1 downto 0);
     signal exec : sl;
 
+    --control
     signal if_id_stall, id_ex_stall, ex_mem_stall, mem_wb_stall : sl;
     signal if_id_nop, id_ex_nop, ex_mem_nop, mem_wb_nop : sl;
     signal if_id_clr, id_ex_clr, ex_mem_clr, mem_wb_clr : sl;
     signal id_ex_a_hazard, id_ex_b_hazard, ex_mem_a_hazard, ex_mem_b_hazard, raw_hazard : sl;
     signal branch_hazard : sl;
+
+    --forwarding
+    signal ex_mem_a_forward, ex_mem_b_forward, mem_wb_a_forward, mem_wb_b_forward : sl;
 begin
 
     branch_correct <= '1' when pc_d = if_id_pc else '0';
@@ -113,19 +118,14 @@ begin
         end if;
     end process;
 
-    PC_d_in <= ((31 downto I_BYTES_ADDR_BITS => '0') & slv(unsigned(mem_wb_pc) + 1) & "00");
-    d_in <= mem_wb_load_data when mem_wb_cw.LoadDsel = '1' else
-            PC_d_in when mem_wb_cw.PCDsel = '1' else
-            mem_wb_data_out;
-
     Regs : entity work.generic_register_file(Behavioral)
         generic map(word_len => XLEN, addr_bits => REGS_ADDR_BITS)
         port map(clk => clk,
                  reset => reset,
                  write_en => mem_wb_cw.Dlen,
                  d_addr => mem_wb_cw.Dsel,
-                 d_in => d_in,
-                 a_addr => if_id_cw.Asel,
+                 d_in => wb_d_in,
+                 a_addr => if_id_cw.Asel_CSRuimm,
                  a_out => a_out,
                  b_addr => if_id_cw.Bsel,
                  b_out => b_out);
@@ -151,10 +151,31 @@ begin
     end process;
 
     --TODO: can move this to id if not meeting timing
-    a_bus <= ((31 downto I_BYTES_ADDR_BITS => '0') & id_ex_pc & "00") when id_ex_cw.PCAsel = '1' else
+    a_pre <= ((31 downto I_BYTES_ADDR_BITS => '0') & id_ex_pc & "00") when id_ex_cw.PCAsel = '1' else
              id_ex_a;
-    b_bus <= id_ex_cw.IMM when id_ex_cw.IMMBsel = '1' else
+    b_pre <= id_ex_cw.IMM when id_ex_cw.IMMBsel = '1' else
              id_ex_b;
+
+    ALU_NONE_FORWARDING : if FORWARDING_AMOUNT = NONE generate
+        a_bus <= a_pre;
+        b_bus <= b_pre;
+    end generate;
+
+    ALU_PARTIAL_FORWARDING : if FORWARDING_AMOUNT = PARTIAL generate
+        a_bus <= mem_d_in when ex_mem_a_forward = '1' else
+                 a_pre;
+        b_bus <= mem_d_in when ex_mem_b_forward = '1' else
+                 b_pre;
+    end generate;
+
+    ALU_FULL_FORWARDING : if FORWARDING_AMOUNT = FULL generate
+        a_bus <= mem_d_in when ex_mem_a_forward = '1' else
+                 wb_d_in when mem_wb_a_forward = '1' else
+                 a_pre;
+        b_bus <= mem_d_in when ex_mem_b_forward = '1' else
+                 wb_d_in when mem_wb_b_forward = '1' else
+                 b_pre;
+    end generate;
 
     ALU : entity work.ALU(Behavioral)
         port map(a => a_bus,
@@ -176,7 +197,7 @@ begin
     store_data <= id_ex_b;
 
     exec <= '0' when (mem_wb_pc = (mem_wb_pc'range => '0')) or mem_wb_stall = '1' else '1';
-    csr_d <= ((XLEN - 1 downto 5 => '0') & id_ex_cw.CSRuimm) when id_ex_cw.ALUFunc_CSRtype(3) = '1' else id_ex_a;
+    csr_d <= ((XLEN - 1 downto 5 => '0') & id_ex_cw.Asel_CSRuimm) when id_ex_cw.ALUFunc_CSRtype(3) = '1' else id_ex_a;
     CSR_regs : entity work.CSR_regs
         port map(
             clk => clk,
@@ -190,17 +211,18 @@ begin
             exec => exec
         );
 
+    data_out <= csr_q when id_ex_cw.is_CSR = '1' else alu_out;
+
     EX_MEM_proc : process(clk) is
     begin
         if rising_edge(clk) then
             if (reset = '1' or ex_mem_clr = '1' or (ex_mem_nop = '1' and ex_mem_stall = '0')) then
-                ex_mem_alu_out <= (others => '0');
+                ex_mem_data_out <= (others => '0');
                 ex_mem_pc <= (others => '0');
                 ex_mem_cw <= CONTROL_WORD_EX_MEM_NOP;
             else
                 if (ex_mem_stall = '0') then
-                    ex_mem_alu_out <= alu_out;
-                    ex_mem_csr_q <= csr_q;
+                    ex_mem_data_out <= data_out;
                     ex_mem_pc <= id_ex_pc;
 
                     ex_mem_cw <= id_ex_to_ex_mem(id_ex_cw);
@@ -209,9 +231,11 @@ begin
         end if;
     end process;
 
-    load_type <= ex_mem_cw.BRcond_LStype;
+    mem_PC_d_in <= ((31 downto I_BYTES_ADDR_BITS => '0') & slv(unsigned(ex_mem_pc) + 1) & "00");
+    mem_d_in <= mem_PC_d_in when ex_mem_cw.PCDsel = '1' else
+                ex_mem_data_out;
 
-    data_out <= ex_mem_csr_q when ex_mem_cw.is_CSR = '1' else ex_mem_alu_out;
+    load_type <= ex_mem_cw.BRcond_LStype;
 
     MEM_WB_proc : process(clk) is
     begin
@@ -224,7 +248,7 @@ begin
             else
                 if (mem_wb_stall = '0') then
                     mem_wb_load_data <= load_data;
-                    mem_wb_data_out <= data_out;
+                    mem_wb_data_out <= ex_mem_data_out;
                     mem_wb_pc <= ex_mem_pc;
 
                     mem_wb_cw <= ex_mem_to_mem_wb(ex_mem_cw);
@@ -233,36 +257,57 @@ begin
         end if;
     end process;
 
+    wb_PC_d_in <= ((31 downto I_BYTES_ADDR_BITS => '0') & slv(unsigned(mem_wb_pc) + 1) & "00");
+    wb_d_in <= mem_wb_load_data when mem_wb_cw.LoadDsel = '1' else
+               wb_PC_d_in when mem_wb_cw.PCDsel = '1' else
+               mem_wb_data_out;
+
     ----control logic----
     --RAW hazard (just stall)
     -- @formatter:off
-    id_ex_a_hazard <= '1' when (if_id_cw.Asel = id_ex_cw.Dsel and 
-                                if_id_cw.Asel /= "00000" and 
+    id_ex_a_hazard <= '1' when (if_id_cw.Asel_CSRuimm = id_ex_cw.Dsel and 
+                                if_id_cw.Asel_CSRuimm /= "00000" and 
                                 if_id_cw.Aused = '1' and 
                                 id_ex_cw.Dlen = '1') else
-                                '0';
+                      '0';
 
     id_ex_b_hazard <= '1' when (if_id_cw.Bsel = id_ex_cw.Dsel and 
                                 if_id_cw.Bsel /= "00000" and 
                                 if_id_cw.Bused = '1' and 
                                 id_ex_cw.Dlen = '1') else
-                                '0';
+                      '0';
 
-    ex_mem_a_hazard <= '1' when (if_id_cw.Asel = ex_mem_cw.Dsel and 
-                                if_id_cw.Asel /= "00000" and 
+    ex_mem_a_hazard <= '1' when (if_id_cw.Asel_CSRuimm = ex_mem_cw.Dsel and 
+                                if_id_cw.Asel_CSRuimm /= "00000" and 
                                 if_id_cw.Aused = '1' and 
                                 ex_mem_cw.Dlen = '1') else
-                                '0';
+                       '0';
 
     ex_mem_b_hazard <= '1' when (if_id_cw.Bsel = ex_mem_cw.Dsel and 
                                 if_id_cw.Bsel /= "00000" and 
                                 if_id_cw.Bused = '1' and 
                                 ex_mem_cw.Dlen = '1') else
-                                '0';
+                       '0';
 
 
+    RAW_NONE_FORWARDING : if FORWARDING_AMOUNT = NONE generate
     raw_hazard <= id_ex_a_hazard or id_ex_b_hazard or 
                   ex_mem_a_hazard or ex_mem_b_hazard;
+    end generate;
+
+    RAW_PARTIAL_FORWARDING : if FORWARDING_AMOUNT = PARTIAL generate
+    raw_hazard <= (id_ex_a_hazard and id_ex_cw.is_load) or 
+                  id_ex_b_hazard or 
+                  (ex_mem_a_hazard and id_ex_cw.is_load) or 
+                  ex_mem_b_hazard;
+    end generate;
+
+    RAW_FULL_FORWARDING : if FORWARDING_AMOUNT = FULL generate
+    raw_hazard <= (id_ex_a_hazard and id_ex_cw.is_load) or
+                  (ex_mem_a_hazard and id_ex_cw.is_load);
+    end generate;
+
+
     -- @formatter:on
 
     --branch hazard
@@ -285,29 +330,33 @@ begin
     ex_mem_stall <= mem_wb_stall; -- or mem_hazard;
     mem_wb_stall <= '0';
 
-    -- DEBUG_SIGNALS : if DEBUG generate
-    -- begin
-    --     DEBUG_proc : process(clk) is
-    --     begin
-    --         if rising_edge(clk) then
-    --             if (reset = '1' or (ex_mem_nop = '1' and ex_mem_stall = '0')) then
-    --                 ex_mem_pc <= (others => '0');
-    --             else
-    --                 if (ex_mem_stall = '0') then
-    --                     ex_mem_pc <= id_ex_pc;
-    --                 end if;
-    --             end if;
+    --Forward Logic
+    -- @formatter:off
+    ex_mem_a_forward <= '1' when (id_ex_cw.Asel_CSRuimm = ex_mem_cw.Dsel and 
+                                  id_ex_cw.Asel_CSRuimm /= "00000" and 
+                                  id_ex_cw.Aused = '1' and 
+                                  ex_mem_cw.Dlen = '1' and 
+                                  ex_mem_cw.is_load = '0') else
+                        '0';
 
-    --             if (reset = '1' or (mem_wb_nop = '1' and mem_wb_stall = '0')) then
-    --                 mem_wb_pc <= (others => '0');
-    --             else
-    --                 if (mem_wb_stall = '0') then
-    --                     mem_wb_pc <= ex_mem_pc;
-    --                 end if;
-    --             end if;
-    --         end if;
-    --     end process DEBUG_proc;
+    ex_mem_b_forward <= '1' when (id_ex_cw.Bsel = ex_mem_cw.Dsel and 
+                                  id_ex_cw.Bsel /= "00000" and 
+                                  id_ex_cw.Bused = '1' and 
+                                  ex_mem_cw.Dlen = '1' and 
+                                  ex_mem_cw.is_load = '0') else
+                        '0';
 
-    -- end generate;
+    mem_wb_a_forward <= '1' when (id_ex_cw.Asel_CSRuimm = mem_wb_cw.Dsel and 
+                                  id_ex_cw.Asel_CSRuimm /= "00000" and 
+                                  id_ex_cw.Aused = '1' and 
+                                  mem_wb_cw.Dlen = '1') else
+                        '0';
+
+    mem_wb_b_forward <= '1' when (id_ex_cw.Bsel = mem_wb_cw.Dsel and 
+                                  id_ex_cw.Bsel /= "00000" and 
+                                  id_ex_cw.Bused = '1' and 
+                                  mem_wb_cw.Dlen = '1') else
+                        '0';
+    -- @formatter:on
 
 end Behavioral;
