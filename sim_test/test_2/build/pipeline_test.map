@@ -1,0 +1,71 @@
+
+There are no discarded input sections
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+ROM              0x00000000         0x00010000         xr
+RAM              0x00010000         0x0000ffe0         xrw
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD build/pipeline_test.o
+
+.text           0x00000000     0x6a08
+                0x00000000                        . = ALIGN (0x4)
+ *(.init)
+ .init          0x00000000       0x90 build/pipeline_test.o
+                0x00000000                _start
+ *(.text.startup)
+ *(.text*)
+ .text          0x00000090     0x6978 build/pipeline_test.o
+                0x00006a08                        . = ALIGN (0x4)
+
+.mailbox        0x00010000       0x20
+                0x00010000                        . = ALIGN (0x4)
+ *(.mailbox)
+ .mailbox       0x00010000       0x20 build/pipeline_test.o
+                0x00010000                mailbox
+                0x00010020                        . = ALIGN (0x4)
+
+.rodata         0x00010020        0x0
+                0x00010020                        . = ALIGN (0x4)
+ *(.rodata*)
+                0x00010020                        . = ALIGN (0x4)
+
+.data           0x00010020       0x30
+                0x00010020                        . = ALIGN (0x4)
+                0x00010020                        __data_start__ = .
+ *(.data*)
+ .data          0x00010020       0x30 build/pipeline_test.o
+                0x00010020                data_words
+                0x00010050                        . = ALIGN (0x4)
+                0x00010050                        __data_end__ = .
+
+.bss            0x00010050     0x1000
+                0x00010050                        . = ALIGN (0x4)
+                0x00010050                        __bss_start__ = .
+ *(.sbss*)
+ *(.bss*)
+ .bss           0x00010050     0x1000 build/pipeline_test.o
+                0x00010050                scratch
+ *(COMMON)
+                0x00011050                        . = ALIGN (0x4)
+                0x00011050                        __bss_end__ = .
+                0x0001ffe0                        . = (ORIGIN (RAM) + LENGTH (RAM))
+                0x0001ffe0                        __StackTop = .
+                0x0001ffe0                        __stack_top = .
+                0x00010000                        __ram_start__ = ORIGIN (RAM)
+                0x0001ffe0                        __ram_end__ = (ORIGIN (RAM) + LENGTH (RAM))
+                0x00000000                        __rom_start__ = ORIGIN (ROM)
+                0x00010000                        __rom_end__ = (ORIGIN (ROM) + LENGTH (ROM))
+                0x00000001                        ASSERT ((__StackTop >= __bss_end__), RAM overflow: data/bss collide with stack)
+                0x00000001                        ASSERT ((. <= (ORIGIN (RAM) + LENGTH (RAM))), RAM overflow)
+                0x00000001                        ASSERT ((SIZEOF (.text) <= LENGTH (ROM)), ROM overflow)
+OUTPUT(build/pipeline_test.elf elf32-littleriscv)
+
+.riscv.attributes
+                0x00000000       0x2d
+ .riscv.attributes
+                0x00000000       0x2d build/pipeline_test.o

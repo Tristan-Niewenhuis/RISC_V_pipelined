@@ -193,7 +193,7 @@ begin
                 instret_lo <= (others => '0');
                 instret_hi <= (others => '0');
                 done <= '0';
-                resetn_reg <= '0';
+                resetn_reg <= '1';
             else
                 --axi write
                 if (write_commit_reg = '1' and awaddr_reg = "10100" and wstrb_reg(0) = '1') then

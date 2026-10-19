@@ -42,7 +42,8 @@ architecture Behavioral of Datapath is
     signal a_pre, b_pre, a_bus, b_bus, alu_out, csr_d, csr_q : slv(XLEN - 1 downto 0);
     signal BTU_out : sl;
     signal branch_correct, branch_take : sl;
-    signal pc_d, pc_base : slv(I_BYTES_ADDR_BITS - 3 downto 0);
+    signal pc_base, pc_sum : slv(I_BYTES_ADDR_BITS - 1 downto 0);
+    signal pc_d : slv(I_BYTES_ADDR_BITS - 3 downto 0);
     signal pc_latch : sl;
 
     --ex_mem
@@ -77,8 +78,9 @@ begin
     branch_correct <= '1' when pc_d = if_id_pc else '0';
     branch_take <= id_ex_cw.PCle or BTU_out;
 
-    pc_base <= id_ex_pc when id_ex_cw.PCAsel = '1' else id_ex_a(I_BYTES_ADDR_BITS - 1 downto 2);
-    pc_d <= slv(signed(pc_base) + signed(id_ex_cw.IMM(I_BYTES_ADDR_BITS - 1 downto 2))); --unsigned or signed add, doesn't matter. same logic under the hood
+    pc_base <= id_ex_pc & "00" when id_ex_cw.PCAsel = '1' else id_ex_a(I_BYTES_ADDR_BITS - 1 downto 0);
+    pc_sum <= slv(signed(pc_base) + signed(id_ex_cw.IMM(I_BYTES_ADDR_BITS - 1 downto 0))); --unsigned or signed add, doesn't matter. same logic under the hood
+    pc_d <= pc_sum(I_BYTES_ADDR_BITS - 1 downto 2);
     pc_latch <= branch_take and (not branch_correct);
     pc_incr <= (not if_id_stall and not branch_hazard);
     Program_Counter : entity work.generic_counter(Behavioral)
