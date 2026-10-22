@@ -1,1 +1,1 @@
--march=rv32i_zicsr_zicntr -mabi=ilp32 -mno-relax  -march=rv32i_zicsr_zicntr -mabi=ilp32 -mno-relax -nostdlib -nostartfiles -static -Wl,--gc-sections -Wl,--no-warn-rwx-segments -Wl,--build-id=none -Wl,-Map=build/pipeline_test.map -T link.ld
+-march=rv32i_zicsr_zicntr -mabi=ilp32 -mno-relax  -march=rv32i_zicsr_zicntr -mabi=ilp32 -mno-relax -nostdlib -nostartfiles -static -Wl,--gc-sections -Wl,--no-warn-rwx-segments -Wl,--build-id=none -Wl,-Map=build/pipeline_test.map -T link.ld ROM_ORIGIN=0x00001000

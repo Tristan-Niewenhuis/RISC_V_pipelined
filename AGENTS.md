@@ -125,7 +125,7 @@ Classic 5-stage: **IF -> ID -> EX -> MEM -> WB.**
 
 - `RISCV_package.vhdl` — `sl/slv`, `XLEN=32`, `I_BYTES_ADDR_BITS=16`,
   `D_BYTES_ADDR_BITS=16`, `PRE_FETCH_BURST_SIZE=4`, `I_MEM_BASE=0x00000000 /
-  0x10000`, `D_MEM_BASE=0x80000000 / 0xFFE0`, `D_IO_BASE=0xC0000000`,
+  0x10000`, `D_MEM_BASE=0x00010000 / 0xFFE0`, `D_IO_BASE=0xC0000000`,
   control-word records + NOPs + converters, `clog2/decode/vector_and`,
   `DEBUG=TRUE`.
 - `Instruction_Decoder.vhdl` — combinational RV32I decode to
@@ -191,7 +191,7 @@ Classic 5-stage: **IF -> ID -> EX -> MEM -> WB.**
 ### A. RTL package view (`RISCV_package.vhdl`)
 
 - `I_MEM_BASE 0x00000000`, `I_MEM_SIZE 0x10000` (64 KiB).
-- `D_MEM_BASE 0x80000000`, `D_MEM_SIZE 0xFFE0` (~64 KiB - 32 B).
+- `D_MEM_BASE 0x00010000`, `D_MEM_SIZE 0xFFE0` (~64 KiB - 32 B).
 - `D_IO_BASE 0xC0000000` — MMIO/test-controller window.
 - Board AXI GPIO (per `RISC_V_TCM` header): LEDs `0x40000000`, switches
   `0x40010000`.

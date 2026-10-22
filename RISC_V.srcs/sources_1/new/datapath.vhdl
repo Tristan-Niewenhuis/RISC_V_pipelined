@@ -1,6 +1,8 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.numeric_std.all;
+use STD.textio.all;
+use IEEE.std_logic_textio.all;
 use work.RISCV_package.all;
 
 entity Datapath is
@@ -24,6 +26,7 @@ architecture Behavioral of Datapath is
     --if
     signal pc_next, pc : slv(I_BYTES_ADDR_BITS - 3 downto 0);
     signal pc_incr : sl;
+    signal pc_ctrl : slv(2 downto 0);
     signal cw_decoded : control_word_if_id;
 
     --if_id
@@ -67,12 +70,25 @@ architecture Behavioral of Datapath is
     --control
     signal if_id_stall, id_ex_stall, ex_mem_stall, mem_wb_stall : sl;
     signal if_id_nop, id_ex_nop, ex_mem_nop, mem_wb_nop : sl;
+    signal id_ex_nop_dly : sl;
     signal if_id_clr, id_ex_clr, ex_mem_clr, mem_wb_clr : sl;
     signal id_ex_a_hazard, id_ex_b_hazard, ex_mem_a_hazard, ex_mem_b_hazard, raw_hazard : sl;
+    signal wait_partial_forward : sl;
     signal branch_hazard : sl;
 
     --forwarding
     signal ex_mem_a_forward, ex_mem_b_forward, mem_wb_a_forward, mem_wb_b_forward : sl;
+
+    -- Simulation-only retirement trace. The valid bits mirror the pipeline
+    -- register hold/bubble/flush behavior; these declarations are ignored by
+    -- synthesis.
+    -- synthesis translate_off
+    signal trace_if_id_valid, trace_id_ex_valid, trace_ex_mem_valid, trace_mem_wb_valid : sl := '0';
+    signal trace_if_id_inst, trace_id_ex_inst, trace_ex_mem_inst, trace_mem_wb_inst : slv(31 downto 0) := (others => '0');
+    signal trace_ex_mem_store_data, trace_mem_wb_store_data : slv(31 downto 0) := (others => '0');
+    file trace_file : text open write_mode is "core_trace.log";
+    signal trace_finished : boolean := false;
+    -- synthesis translate_on
 begin
 
     branch_correct <= '1' when pc_d = if_id_pc else '0';
@@ -83,16 +99,15 @@ begin
     pc_d <= pc_sum(I_BYTES_ADDR_BITS - 1 downto 2);
     pc_latch <= branch_take and (not branch_correct);
     pc_incr <= (not if_id_stall and not branch_hazard);
-    Program_Counter : entity work.generic_counter(Behavioral)
-        generic map(bits => I_BYTES_ADDR_BITS - 2)
-        port map(clk => clk,
-                 reset => reset,
-                 latch => pc_latch,
-                 enable => pc_incr,
-                 d => pc_d,
-                 q => pc,
-                 next_count_out => pc_next
-                );
+
+    --counter
+    pc <= pc_next when rising_edge(clk);
+    pc_ctrl <= reset & pc_latch & pc_incr;
+    with pc_ctrl select pc_next <=
+        pc when "000",
+        slv(unsigned(pc) + 1) when "001",
+        pc_d when "010" | "011",
+        "00010000000000" when others; --starting address as x1000 for test_2, else set zero
 
     fetch_address <= pc when I_USE_NEGEDGE else pc_next;
 
@@ -141,6 +156,7 @@ begin
                 id_ex_b <= (others => '0');
                 id_ex_cw <= CONTROL_WORD_ID_EX_NOP;
             else
+                id_ex_nop_dly <= id_ex_nop;
                 if (id_ex_stall = '0') then
                     id_ex_pc <= if_id_pc;
                     id_ex_a <= a_out;
@@ -300,14 +316,16 @@ begin
     RAW_PARTIAL_FORWARDING : if FORWARDING_AMOUNT = PARTIAL generate
     raw_hazard <= (id_ex_a_hazard and id_ex_cw.is_load) or 
                   id_ex_b_hazard or 
-                  (ex_mem_a_hazard and id_ex_cw.is_load) or 
+                  (ex_mem_a_hazard and ex_mem_cw.is_load) or 
                   ex_mem_b_hazard;
     end generate;
 
     RAW_FULL_FORWARDING : if FORWARDING_AMOUNT = FULL generate
     raw_hazard <= (id_ex_a_hazard and id_ex_cw.is_load) or
-                  (ex_mem_a_hazard and id_ex_cw.is_load);
+                  (ex_mem_a_hazard and ex_mem_cw.is_load);
     end generate;
+
+
 
 
     -- @formatter:on
@@ -327,9 +345,9 @@ begin
     mem_wb_nop <= '0'; --mem_hazard;
 
     --pipeline register enable
-    if_id_stall <= id_ex_stall or raw_hazard;
-    id_ex_stall <= ex_mem_stall;
-    ex_mem_stall <= mem_wb_stall; -- or mem_hazard;
+    if_id_stall <= raw_hazard; -- mem_hazard;
+    id_ex_stall <= '0'; -- mem_hazard;
+    ex_mem_stall <= wait_partial_forward; -- mem_hazard;
     mem_wb_stall <= '0';
 
     --Forward Logic
@@ -359,6 +377,116 @@ begin
                                   id_ex_cw.Bused = '1' and 
                                   mem_wb_cw.Dlen = '1') else
                         '0';
+
+    wait_partial_forward <= ((ex_mem_a_hazard and not ex_mem_cw.is_load) or 
+                              ex_mem_b_hazard) and 
+                              id_ex_nop_dly;
     -- @formatter:on
+
+    -- Simulation-only trace in Spike commit-log format. Each valid
+    -- instruction is emitted once at WB, including instructions that do not
+    -- write a register. Stop and close the file when test_2 writes its pass or
+    -- fail marker to x31, avoiding an unbounded trace of the terminal loop.
+    -- synthesis translate_off
+    TRACE_PIPELINE : process(clk)
+    begin
+        if rising_edge(clk) then
+            if reset = '1' then
+                trace_if_id_valid <= '0';
+                trace_id_ex_valid <= '0';
+                trace_ex_mem_valid <= '0';
+                trace_mem_wb_valid <= '0';
+                trace_if_id_inst <= (others => '0');
+                trace_id_ex_inst <= (others => '0');
+                trace_ex_mem_inst <= (others => '0');
+                trace_mem_wb_inst <= (others => '0');
+                trace_ex_mem_store_data <= (others => '0');
+                trace_mem_wb_store_data <= (others => '0');
+            else
+                if if_id_clr = '1' or (if_id_nop = '1' and if_id_stall = '0') then
+                    trace_if_id_valid <= '0';
+                    trace_if_id_inst <= (others => '0');
+                elsif if_id_stall = '0' then
+                    trace_if_id_valid <= '1';
+                    trace_if_id_inst <= inst;
+                end if;
+
+                if id_ex_clr = '1' or (id_ex_nop = '1' and id_ex_stall = '0') then
+                    trace_id_ex_valid <= '0';
+                    trace_id_ex_inst <= (others => '0');
+                elsif id_ex_stall = '0' then
+                    trace_id_ex_valid <= trace_if_id_valid;
+                    trace_id_ex_inst <= trace_if_id_inst;
+                end if;
+
+                if ex_mem_clr = '1' or (ex_mem_nop = '1' and ex_mem_stall = '0') then
+                    trace_ex_mem_valid <= '0';
+                    trace_ex_mem_inst <= (others => '0');
+                    trace_ex_mem_store_data <= (others => '0');
+                elsif ex_mem_stall = '0' then
+                    trace_ex_mem_valid <= trace_id_ex_valid;
+                    trace_ex_mem_inst <= trace_id_ex_inst;
+                    trace_ex_mem_store_data <= id_ex_b;
+                end if;
+
+                if mem_wb_clr = '1' or (mem_wb_nop = '1' and mem_wb_stall = '0') then
+                    trace_mem_wb_valid <= '0';
+                    trace_mem_wb_inst <= (others => '0');
+                    trace_mem_wb_store_data <= (others => '0');
+                elsif mem_wb_stall = '0' then
+                    trace_mem_wb_valid <= trace_ex_mem_valid;
+                    trace_mem_wb_inst <= trace_ex_mem_inst;
+                    trace_mem_wb_store_data <= trace_ex_mem_store_data;
+                end if;
+            end if;
+        end if;
+    end process TRACE_PIPELINE;
+
+    TRACE_COMMIT : process(clk)
+        variable trace_line : line;
+        variable trace_pc : slv(31 downto 0);
+        variable trace_mem_value : slv(31 downto 0);
+    begin
+        if rising_edge(clk) then
+            if reset = '0' and trace_mem_wb_valid = '1' and not trace_finished then
+                trace_pc := (31 downto I_BYTES_ADDR_BITS => '0') & mem_wb_pc & "00";
+                write(trace_line, string'("core   0: 3 0x"));
+                hwrite(trace_line, trace_pc);
+                write(trace_line, string'(" (0x"));
+                hwrite(trace_line, trace_mem_wb_inst);
+                write(trace_line, string'(")"));
+
+                if mem_wb_cw.Dlen = '1' and mem_wb_cw.Dsel /= "00000" then
+                    write(trace_line, string'(" x"));
+                    write(trace_line, to_integer(unsigned(mem_wb_cw.Dsel)));
+                    write(trace_line, string'(" 0x"));
+                    hwrite(trace_line, wb_d_in);
+                end if;
+
+                if trace_mem_wb_inst(6 downto 0) = "0000011" then
+                    write(trace_line, string'(" mem 0x"));
+                    hwrite(trace_line, mem_wb_data_out);
+                elsif trace_mem_wb_inst(6 downto 0) = "0100011" then
+                    trace_mem_value := trace_mem_wb_store_data;
+                    case trace_mem_wb_inst(14 downto 12) is
+                        when "000" => trace_mem_value := (31 downto 8 => '0') & trace_mem_wb_store_data(7 downto 0);
+                        when "001" => trace_mem_value := (31 downto 16 => '0') & trace_mem_wb_store_data(15 downto 0);
+                        when others => null;
+                    end case;
+                    write(trace_line, string'(" mem 0x"));
+                    hwrite(trace_line, mem_wb_data_out);
+                    write(trace_line, string'(" 0x"));
+                    hwrite(trace_line, trace_mem_value);
+                end if;
+                writeline(trace_file, trace_line);
+
+                if mem_wb_cw.Dlen = '1' and mem_wb_cw.Dsel = "11111" and (wb_d_in = x"600D600D" or wb_d_in = x"BAD0BAD0") then
+                    file_close(trace_file);
+                    trace_finished <= true;
+                end if;
+            end if;
+        end if;
+    end process TRACE_COMMIT;
+    -- synthesis translate_on
 
 end Behavioral;

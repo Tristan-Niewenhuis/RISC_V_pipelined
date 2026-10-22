@@ -67,6 +67,8 @@ LDFLAGS  := -march=$(ARCH) -mabi=$(ABI) -mno-relax -nostdlib -nostartfiles -stat
 
 ROM_DEPTH ?= 0
 RAM_DEPTH ?= 0
+ROM_ORIGIN ?= 0x00001000
+ROM_ORIGIN_BYTES := $(shell printf '%d' $(ROM_ORIGIN))
 
 ELF := $(BUILD)/$(TARGET).elf
 OBJ := $(BUILD)/$(TARGET).o
@@ -76,7 +78,7 @@ all: $(ELF) coe lst tests info
 
 # rebuild when the -D options change
 $(BUILD)/flags.stamp: FORCE | $(BUILD)
-	@echo '$(ASFLAGS) $(LDFLAGS)' | cmp -s - $@ || echo '$(ASFLAGS) $(LDFLAGS)' > $@
+	@echo '$(ASFLAGS) $(LDFLAGS) ROM_ORIGIN=$(ROM_ORIGIN)' | cmp -s - $@ || echo '$(ASFLAGS) $(LDFLAGS) ROM_ORIGIN=$(ROM_ORIGIN)' > $@
 
 $(BUILD):
 	@mkdir -p $@
@@ -89,9 +91,12 @@ $(ELF): $(OBJ) $(LDSCRIPT) $(BUILD)/flags.stamp
 	@$(SIZE) $@ 2>/dev/null || true
 
 # ---- raw binaries ------------------------------------------------------------
-# ROM = everything linked into .text (starts at 0x00000000)
-$(BUILD)/rom.bin: $(ELF)
-	$(OBJCOPY) -O binary -j .text $< $@
+# ROM = zero padding up to ROM_ORIGIN, followed by the linked .text bytes.
+# This makes the byte offset in rom.bin match the code's linked ROM address.
+$(BUILD)/rom.bin: $(ELF) $(BUILD)/flags.stamp Makefile
+	$(OBJCOPY) -O binary -j .text $< $(BUILD)/rom.text.bin
+	dd if=/dev/zero of=$@ bs=1 count=$(ROM_ORIGIN_BYTES) status=none
+	cat $(BUILD)/rom.text.bin >> $@
 # RAM image = .mailbox + .rodata + .data (starts at 0x00010000; .bss is NOLOAD)
 $(BUILD)/ram.bin: $(ELF)
 	$(OBJCOPY) -O binary -j .mailbox -j .rodata -j .data --gap-fill 0 $< $@
@@ -111,6 +116,9 @@ export AWK_COE
 
 $(BUILD)/rom.coe: DEPTH := $(ROM_DEPTH)
 $(BUILD)/ram.coe: DEPTH := $(RAM_DEPTH)
+# rom.coe is generated from the padded rom.bin, so its first ROM_ORIGIN/4
+# words are zero and .text begins at its linked word address.
+$(BUILD)/rom.coe: $(BUILD)/flags.stamp Makefile
 $(BUILD)/%.coe: $(BUILD)/%.bin
 	od -An -v -w4 -tx4 $< | awk -v depth=$(DEPTH) "$$AWK_COE" > $@
 

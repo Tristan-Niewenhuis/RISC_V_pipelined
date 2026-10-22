@@ -25,12 +25,12 @@ package RISCV_package is
   constant I_MEM_BASE : slv(31 downto 0) := x"00000000";
   constant I_MEM_SIZE_LOGICAL : integer := 16#10000#;
   constant I_MEM_BYTES_REAL : integer := 16#10000#; --must be power of 2
-  constant I_MEM_INIT_FILE : string := "C:/RISC_V_research/RISC_V_pipelined_private/sim_test/test_2/rom.coe";
+  constant I_MEM_INIT_FILE : string := "C:/RISC_V_research/RISC_V_pipelined_private/sim_test/test_2/build/rom.coe";
   constant I_USE_NEGEDGE : boolean := true;
-  constant D_MEM_BASE : slv(31 downto 0) := x"80000000";
+  constant D_MEM_BASE : slv(31 downto 0) := x"00010000";
   constant D_MEM_SIZE_LOGICAL : integer := 16#FFE0#;
   constant D_MEM_BYTES_REAL : integer := 16#10000#; --must be power of 2
-  constant D_MEM_INIT_FILE : string := "C:/RISC_V_research/RISC_V_pipelined_private/sim_test/test_2/ram.coe";
+  constant D_MEM_INIT_FILE : string := "C:/RISC_V_research/RISC_V_pipelined_private/sim_test/test_2/build/ram.coe";
   constant D_IO_BASE : slv(31 downto 0) := x"C0000000";
   constant D_USE_NEGEDGE : boolean := false;
 
