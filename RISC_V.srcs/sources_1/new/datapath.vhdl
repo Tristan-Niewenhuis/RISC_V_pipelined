@@ -42,7 +42,7 @@ architecture Behavioral of Datapath is
     signal id_ex_a, id_ex_b : slv(XLEN - 1 downto 0);
 
     --ex
-    signal a_pre, b_pre, a_bus, b_bus, alu_out, csr_d, csr_q : slv(XLEN - 1 downto 0);
+    signal ex_a_bus, ex_b_bus, a_alu, b_alu, alu_out, csr_d, csr_q : slv(XLEN - 1 downto 0);
     signal BTU_out : sl;
     signal branch_correct, branch_take : sl;
     signal pc_base, pc_sum : slv(I_BYTES_ADDR_BITS - 1 downto 0);
@@ -70,7 +70,7 @@ architecture Behavioral of Datapath is
     --control
     signal if_id_stall, id_ex_stall, ex_mem_stall, mem_wb_stall : sl;
     signal if_id_nop, id_ex_nop, ex_mem_nop, mem_wb_nop : sl;
-    signal id_ex_nop_dly : sl;
+    signal if_id_stall_dly : sl := '0';
     signal if_id_clr, id_ex_clr, ex_mem_clr, mem_wb_clr : sl;
     signal id_ex_a_hazard, id_ex_b_hazard, ex_mem_a_hazard, ex_mem_b_hazard, raw_hazard : sl;
     signal wait_partial_forward : sl;
@@ -94,7 +94,7 @@ begin
     branch_correct <= '1' when pc_d = if_id_pc else '0';
     branch_take <= id_ex_cw.PCle or BTU_out;
 
-    pc_base <= id_ex_pc & "00" when id_ex_cw.PCAsel = '1' else id_ex_a(I_BYTES_ADDR_BITS - 1 downto 0);
+    pc_base <= id_ex_pc & "00" when id_ex_cw.PCAsel = '1' else ex_a_bus(I_BYTES_ADDR_BITS - 1 downto 0);
     pc_sum <= slv(signed(pc_base) + signed(id_ex_cw.IMM(I_BYTES_ADDR_BITS - 1 downto 0))); --unsigned or signed add, doesn't matter. same logic under the hood
     pc_d <= pc_sum(I_BYTES_ADDR_BITS - 1 downto 2);
     pc_latch <= branch_take and (not branch_correct);
@@ -156,7 +156,6 @@ begin
                 id_ex_b <= (others => '0');
                 id_ex_cw <= CONTROL_WORD_ID_EX_NOP;
             else
-                id_ex_nop_dly <= id_ex_nop;
                 if (id_ex_stall = '0') then
                     id_ex_pc <= if_id_pc;
                     id_ex_a <= a_out;
@@ -168,42 +167,42 @@ begin
         end if;
     end process;
 
-    --TODO: can move this to id if not meeting timing
-    a_pre <= ((31 downto I_BYTES_ADDR_BITS => '0') & id_ex_pc & "00") when id_ex_cw.PCAsel = '1' else
-             id_ex_a;
-    b_pre <= id_ex_cw.IMM when id_ex_cw.IMMBsel = '1' else
-             id_ex_b;
-
     ALU_NONE_FORWARDING : if FORWARDING_AMOUNT = NONE generate
-        a_bus <= a_pre;
-        b_bus <= b_pre;
+        ex_a_bus <= id_ex_a;
+        ex_b_bus <= id_ex_b;
     end generate;
 
     ALU_PARTIAL_FORWARDING : if FORWARDING_AMOUNT = PARTIAL generate
-        a_bus <= mem_d_in when ex_mem_a_forward = '1' else
-                 a_pre;
-        b_bus <= mem_d_in when ex_mem_b_forward = '1' else
-                 b_pre;
+        ex_a_bus <= mem_d_in when ex_mem_a_forward = '1' else
+                    id_ex_a;
+        ex_b_bus <= mem_d_in when ex_mem_b_forward = '1' else
+                    id_ex_b;
     end generate;
 
     ALU_FULL_FORWARDING : if FORWARDING_AMOUNT = FULL generate
-        a_bus <= mem_d_in when ex_mem_a_forward = '1' else
-                 wb_d_in when mem_wb_a_forward = '1' else
-                 a_pre;
-        b_bus <= mem_d_in when ex_mem_b_forward = '1' else
-                 wb_d_in when mem_wb_b_forward = '1' else
-                 b_pre;
+        ex_a_bus <= mem_d_in when ex_mem_a_forward = '1' else
+                    wb_d_in when mem_wb_a_forward = '1' else
+                    id_ex_a;
+        ex_b_bus <= mem_d_in when ex_mem_b_forward = '1' else
+                    wb_d_in when mem_wb_b_forward = '1' else
+                    id_ex_b;
     end generate;
 
+    --TODO: can move this to id if not meeting timing
+    a_alu <= ((31 downto I_BYTES_ADDR_BITS => '0') & id_ex_pc & "00") when id_ex_cw.PCAsel = '1' else
+             ex_a_bus;
+    b_alu <= id_ex_cw.IMM when id_ex_cw.IMMBsel = '1' else
+             ex_b_bus;
+
     ALU : entity work.ALU(Behavioral)
-        port map(a => a_bus,
-                 b => b_bus,
+        port map(a => a_alu,
+                 b => b_alu,
                  alu_out => alu_out,
                  func => id_ex_cw.ALUFunc_CSRtype);
 
     BTU : entity work.BTU(Behavioral)
-        port map(a => id_ex_a,
-                 b => id_ex_b,
+        port map(a => ex_a_bus,
+                 b => ex_b_bus,
                  cond => id_ex_cw.BRcond_LStype,
                  enable => id_ex_cw.isBR,
                  BTU_out => BTU_out);
@@ -211,11 +210,11 @@ begin
     --load/store addr goes in now, so data is ready by the time the mem stage happens
     ls_ctrl <= id_ex_cw.is_store;
     store_type <= id_ex_cw.BRcond_LStype;
-    ls_address <= slv(unsigned(id_ex_a) + unsigned(id_ex_cw.IMM)); --slv(unsigned(id_ex_a(D_ADDR_BITS - 1 downto 0)) + unsigned(id_ex_cw.IMM(D_ADDR_BITS - 1 downto 0)));
-    store_data <= id_ex_b;
+    ls_address <= slv(unsigned(ex_a_bus) + unsigned(id_ex_cw.IMM)); --slv(unsigned(id_ex_a_bus(D_ADDR_BITS - 1 downto 0)) + unsigned(id_ex_cw.IMM(D_ADDR_BITS - 1 downto 0)));
+    store_data <= ex_b_bus;
 
     exec <= '0' when (mem_wb_pc = (mem_wb_pc'range => '0')) or mem_wb_stall = '1' else '1';
-    csr_d <= ((XLEN - 1 downto 5 => '0') & id_ex_cw.Asel_CSRuimm) when id_ex_cw.ALUFunc_CSRtype(3) = '1' else id_ex_a;
+    csr_d <= ((XLEN - 1 downto 5 => '0') & id_ex_cw.Asel_CSRuimm) when id_ex_cw.ALUFunc_CSRtype(3) = '1' else ex_a_bus;
     CSR_regs : entity work.CSR_regs
         port map(
             clk => clk,
@@ -315,18 +314,15 @@ begin
 
     RAW_PARTIAL_FORWARDING : if FORWARDING_AMOUNT = PARTIAL generate
     raw_hazard <= (id_ex_a_hazard and id_ex_cw.is_load) or 
-                  id_ex_b_hazard or 
+                  (id_ex_b_hazard and not wait_partial_forward) or 
                   (ex_mem_a_hazard and ex_mem_cw.is_load) or 
-                  ex_mem_b_hazard;
+                  (ex_mem_b_hazard and not wait_partial_forward);
     end generate;
 
     RAW_FULL_FORWARDING : if FORWARDING_AMOUNT = FULL generate
-    raw_hazard <= (id_ex_a_hazard and id_ex_cw.is_load) or
-                  (ex_mem_a_hazard and ex_mem_cw.is_load);
+    raw_hazard <= ((id_ex_a_hazard or id_ex_b_hazard) and id_ex_cw.is_load) or
+                  ((ex_mem_a_hazard or ex_mem_b_hazard) and ex_mem_cw.is_load);
     end generate;
-
-
-
 
     -- @formatter:on
 
@@ -342,7 +338,7 @@ begin
     if_id_nop <= '0';
     id_ex_nop <= raw_hazard;
     ex_mem_nop <= '0';
-    mem_wb_nop <= '0'; --mem_hazard;
+    mem_wb_nop <= wait_partial_forward; --mem_hazard;
 
     --pipeline register enable
     if_id_stall <= raw_hazard; -- mem_hazard;
@@ -378,9 +374,18 @@ begin
                                   mem_wb_cw.Dlen = '1') else
                         '0';
 
+    WAIT_PARTIAL : if FORWARDING_AMOUNT = PARTIAL generate
+    if_id_stall_dly <= if_id_stall when rising_edge(clk);
+    
     wait_partial_forward <= ((ex_mem_a_hazard and not ex_mem_cw.is_load) or 
                               ex_mem_b_hazard) and 
-                              id_ex_nop_dly;
+                              if_id_stall_dly;
+    end generate;
+
+    NO_WAIT_PARTIAL : if FORWARDING_AMOUNT /= PARTIAL generate
+    wait_partial_forward <= '0';
+    end generate;
+
     -- @formatter:on
 
     -- Simulation-only trace in Spike commit-log format. Each valid
@@ -426,7 +431,7 @@ begin
                 elsif ex_mem_stall = '0' then
                     trace_ex_mem_valid <= trace_id_ex_valid;
                     trace_ex_mem_inst <= trace_id_ex_inst;
-                    trace_ex_mem_store_data <= id_ex_b;
+                    trace_ex_mem_store_data <= ex_b_bus;
                 end if;
 
                 if mem_wb_clr = '1' or (mem_wb_nop = '1' and mem_wb_stall = '0') then

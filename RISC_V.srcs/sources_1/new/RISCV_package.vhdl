@@ -12,7 +12,7 @@ package RISCV_package is
   --PARTIAL only forwards from EX_MEM back to alu
   --FULL is both EX_MEM and MEM_WB to alu
   type forwarding_t is (NONE, PARTIAL, FULL);
-  constant FORWARDING_AMOUNT : forwarding_t := PARTIAL;
+  constant FORWARDING_AMOUNT : forwarding_t := FULL;
 
   constant DEBUG : boolean := TRUE;
   constant XLEN_BITS : integer := 5;
