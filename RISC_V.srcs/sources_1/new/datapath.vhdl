@@ -72,7 +72,8 @@ architecture Behavioral of Datapath is
     signal if_id_nop, id_ex_nop, ex_mem_nop, mem_wb_nop : sl;
     signal if_id_stall_dly : sl := '0';
     signal if_id_clr, id_ex_clr, ex_mem_clr, mem_wb_clr : sl;
-    signal id_ex_a_hazard, id_ex_b_hazard, ex_mem_a_hazard, ex_mem_b_hazard, raw_hazard : sl;
+    signal id_ex_a_hazard, id_ex_b_hazard, ex_mem_a_hazard, ex_mem_b_hazard : sl;
+    signal id_ex_hazard, ex_mem_hazard, raw_hazard : sl;
     signal wait_partial_forward : sl;
     signal branch_hazard : sl;
 
@@ -294,6 +295,8 @@ begin
                                 id_ex_cw.Dlen = '1') else
                       '0';
 
+    id_ex_hazard <= id_ex_a_hazard or id_ex_b_hazard;
+
     ex_mem_a_hazard <= '1' when (if_id_cw.Asel_CSRuimm = ex_mem_cw.Dsel and 
                                 if_id_cw.Asel_CSRuimm /= "00000" and 
                                 if_id_cw.Aused = '1' and 
@@ -306,28 +309,33 @@ begin
                                 ex_mem_cw.Dlen = '1') else
                        '0';
 
+    ex_mem_hazard <= ex_mem_a_hazard or ex_mem_b_hazard;
 
     RAW_NONE_FORWARDING : if FORWARDING_AMOUNT = NONE generate
-    raw_hazard <= id_ex_a_hazard or id_ex_b_hazard or 
-                  ex_mem_a_hazard or ex_mem_b_hazard;
+        wait_partial_forward <= '0';
+        raw_hazard <= id_ex_hazard or ex_mem_hazard;
     end generate;
 
     RAW_PARTIAL_FORWARDING : if FORWARDING_AMOUNT = PARTIAL generate
-    raw_hazard <= (id_ex_a_hazard and id_ex_cw.is_load) or 
-                  (id_ex_b_hazard and not wait_partial_forward) or 
-                  (ex_mem_a_hazard and ex_mem_cw.is_load) or 
-                  (ex_mem_b_hazard and not wait_partial_forward);
+        if_id_stall_dly <= if_id_stall when rising_edge(clk);
+
+        wait_partial_forward <= (ex_mem_hazard and not ex_mem_cw.is_load) and 
+                                if_id_stall_dly;
+
+        raw_hazard <= (id_ex_hazard and id_ex_cw.is_load) or 
+                      (ex_mem_hazard and not wait_partial_forward);
     end generate;
 
     RAW_FULL_FORWARDING : if FORWARDING_AMOUNT = FULL generate
-    raw_hazard <= ((id_ex_a_hazard or id_ex_b_hazard) and id_ex_cw.is_load) or
-                  ((ex_mem_a_hazard or ex_mem_b_hazard) and ex_mem_cw.is_load);
+        wait_partial_forward <= '0';
+        raw_hazard <= (id_ex_hazard and id_ex_cw.is_load) or 
+                      (ex_mem_hazard and ex_mem_cw.is_load);
     end generate;
-
     -- @formatter:on
 
     --branch hazard
-    branch_hazard <= '1' when (branch_take = '1' and branch_correct = '0') else '0';
+    branch_hazard <= '1' when (branch_take = '1' and branch_correct = '0') else
+                     '0';
 
     --pipeline register bubbles
     if_id_clr <= branch_hazard;
@@ -375,15 +383,11 @@ begin
                         '0';
 
     WAIT_PARTIAL : if FORWARDING_AMOUNT = PARTIAL generate
-    if_id_stall_dly <= if_id_stall when rising_edge(clk);
     
-    wait_partial_forward <= ((ex_mem_a_hazard and not ex_mem_cw.is_load) or 
-                              ex_mem_b_hazard) and 
-                              if_id_stall_dly;
     end generate;
 
     NO_WAIT_PARTIAL : if FORWARDING_AMOUNT /= PARTIAL generate
-    wait_partial_forward <= '0';
+    
     end generate;
 
     -- @formatter:on
