@@ -8,7 +8,7 @@ $ErrorActionPreference = "Stop"
 $PrivateRepo = "."
 
 # Public GitHub repository.
-$PublicRepo = "https://github.com/Tristan-Niewenhuis/temp.git"
+$PublicRepo = "https://github.com/Tristan-Niewenhuis/RISC_V_pipelined.git"
 
 # Branch to publish.
 $PublicBranch = "master"
