@@ -1,2 +1,4 @@
 embench-iot-files/** linguist-generated
 cylon_test/** linguist-generated
+*.tcl linguist-generated
+build_results/** linguist-generated
