@@ -1,7 +1,7 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0x21083B1A76D9C759",
+      "boundary_crc": "0x7D2F9B57074F3301",
       "device": "xc7a100tcsg324-1",
       "gen_directory": "../../../../RISC_V.gen/sources_1/bd/TCM_axi_slave",
       "name": "TCM_axi_slave",
@@ -398,9 +398,6 @@
           }
         }
       },
-      "status_led_0": {
-        "direction": "O"
-      },
       "sys_clock": {
         "type": "clk",
         "direction": "I",
@@ -429,7 +426,7 @@
           }
         }
       },
-      "pc_asserted_1": {
+      "pc_asserted": {
         "direction": "O"
       },
       "slow_clk_restn": {
@@ -447,6 +444,12 @@
             "value_src": "const_prop"
           }
         }
+      },
+      "resetn_reg_led": {
+        "direction": "O"
+      },
+      "done_led": {
+        "direction": "O"
       }
     },
     "components": {
@@ -472,7 +475,7 @@
                 "value_src": "constant"
               },
               "FREQ_HZ": {
-                "value": "100000000",
+                "value": "90000000",
                 "value_src": "ip_prop"
               },
               "PHASE": {
@@ -698,16 +701,19 @@
         "has_run_ip_tcl": "true",
         "parameters": {
           "CLKOUT1_JITTER": {
-            "value": "126.133"
+            "value": "247.412"
           },
           "CLKOUT1_PHASE_ERROR": {
-            "value": "94.994"
+            "value": "296.868"
+          },
+          "CLKOUT1_REQUESTED_OUT_FREQ": {
+            "value": "90.000"
           },
           "CLKOUT2_JITTER": {
-            "value": "163.613"
+            "value": "299.923"
           },
           "CLKOUT2_PHASE_ERROR": {
-            "value": "94.994"
+            "value": "296.868"
           },
           "CLKOUT2_REQUESTED_OUT_FREQ": {
             "value": "30"
@@ -716,13 +722,16 @@
             "value": "true"
           },
           "MMCM_CLKFBOUT_MULT_F": {
-            "value": "10.500"
+            "value": "49.500"
           },
           "MMCM_CLKOUT0_DIVIDE_F": {
-            "value": "10.500"
+            "value": "11.000"
           },
           "MMCM_CLKOUT1_DIVIDE": {
-            "value": "35"
+            "value": "33"
+          },
+          "MMCM_DIVCLK_DIVIDE": {
+            "value": "5"
           },
           "NUM_OUT_CLKS": {
             "value": "2"
@@ -944,7 +953,7 @@
                 "value_src": "constant"
               },
               "FREQ_HZ": {
-                "value": "100000000",
+                "value": "90000000",
                 "value_src": "ip_prop"
               },
               "ID_WIDTH": {
@@ -1157,7 +1166,7 @@
                 "value_src": "constant"
               },
               "FREQ_HZ": {
-                "value": "100000000",
+                "value": "90000000",
                 "value_src": "ip_prop"
               },
               "PHASE": {
@@ -1190,7 +1199,10 @@
               }
             }
           },
-          "status_led": {
+          "resetn_reg_led": {
+            "direction": "O"
+          },
+          "done_led": {
             "direction": "O"
           },
           "riscv_d_addr": {
@@ -1344,7 +1356,7 @@
       "axi_protocol_checker_0_pc_asserted": {
         "ports": [
           "axi_protocol_checker_0/pc_asserted",
-          "pc_asserted_1"
+          "pc_asserted"
         ]
       },
       "clk_wiz_0_clk_out1": {
@@ -1445,16 +1457,22 @@
           "proc_sys_reset_0/ext_reset_in"
         ]
       },
+      "test_controller_1_done_led": {
+        "ports": [
+          "test_controller_1/done_led",
+          "done_led"
+        ]
+      },
       "test_controller_1_mem_hazard": {
         "ports": [
           "test_controller_1/mem_hazard",
           "mem_hazard"
         ]
       },
-      "test_controller_1_status_led": {
+      "test_controller_1_resetn_reg_led": {
         "ports": [
-          "test_controller_1/status_led",
-          "status_led_0"
+          "test_controller_1/resetn_reg_led",
+          "resetn_reg_led"
         ]
       }
     },

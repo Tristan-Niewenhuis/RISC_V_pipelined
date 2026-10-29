@@ -108,7 +108,7 @@ begin
         pc when "000",
         slv(unsigned(pc) + 1) when "001",
         pc_d when "010" | "011",
-        "00010000000000" when others; --starting address as x1000 for test_2, else set zero
+        "00000000000000" when others; --starting address as x1000 ("00010000000000") for test_2, else set zero
 
     fetch_address <= pc when I_USE_NEGEDGE else pc_next;
 

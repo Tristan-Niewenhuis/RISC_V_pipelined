@@ -304,7 +304,7 @@ def generate_tcl_script(tests):
         "",
         'set result_file "__RESULT_FILE__"',
         'set result_fp [open $result_file "w"]',
-        'puts $result_fp "name,cycle_low,cycle_high,cycles,instret_low,instret_high,instret,elapsed_seconds"',
+        'puts $result_fp "name,cycle_low,cycle_high,cycles,instret_low,instret_high,instret,elapsed_seconds,status"',
     ])
 
     for test_number, test in enumerate(tests):
@@ -348,6 +348,7 @@ def generate_tcl_script(tests):
             "",
             "# Poll STATUS until DONE = 1",
             f"set done_{test_number} 0",
+            f"set timed_out_{test_number} 0",
             f"set poll_start_{test_number} [clock seconds]",
             f"create_hw_axi_txn status_{test_number} $hw_axi -type READ "
             f"-address {tcl_hex(STATUS_ADDR)}",
@@ -359,18 +360,19 @@ def generate_tcl_script(tests):
             f"    if {{($status_value_{test_number} & {DONE_MASK}) != 0}} {{",
             f"        set done_{test_number} 1",
             "    }",
-            f"    if {{[expr {{[clock seconds] - $poll_start_{test_number}}}] >= {int(DONE_TIMEOUT_SECONDS)}}} {{",
-            f'        puts "ERROR: Timeout waiting for DONE on {name}"',
-            f'        puts $result_fp "{name},TIMEOUT"',
-            "        flush $result_fp",
-            "        close $result_fp",
-            "        close_hw_target",
-            "        disconnect_hw_server",
-            "        close_hw_manager",
-            "        exit 1",
+            f"    if {{!$done_{test_number} && [expr {{[clock seconds] - $poll_start_{test_number}}}] >= {int(DONE_TIMEOUT_SECONDS)}}} {{",
+            f'        puts "TIMEOUT: {name} did not set DONE; continuing to next test"',
+            f"        set timed_out_{test_number} 1",
+            "        break",
             "    }",
             f"    after {int(DONE_POLL_INTERVAL * 1000)}",
             "}",
+            "",
+            f"if {{$timed_out_{test_number}}} {{",
+            f'    puts $result_fp "{name},,,,,,,,TIMEOUT"',
+            "    flush $result_fp",
+            "}",
+            f"if {{!$timed_out_{test_number}}} {{",
             "",
         ])
 
@@ -403,8 +405,9 @@ def generate_tcl_script(tests):
             f'puts "TEST: {name}"',
             f'puts "  cycles  = $cycles_{test_number}"',
             f'puts "  instret = $instret_{test_number}"',
-            f'puts $result_fp "{name},$cycle_lo_{test_number},$cycle_hi_{test_number},$cycles_{test_number},$instret_lo_{test_number},$instret_hi_{test_number},$instret_{test_number},0"',
+            f'puts $result_fp "{name},$cycle_lo_{test_number},$cycle_hi_{test_number},$cycles_{test_number},$instret_lo_{test_number},$instret_hi_{test_number},$instret_{test_number},0,DONE"',
             "flush $result_fp",
+            "}",
             "",
             "# Put CPU back into reset before next test",
             f"create_hw_axi_txn final_reset_{test_number} $hw_axi -type WRITE "

@@ -7,7 +7,8 @@ entity test_controller is
     port(
         clk, resetn : in std_logic;
         CPU_resetn : out std_logic := '0';
-        status_led : out std_logic := '0';
+        resetn_reg_led : out std_logic := '0';
+        done_led : out std_logic := '0';
         -- AXI4-Lite Slave Interface from PC throught JTAG->AXI
         -- Write address channel
         S_AXI_AWADDR : in std_logic_vector(4 downto 0);
@@ -198,31 +199,35 @@ begin
                 --axi write
                 if (write_commit_reg = '1' and awaddr_reg = "10100" and wstrb_reg(0) = '1') then
                     resetn_reg <= wdata_reg(0);
+                    if (wdata_reg(0) = '0') then --deassert done on resetn register
+                        done <= '0';
+                    end if;
                 end if;
-            end if;
 
-            --bram interface
-            if (riscv_d_strobe_1 = "1111") then
-                case riscv_d_addr_1(2 downto 0) is
-                    when "000" =>
-                        cycle_lo <= riscv_d_data_in_1;
-                    when "001" =>
-                        cycle_hi <= riscv_d_data_in_1;
-                    when "010" =>
-                        instret_lo <= riscv_d_data_in_1;
-                    when "011" =>
-                        instret_hi <= riscv_d_data_in_1;
-                    when "100" =>
-                        done <= riscv_d_data_in_1(0);
-                    when others =>
-                        null;
-                end case;
+                --bram interface
+                if (riscv_d_strobe_1 = "1111") then
+                    case riscv_d_addr_1(2 downto 0) is
+                        when "000" =>
+                            cycle_lo <= riscv_d_data_in_1;
+                        when "001" =>
+                            cycle_hi <= riscv_d_data_in_1;
+                        when "010" =>
+                            instret_lo <= riscv_d_data_in_1;
+                        when "011" =>
+                            instret_hi <= riscv_d_data_in_1;
+                        when "100" =>
+                            done <= riscv_d_data_in_1(0);
+                        when others =>
+                            null;
+                    end case;
+                end if;
             end if;
         end if;
     end process;
 
     CPU_resetn <= resetn and resetn_reg;
 
-    status_led <= resetn_reg;
+    resetn_reg_led <= resetn_reg;
+    done_led <= done;
 
 end Behavioral;

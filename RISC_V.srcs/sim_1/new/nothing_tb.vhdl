@@ -62,9 +62,10 @@ architecture Behavioral of nothing_tb is
     signal clk_out2 : std_logic;
     signal locked : std_logic;
     signal mem_hazard : std_logic;
-    signal pc_asserted_1 : std_logic;
+    signal done_led : std_logic;
     signal slow_clk_restn : std_logic_vector(0 to 0);
-    signal status_led_0 : std_logic;
+    signal pc_asserted : std_logic;
+    signal resetn_reg_led : std_logic;
 
 begin
 
@@ -111,12 +112,13 @@ begin
             S00_AXI_wstrb => S00_AXI_wstrb,
             S00_AXI_wvalid => S00_AXI_wvalid,
             clk_out2 => clk_out2,
+            done_led => done_led,
             locked => locked,
             mem_hazard => mem_hazard,
-            pc_asserted_1 => pc_asserted_1,
+            pc_asserted => pc_asserted,
             reset => reset,
-            slow_clk_restn => slow_clk_restn,
-            status_led_0 => status_led_0,
+            resetn_reg_led => resetn_reg_led,
+            slow_clk_restn(0) => slow_clk_restn(0),
             sys_clock => sys_clock
         );
 

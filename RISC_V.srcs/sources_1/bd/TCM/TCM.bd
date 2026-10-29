@@ -1,7 +1,7 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0xF98DA0781AF19F59",
+      "boundary_crc": "0xCA5A4BC152FA1479",
       "device": "xc7a100tcsg324-1",
       "gen_directory": "../../../../RISC_V.gen/sources_1/bd/TCM",
       "name": "TCM",
@@ -28,9 +28,6 @@
           }
         }
       },
-      "status_led_0": {
-        "direction": "O"
-      },
       "sys_clock": {
         "type": "clk",
         "direction": "I",
@@ -55,7 +52,13 @@
           }
         }
       },
-      "pc_asserted_1": {
+      "pc_asserted": {
+        "direction": "O"
+      },
+      "resetn_reg_led": {
+        "direction": "O"
+      },
+      "done_led": {
         "direction": "O"
       }
     },
@@ -506,9 +509,6 @@
           "mem_hazard": {
             "direction": "O"
           },
-          "status_led_0": {
-            "direction": "O"
-          },
           "sys_clock": {
             "type": "clk",
             "direction": "I",
@@ -539,9 +539,6 @@
               }
             }
           },
-          "pc_asserted_1": {
-            "direction": "O"
-          },
           "slow_clk_restn": {
             "type": "rst",
             "direction": "O",
@@ -571,6 +568,15 @@
                 "value_src": "user_prop"
               }
             }
+          },
+          "pc_asserted": {
+            "direction": "O"
+          },
+          "resetn_reg_led": {
+            "direction": "O"
+          },
+          "done_led": {
+            "direction": "O"
           }
         },
         "post_compiled_compname": "TCM_axi_slave_inst_0",
@@ -578,7 +584,7 @@
         "variant_info": {
           "TCM_axi_slave.bd": {
             "scoped_diagram": "TCM_axi_slave_inst_0.bd",
-            "design_checksum": "0xBF0ADFB93D60D97",
+            "design_checksum": "0x4B9B55ABEFFD6DD4",
             "ref_name": "TCM_axi_slave",
             "ref_subinst_path": "TCM_TCM_axi_slave_0",
             "ref_type": "Block Design",
@@ -597,10 +603,22 @@
       }
     },
     "nets": {
-      "TCM_axi_slave_pc_asserted_1": {
+      "TCM_axi_slave_done_led": {
         "ports": [
-          "TCM_axi_slave/pc_asserted_1",
-          "pc_asserted_1"
+          "TCM_axi_slave/done_led",
+          "done_led"
+        ]
+      },
+      "TCM_axi_slave_pc_asserted": {
+        "ports": [
+          "TCM_axi_slave/pc_asserted",
+          "pc_asserted"
+        ]
+      },
+      "TCM_axi_slave_resetn_reg_led": {
+        "ports": [
+          "TCM_axi_slave/resetn_reg_led",
+          "resetn_reg_led"
         ]
       },
       "TCM_axi_slave_slow_clk_restn": {
@@ -625,17 +643,6 @@
         "ports": [
           "sys_clock",
           "TCM_axi_slave/sys_clock"
-        ]
-      },
-      "test_controller_1_mem_hazard": {
-        "ports": [
-          "TCM_axi_slave/mem_hazard"
-        ]
-      },
-      "test_controller_1_status_led": {
-        "ports": [
-          "TCM_axi_slave/status_led_0",
-          "status_led_0"
         ]
       }
     },

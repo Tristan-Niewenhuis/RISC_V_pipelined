@@ -2,7 +2,8 @@
 ### A Study of Hazard Resolution, Performance, and FPGA Timing Tradeoffs
 
 **Author:** Tristan Niewenhuis  
-**Project Type:** Independent Study / Computer Architecture Research  
+**Project Type:** Independent Study / Computer Architecture Research
+**Advisor:** Dr. Larry Pyeatt, South Dakota Mines  
 **Platform:** Digilent Nexys A7 (Xilinx Artix-7 xc7a100tcsg324-1)  
 **Date:** Fall 2026
 
@@ -62,6 +63,17 @@ RISC_V.vhdl is the top module of the processor, and the block design is used to 
 RISC_V_AXI.vhdl is the version of that uses AXI interfaces to fetch and load/store which means it is compatible with external RAM, however there is a large stall penalty waiting for load/store and pre-fetch misses.
 
 Planning on doing forwarding comparisons for both native bram, and axi bus implementations.
+
+## Core Architecture
+### No Forwarding
+![Core Architecture](docs/images/None_Core_Architecture.png)
+### Partial Forwarding (just from mem stage)
+![Core Architecture](docs/images/Partial_Core_Architecture.png)
+### Full Forwarding
+![Core Architecture](docs/images/Full_Core_Architecture.png)
+
+## Testing Framework
+![Testing Framwork](docs/images/Testing_Framework.png)
 
 ## Results TODO
 Come back in November 2026

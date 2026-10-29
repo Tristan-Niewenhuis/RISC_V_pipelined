@@ -12,7 +12,7 @@ package RISCV_package is
   --PARTIAL only forwards from EX_MEM back to alu
   --FULL is both EX_MEM and MEM_WB to alu
   type forwarding_t is (NONE, PARTIAL, FULL);
-  constant FORWARDING_AMOUNT : forwarding_t := PARTIAL;
+  constant FORWARDING_AMOUNT : forwarding_t := NONE;
 
   constant DEBUG : boolean := TRUE;
   constant XLEN_BITS : integer := 5;
@@ -25,12 +25,12 @@ package RISCV_package is
   constant I_MEM_BASE : slv(31 downto 0) := x"00000000";
   constant I_MEM_SIZE_LOGICAL : integer := 16#10000#;
   constant I_MEM_BYTES_REAL : integer := 16#10000#; --must be power of 2
-  constant I_MEM_INIT_FILE : string := "C:/RISC_V_research/RISC_V_pipelined_private/sim_test/test_2/build/rom.coe";
-  constant I_USE_NEGEDGE : boolean := true;
+  constant I_MEM_INIT_FILE : string := "C:/RISC_V_research/RISC_V_pipelined_private/embench-iot-files/build/src/aha-mont64/aha-mont64_rom.coe";
+  constant I_USE_NEGEDGE : boolean := false;
   constant D_MEM_BASE : slv(31 downto 0) := x"00010000";
   constant D_MEM_SIZE_LOGICAL : integer := 16#FFE0#;
   constant D_MEM_BYTES_REAL : integer := 16#10000#; --must be power of 2
-  constant D_MEM_INIT_FILE : string := "C:/RISC_V_research/RISC_V_pipelined_private/sim_test/test_2/build/ram.coe";
+  constant D_MEM_INIT_FILE : string := "C:/RISC_V_research/RISC_V_pipelined_private/embench-iot-files/build/src/aha-mont64/aha-mont64_ram.coe";
   constant D_IO_BASE : slv(31 downto 0) := x"C0000000";
   constant D_USE_NEGEDGE : boolean := false;
 
