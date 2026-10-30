@@ -33,6 +33,7 @@ architecture Behavioral of RISC_V_TCM is
   signal d_s_strobe_v, d_s_strobe_p, d_s_strobe_p1, d_s_strobe_f : slv(3 downto 0);
   signal i_addr_f, i_dbg_addr_f, d_addr_p_f, d_dbg_addr_f : slv(31 downto 0);
   signal d_me_msel : sl;
+  signal d_me_msel_q : slv(0 downto 0);
 begin
   reset <= not resetn;
   datapath : entity work.Datapath
@@ -70,7 +71,14 @@ begin
   d_me_msel <= '1' when to_integer(unsigned(d_addr_v)) < D_MEM_SIZE_LOGICAL / 4 else '0';
 
   d_addr_p <= d_addr_v;
-  d_l_data_v <= d_l_data_p when d_me_msel = '1' else
+  -- Load data returns in MEM, one cycle after the address is issued in EX.
+  -- Select it with the load's own region, not the region of the next
+  -- instruction's address.
+  d_me_msel_reg : entity work.generic_register
+    generic map(bits => 1)
+    port map(clk => clk, reset => reset, enable => '1', d(0) => d_me_msel, q => d_me_msel_q);
+
+  d_l_data_v <= d_l_data_p when d_me_msel_q(0) = '1' else
                 (others => '0');
   d_s_data_p <= d_s_data_v;
   d_s_strobe_p <= d_s_strobe_v when d_me_msel = '1' else
