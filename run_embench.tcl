@@ -9112,6 +9112,71 @@ delete_hw_axi_txn -quiet [get_hw_axi_txns iram_0_824]
 
 # Load DRAM (one AXI transaction per 32-bit word)
 
+# Write one word at 0x80000000
+delete_hw_axi_txn -quiet [get_hw_axi_txns dram_0_0]
+create_hw_axi_txn dram_0_0 $hw_axi \
+    -type WRITE \
+    -address 80000000 \
+    -len 1 \
+    -data {3928F89F}
+run_axi_delayed dram_0_0
+delete_hw_axi_txn -quiet [get_hw_axi_txns dram_0_0]
+
+
+# Write one word at 0x80000004
+delete_hw_axi_txn -quiet [get_hw_axi_txns dram_0_1]
+create_hw_axi_txn dram_0_1 $hw_axi \
+    -type WRITE \
+    -address 80000004 \
+    -len 1 \
+    -data {FAE84927}
+run_axi_delayed dram_0_1
+delete_hw_axi_txn -quiet [get_hw_axi_txns dram_0_1]
+
+
+# Write one word at 0x80000008
+delete_hw_axi_txn -quiet [get_hw_axi_txns dram_0_2]
+create_hw_axi_txn dram_0_2 $hw_axi \
+    -type WRITE \
+    -address 80000008 \
+    -len 1 \
+    -data {B9330573}
+run_axi_delayed dram_0_2
+delete_hw_axi_txn -quiet [get_hw_axi_txns dram_0_2]
+
+
+# Write one word at 0x8000000C
+delete_hw_axi_txn -quiet [get_hw_axi_txns dram_0_3]
+create_hw_axi_txn dram_0_3 $hw_axi \
+    -type WRITE \
+    -address 8000000C \
+    -len 1 \
+    -data {14736DEF}
+run_axi_delayed dram_0_3
+delete_hw_axi_txn -quiet [get_hw_axi_txns dram_0_3]
+
+
+# Write one word at 0x80000010
+delete_hw_axi_txn -quiet [get_hw_axi_txns dram_0_4]
+create_hw_axi_txn dram_0_4 $hw_axi \
+    -type WRITE \
+    -address 80000010 \
+    -len 1 \
+    -data {87237FEF}
+run_axi_delayed dram_0_4
+delete_hw_axi_txn -quiet [get_hw_axi_txns dram_0_4]
+
+
+# Write one word at 0x80000014
+delete_hw_axi_txn -quiet [get_hw_axi_txns dram_0_5]
+create_hw_axi_txn dram_0_5 $hw_axi \
+    -type WRITE \
+    -address 80000014 \
+    -len 1 \
+    -data {05493721}
+run_axi_delayed dram_0_5
+delete_hw_axi_txn -quiet [get_hw_axi_txns dram_0_5]
+
 
 # Release CPU reset
 create_hw_axi_txn release_cpu_0 $hw_axi -type WRITE -address C0000014 -data 00000001
@@ -182931,6 +182996,27 @@ delete_hw_axi_txn -quiet [get_hw_axi_txns iram_10_5016]
 
 
 # Load DRAM (one AXI transaction per 32-bit word)
+
+# Write one word at 0x80000000
+delete_hw_axi_txn -quiet [get_hw_axi_txns dram_10_0]
+create_hw_axi_txn dram_10_0 $hw_axi \
+    -type WRITE \
+    -address 80000000 \
+    -len 1 \
+    -data {00000005}
+run_axi_delayed dram_10_0
+delete_hw_axi_txn -quiet [get_hw_axi_txns dram_10_0]
+
+
+# Write one word at 0x80000004
+delete_hw_axi_txn -quiet [get_hw_axi_txns dram_10_1]
+create_hw_axi_txn dram_10_1 $hw_axi \
+    -type WRITE \
+    -address 80000004 \
+    -len 1 \
+    -data {00000003}
+run_axi_delayed dram_10_1
+delete_hw_axi_txn -quiet [get_hw_axi_txns dram_10_1]
 
 
 # Release CPU reset
@@ -404337,7 +404423,7 @@ create_hw_axi_txn dram_18_890 $hw_axi \
     -type WRITE \
     -address 80000DE8 \
     -len 1 \
-    -data {00000000}
+    -data {C2F8F359}
 run_axi_delayed dram_18_890
 delete_hw_axi_txn -quiet [get_hw_axi_txns dram_18_890]
 
@@ -404348,7 +404434,7 @@ create_hw_axi_txn dram_18_891 $hw_axi \
     -type WRITE \
     -address 80000DEC \
     -len 1 \
-    -data {00000000}
+    -data {01A56E1F}
 run_axi_delayed dram_18_891
 delete_hw_axi_txn -quiet [get_hw_axi_txns dram_18_891]
 
@@ -404370,7 +404456,7 @@ create_hw_axi_txn dram_18_893 $hw_axi \
     -type WRITE \
     -address 80000DF4 \
     -len 1 \
-    -data {00000000}
+    -data {3FF00000}
 run_axi_delayed dram_18_893
 delete_hw_axi_txn -quiet [get_hw_axi_txns dram_18_893]
 
@@ -405165,6 +405251,17 @@ create_hw_axi_txn dram_18_965 $hw_axi \
     -data {00000000}
 run_axi_delayed dram_18_965
 delete_hw_axi_txn -quiet [get_hw_axi_txns dram_18_965]
+
+
+# Write one word at 0x80000F18
+delete_hw_axi_txn -quiet [get_hw_axi_txns dram_18_966]
+create_hw_axi_txn dram_18_966 $hw_axi \
+    -type WRITE \
+    -address 80000F18 \
+    -len 1 \
+    -data {00010DF8}
+run_axi_delayed dram_18_966
+delete_hw_axi_txn -quiet [get_hw_axi_txns dram_18_966]
 
 
 # Release CPU reset
