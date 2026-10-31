@@ -55,7 +55,7 @@ Get-ChildItem $buildDir -Directory | ForEach-Object {
             throw "objcopy failed while extracting ROM from $($exe.FullName)"
         }
 
-        & $objcopy -O binary --only-section=.rodata --only-section=.data $exe.FullName $ramBin
+        & $objcopy -O binary --only-section=.rodata '--only-section=.srodata*' --only-section=.data '--only-section=.sdata*' $exe.FullName $ramBin
         if ($LASTEXITCODE -ne 0) {
             throw "objcopy failed while extracting RAM from $($exe.FullName)"
         }
