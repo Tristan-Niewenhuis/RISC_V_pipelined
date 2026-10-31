@@ -35,6 +35,7 @@ SECTIONS
     {
         . = ALIGN(4);
         *(.rodata*)
+        *(.srodata*)
         . = ALIGN(4);
     } > RAM
 
@@ -43,6 +44,7 @@ SECTIONS
         . = ALIGN(4);
         __data_start__ = .;
         *(.data*)
+        *(.sdata*)
         . = ALIGN(4);
         __data_end__ = .;
     } > RAM

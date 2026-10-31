@@ -39,7 +39,9 @@ Get-ChildItem $buildDir -Directory | ForEach-Object {
         & $objcopy `
             -O binary `
             --only-section=.rodata `
+            '--only-section=.srodata*' `
             --only-section=.data `
+            '--only-section=.sdata*' `
             $exe.FullName `
             $ramBin
 
