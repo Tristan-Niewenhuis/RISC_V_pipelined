@@ -304,7 +304,7 @@ def generate_tcl_script(tests):
         "",
         'set result_file "__RESULT_FILE__"',
         'set result_fp [open $result_file "w"]',
-        'puts $result_fp "name,cycle_low,cycle_high,cycles,instret_low,instret_high,instret,elapsed_seconds,status"',
+        'puts $result_fp "name,cycle_low,cycle_high,cycles,instret_low,instret_high,instret,status"',
     ])
 
     for test_number, test in enumerate(tests):
@@ -405,7 +405,7 @@ def generate_tcl_script(tests):
             f'puts "TEST: {name}"',
             f'puts "  cycles  = $cycles_{test_number}"',
             f'puts "  instret = $instret_{test_number}"',
-            f'puts $result_fp "{name},$cycle_lo_{test_number},$cycle_hi_{test_number},$cycles_{test_number},$instret_lo_{test_number},$instret_hi_{test_number},$instret_{test_number},0,DONE"',
+            f'puts $result_fp "{name},$cycle_lo_{test_number},$cycle_hi_{test_number},$cycles_{test_number},$instret_lo_{test_number},$instret_hi_{test_number},$instret_{test_number},DONE"',
             "flush $result_fp",
             "}",
             "",
