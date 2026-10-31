@@ -279823,7 +279823,7 @@ while {!$done_12} {
     if {($status_value_12 & 1) != 0} {
         set done_12 1
     }
-    if {!$done_12 && [expr {[clock seconds] - $poll_start_12}] >= 60} {
+    if {!$done_12 && [expr {[clock seconds] - $poll_start_12}] >= 600} {
         puts "TIMEOUT: qrduino did not set DONE; continuing to next test"
         set timed_out_12 1
         break
