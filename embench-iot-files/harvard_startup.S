@@ -28,8 +28,17 @@ bss_done:
     /*
      * Call C code.
      */
-    jal ra, main
+    jal ra, main             # a0 = main's return value
 
+    beqz a0, report_done     # zero means pass
+    li   t0, 0x0000FFE4      # cycle_hi register
+    li   t1, 0xDEADBEEF
+    sw   t1, 0(t0)           # mark verification failure
+
+report_done:
+    li   t0, 0x0000FFF0      # DONE/status register
+    li   t1, 1
+    sw   t1, 0(t0)           # tell the harness the run finished
 
 hang:
     j hang

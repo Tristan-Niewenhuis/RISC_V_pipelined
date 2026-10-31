@@ -1,6 +1,23 @@
+param(
+    [string]$RomOrigin = "0x00001000"
+)
+
 $buildDir = ".\build\src"
 
 $objcopy = "C:\AMDDesignTools\2026.1\gnu\riscv\nt\bin\riscv64-unknown-elf-objcopy.exe"
+
+if ($RomOrigin -match '^0[xX]([0-9a-fA-F]+)$') {
+    $romOriginBytes = [Convert]::ToInt32($Matches[1], 16)
+}
+else {
+    $romOriginBytes = [int]::Parse($RomOrigin)
+}
+
+if ($romOriginBytes -lt 0 -or ($romOriginBytes % 4) -ne 0) {
+    throw "ROM_ORIGIN must be a non-negative, 4-byte-aligned byte address: $RomOrigin"
+}
+
+Write-Host ("Padding each ROM COE with {0} zero bytes before .text (ROM_ORIGIN={1})" -f $romOriginBytes, $RomOrigin)
 
 Get-ChildItem $buildDir -Directory | ForEach-Object {
 
@@ -12,6 +29,7 @@ Get-ChildItem $buildDir -Directory | ForEach-Object {
         $baseName = [System.IO.Path]::GetFileNameWithoutExtension($exe.Name)
 
         $romBin = Join-Path $dir.FullName "${baseName}_rom.bin"
+        $romTextBin = Join-Path $dir.FullName "${baseName}_rom_text.bin"
         $ramBin = Join-Path $dir.FullName "${baseName}_ram.bin"
 
         $romCoe = Join-Path $dir.FullName "${baseName}_rom.coe"
@@ -20,17 +38,24 @@ Get-ChildItem $buildDir -Directory | ForEach-Object {
 
         Write-Host "Creating ROM image for $($exe.FullName)"
 
-        # Extract all .text.* sections into the ROM image.
+        # Extract .text. This raw section starts at offset zero, so add leading
+        # bytes matching its linked ROM address before converting to COE.
         & $objcopy `
             -O binary `
             --only-section=.text `
             $exe.FullName `
-            $romBin
+            $romTextBin
 
         if ($LASTEXITCODE -ne 0) {
             Write-Error "objcopy failed for ROM: $($exe.FullName)"
             return
         }
+
+        $textBytes = [System.IO.File]::ReadAllBytes($romTextBin)
+        [byte[]]$romBytes = New-Object byte[] ($romOriginBytes + $textBytes.Length)
+        [System.Array]::Copy($textBytes, 0, $romBytes, $romOriginBytes, $textBytes.Length)
+        [System.IO.File]::WriteAllBytes($romBin, $romBytes)
+        Remove-Item -LiteralPath $romTextBin
 
 
         Write-Host "Creating RAM image for $($exe.FullName)"

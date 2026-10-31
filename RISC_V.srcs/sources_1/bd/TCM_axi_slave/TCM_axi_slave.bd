@@ -475,7 +475,7 @@
                 "value_src": "constant"
               },
               "FREQ_HZ": {
-                "value": "90000000",
+                "value": "85000000",
                 "value_src": "ip_prop"
               },
               "PHASE": {
@@ -701,19 +701,19 @@
         "has_run_ip_tcl": "true",
         "parameters": {
           "CLKOUT1_JITTER": {
-            "value": "247.412"
+            "value": "242.325"
           },
           "CLKOUT1_PHASE_ERROR": {
-            "value": "296.868"
+            "value": "300.046"
           },
           "CLKOUT1_REQUESTED_OUT_FREQ": {
-            "value": "90.000"
+            "value": "85.000"
           },
           "CLKOUT2_JITTER": {
-            "value": "299.923"
+            "value": "284.425"
           },
           "CLKOUT2_PHASE_ERROR": {
-            "value": "296.868"
+            "value": "300.046"
           },
           "CLKOUT2_REQUESTED_OUT_FREQ": {
             "value": "30"
@@ -722,13 +722,13 @@
             "value": "true"
           },
           "MMCM_CLKFBOUT_MULT_F": {
-            "value": "49.500"
+            "value": "51.000"
           },
           "MMCM_CLKOUT0_DIVIDE_F": {
-            "value": "11.000"
+            "value": "12.000"
           },
           "MMCM_CLKOUT1_DIVIDE": {
-            "value": "33"
+            "value": "34"
           },
           "MMCM_DIVCLK_DIVIDE": {
             "value": "5"
@@ -953,7 +953,7 @@
                 "value_src": "constant"
               },
               "FREQ_HZ": {
-                "value": "90000000",
+                "value": "85000000",
                 "value_src": "ip_prop"
               },
               "ID_WIDTH": {
@@ -1166,7 +1166,7 @@
                 "value_src": "constant"
               },
               "FREQ_HZ": {
-                "value": "90000000",
+                "value": "85000000",
                 "value_src": "ip_prop"
               },
               "PHASE": {

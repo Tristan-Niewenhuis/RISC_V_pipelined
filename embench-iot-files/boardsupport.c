@@ -8,7 +8,6 @@
 #define CYCLE_HI_ADDR (*(volatile uint32_t *)0x0000FFE4)
 #define INSTRET_LO_ADDR (*(volatile uint32_t *)0x0000FFE8)
 #define INSTRET_HI_ADDR (*(volatile uint32_t *)0x0000FFEC)
-#define DONE_ADDR (*(volatile uint32_t *)0x0000FFF0)
 
 volatile uint32_t start_cycles_hi;
 volatile uint32_t start_cycles_lo;
@@ -84,13 +83,4 @@ stop_trigger()
   CYCLE_HI_ADDR = cycle_hi;
   INSTRET_LO_ADDR = instret_lo;
   INSTRET_HI_ADDR = instret_hi;
-
-  /* Signal that measurement is complete. */
-  DONE_ADDR = 1;
-
-  /* Keep the processor here after reporting results. */
-  while (1)
-  {
-    __asm__ volatile("nop");
-  }
 }

@@ -1,27 +1,75 @@
 {
    "ActiveEmotionalView":"Default View",
-   "Default View_ScaleFactor":"1.25",
-   "Default View_TopLeft":"-369,-137",
+   "Default View_ScaleFactor":"0.473661",
+   "Default View_TopLeft":"-1535,-230",
    "ExpandedHierarchyInLayout":"",
    "guistr":"# # String gsaved with Nlview 7.8.0 2024-04-26 e1825d835c VDI=44 GEI=38 GUI=JA:24.0 threadsafe
 #  -string -flagsOSRD
 preplace port port-id_reset -pg 1 -lvl 0 -x -10 -y 170 -defaultsOSRD
 preplace port port-id_sys_clock -pg 1 -lvl 0 -x -10 -y 200 -defaultsOSRD
-preplace port port-id_pc_asserted -pg 1 -lvl 3 -x 630 -y 120 -defaultsOSRD
-preplace port port-id_resetn_reg_led -pg 1 -lvl 3 -x 630 -y 150 -defaultsOSRD
-preplace port port-id_done_led -pg 1 -lvl 3 -x 630 -y 180 -defaultsOSRD
+preplace port port-id_pc_asserted -pg 1 -lvl 3 -x 2120 -y 120 -defaultsOSRD
+preplace port port-id_resetn_reg_led -pg 1 -lvl 3 -x 2120 -y 150 -defaultsOSRD
+preplace port port-id_done_led -pg 1 -lvl 3 -x 2120 -y 180 -defaultsOSRD
 preplace inst jtag_axi_0 -pg 1 -lvl 1 -x 120 -y 100 -defaultsOSRD
-preplace inst TCM_axi_slave -pg 1 -lvl 2 -x 450 -y 120 -defaultsOSRD
-preplace netloc TCM_axi_slave_slow_clk_restn 1 0 3 20 240 NJ 240 590
-preplace netloc clk_wiz_1_clk_out1 1 0 3 10 250 NJ 250 600
-preplace netloc resetn_1 1 0 2 NJ 170 220
-preplace netloc sys_clock_1 1 0 2 NJ 200 230J
-preplace netloc TCM_axi_slave_pc_asserted 1 2 1 N 120
-preplace netloc TCM_axi_slave_resetn_reg_led 1 2 1 610 150n
-preplace netloc TCM_axi_slave_done_led 1 2 1 N 180
-preplace netloc jtag_axi_0_M_AXI 1 1 1 N 100
-levelinfo -pg 1 -10 120 450 630
-pagesize -pg 1 -db -bbox -sgen -120 0 2220 1550
+preplace inst TCM_axi_slave -pg 1 -lvl 2 -x 460 -y 122 -defaultsOSRD
+preplace inst TCM_axi_slave|RISC_V_TCM_0 -pg 1 -lvl 3 -x 1290 -y 382 -defaultsOSRD
+preplace inst TCM_axi_slave|axi_bram_ctrl_0 -pg 1 -lvl 4 -x 1710 -y 132 -defaultsOSRD
+preplace inst TCM_axi_slave|axi_bram_ctrl_1 -pg 1 -lvl 4 -x 1710 -y 372 -defaultsOSRD
+preplace inst TCM_axi_slave|axi_clock_converter_0 -pg 1 -lvl 3 -x 1290 -y 1012 -defaultsOSRD
+preplace inst TCM_axi_slave|axi_clock_converter_1 -pg 1 -lvl 3 -x 1290 -y 1392 -defaultsOSRD
+preplace inst TCM_axi_slave|axi_clock_converter_2 -pg 1 -lvl 3 -x 1290 -y 1192 -defaultsOSRD
+preplace inst TCM_axi_slave|clk_wiz_0 -pg 1 -lvl 3 -x 1290 -y 622 -defaultsOSRD
+preplace inst TCM_axi_slave|proc_sys_reset_0 -pg 1 -lvl 2 -x 860 -y 292 -defaultsOSRD
+preplace inst TCM_axi_slave|proc_sys_reset_2 -pg 1 -lvl 2 -x 860 -y 892 -defaultsOSRD
+preplace inst TCM_axi_slave|smartconnect_0 -pg 1 -lvl 2 -x 860 -y 1132 -defaultsOSRD
+preplace inst TCM_axi_slave|test_controller_1 -pg 1 -lvl 4 -x 1710 -y 582 -defaultsOSRD
+preplace inst TCM_axi_slave|axi_protocol_checker_0 -pg 1 -lvl 4 -x 1710 -y 792 -defaultsOSRD
+preplace inst TCM_axi_slave|proc_sys_reset_3 -pg 1 -lvl 3 -x 1290 -y 812 -defaultsOSRD
+preplace inst TCM_axi_slave|ilvector_logic_0 -pg 1 -lvl 1 -x 520 -y 562 -defaultsOSRD
+preplace netloc TCM_axi_slave_slow_clk_restn 1 0 3 20 240 230J 1524 2060
+preplace netloc clk_wiz_1_clk_out1 1 0 3 10 250 220J 1534 2070
+preplace netloc resetn_1 1 0 2 NJ 170 250
+preplace netloc sys_clock_1 1 0 2 NJ 200 240J
+preplace netloc TCM_axi_slave_pc_asserted 1 2 1 2080 120n
+preplace netloc TCM_axi_slave_resetn_reg_led 1 2 1 2090 150n
+preplace netloc TCM_axi_slave_done_led 1 2 1 2100 180n
+preplace netloc jtag_axi_0_M_AXI 1 1 1 260 100n
+preplace netloc TCM_axi_slave|RISC_V_TCM_0_io_addr 1 3 1 1520 362n
+preplace netloc TCM_axi_slave|RISC_V_TCM_0_io_s_data 1 3 1 1510 382n
+preplace netloc TCM_axi_slave|RISC_V_TCM_0_io_s_strobe 1 3 1 1490 402n
+preplace netloc TCM_axi_slave|axi_bram_ctrl_0_bram_addr_a 1 2 3 1100 42 NJ 42 1870
+preplace netloc TCM_axi_slave|axi_bram_ctrl_0_bram_we_a 1 2 3 1090 232 NJ 232 1870
+preplace netloc TCM_axi_slave|axi_bram_ctrl_0_bram_wrdata_a 1 2 3 1080 222 NJ 222 1910
+preplace netloc TCM_axi_slave|axi_bram_ctrl_1_bram_addr_a 1 2 3 1110 242 NJ 242 1870
+preplace netloc TCM_axi_slave|axi_bram_ctrl_1_bram_we_a 1 2 3 1120 252 NJ 252 1910
+preplace netloc TCM_axi_slave|axi_bram_ctrl_1_bram_wrdata_a 1 2 3 1100 532 1470J 462 1870
+preplace netloc TCM_axi_slave|axi_protocol_checker_0_pc_asserted 1 4 1 N 812
+preplace netloc TCM_axi_slave|clk_wiz_0_clk_out1 1 1 3 690 392 1060 512 1460
+preplace netloc TCM_axi_slave|clk_wiz_0_locked 1 1 4 680 722 1120 702 1460 692 NJ
+preplace netloc TCM_axi_slave|clk_wiz_1_clk_out1 1 1 4 690 1212 1050 912 1470 702 1900J
+preplace netloc TCM_axi_slave|ilvector_logic_0_Res 1 1 2 660 792 N
+preplace netloc TCM_axi_slave|proc_sys_reset_0_peripheral_aresetn 1 2 1 N 332
+preplace netloc TCM_axi_slave|proc_sys_reset_2_interconnect_aresetn 1 2 1 1030 912n
+preplace netloc TCM_axi_slave|proc_sys_reset_2_peripheral_aresetn 1 2 2 1040 522 1550
+preplace netloc TCM_axi_slave|proc_sys_reset_3_interconnect_aresetn 1 1 3 660 1222 1100 1292 1460
+preplace netloc TCM_axi_slave|proc_sys_reset_3_peripheral_aresetn 1 3 2 1550 872 NJ
+preplace netloc TCM_axi_slave|reset_1 1 0 1 NJ 562
+preplace netloc TCM_axi_slave|sys_clock_1 1 0 3 NJ 622 NJ 622 N
+preplace netloc TCM_axi_slave|test_controller_1_CPU_resetn 1 1 4 680 192 1070J 542 1500J 472 1870
+preplace netloc TCM_axi_slave|test_controller_1_mem_hazard 1 4 1 1890 612n
+preplace netloc TCM_axi_slave|test_controller_1_resetn_reg_led 1 4 1 1910 572n
+preplace netloc TCM_axi_slave|test_controller_1_done_led 1 4 1 1880 592n
+preplace netloc TCM_axi_slave|axi_clock_converter_0_M_AXI 1 3 1 1480 112n
+preplace netloc TCM_axi_slave|axi_clock_converter_1_M_AXI 1 3 1 1530 352n
+preplace netloc TCM_axi_slave|axi_clock_converter_2_M_AXI 1 3 1 1540 532n
+preplace netloc TCM_axi_slave|jtag_axi_0_M_AXI 1 0 5 NJ 502 670 712 NJ 712 NJ 712 1870
+preplace netloc TCM_axi_slave|smartconnect_0_M00_AXI 1 2 1 1090 972n
+preplace netloc TCM_axi_slave|smartconnect_0_M01_AXI 1 2 1 1040 1132n
+preplace netloc TCM_axi_slave|smartconnect_0_M02_AXI 1 2 1 N 1152
+levelinfo -pg 1 -10 120 460 2120
+levelinfo -hier TCM_axi_slave * 520 860 1290 1710 *
+pagesize -pg 1 -db -bbox -sgen -120 0 2260 1550
+pagesize -hier TCM_axi_slave -db -bbox -sgen 350 32 1940 1492
 "
 }
 0

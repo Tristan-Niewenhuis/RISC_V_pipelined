@@ -16,6 +16,9 @@ LD=riscv64-unknown-elf-ld
 OBJCOPY=riscv64-unknown-elf-objcopy
 OBJDUMP=riscv64-unknown-elf-objdump
 
+# Must match the ROM ORIGIN in link.ld. The COE places .text at this byte offset.
+ROM_ORIGIN ?= 0x00000000
+
 CFLAGS="-O2 -ffunction-sections -fdata-sections -march=rv32i_zicsr_zicntr -mabi=ilp32"
 LDFLAGS="-O2 -march=rv32i_zicsr_zicntr -mabi=ilp32 -Wl,--gc-sections -Wl,--no-warn-rwx-segments -Wl,--build-id=none -static -nostartfiles $(BUILD_DIR_FROM_EMBENCH)/$(STARTUP).o -T ${BUILD_DIR_FROM_EMBENCH}/link.ld"
 
@@ -37,7 +40,7 @@ dis: elf
 	powershell -NoProfile -ExecutionPolicy Bypass -File .\disassemble.ps1
 
 coe: elf
-	powershell -NoProfile -ExecutionPolicy Bypass -File .\make_coe.ps1
+	powershell -NoProfile -ExecutionPolicy Bypass -File .\make_coe.ps1 -RomOrigin "$(ROM_ORIGIN)"
 
 # Export raw little-endian binaries and one-32-bit-word-per-line hex files.
 images: elf
