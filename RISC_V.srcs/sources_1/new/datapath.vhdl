@@ -24,9 +24,8 @@ end Datapath;
 
 architecture Behavioral of Datapath is
     --if
-    signal pc_next, pc : slv(I_BYTES_ADDR_BITS - 3 downto 0);
-    signal pc_incr : sl;
-    signal pc_ctrl : slv(2 downto 0);
+    signal pc_next, pc, pc_seq : slv(I_BYTES_ADDR_BITS - 3 downto 0);
+    signal pc_seq_ctrl : slv(1 downto 0);
     signal cw_decoded : control_word_if_id;
 
     --if_id
@@ -45,6 +44,7 @@ architecture Behavioral of Datapath is
     signal ex_a_bus, ex_b_bus, a_alu, b_alu, alu_out, csr_d, csr_q : slv(XLEN - 1 downto 0);
     signal BTU_out : sl;
     signal branch_correct, branch_take : sl;
+    signal imm_is_4 : sl;
     signal pc_base, pc_sum : slv(I_BYTES_ADDR_BITS - 1 downto 0);
     signal pc_d : slv(I_BYTES_ADDR_BITS - 3 downto 0);
     signal pc_latch : sl;
@@ -55,8 +55,9 @@ architecture Behavioral of Datapath is
     signal ex_mem_data_out : slv(XLEN - 1 downto 0);
 
     --mem
-    signal mem_d_in, mem_PC_d_in : slv(XLEN - 1 downto 0);
-    signal data_out : slv(XLEN - 1 downto 0);
+    signal mem_d_in : slv(XLEN - 1 downto 0);
+    signal data_out, ex_PC_d_in : slv(XLEN - 1 downto 0);
+    signal data_sel : slv(1 downto 0);
 
     --mem_wb
     signal mem_wb_cw : control_word_mem_wb;
@@ -64,7 +65,7 @@ architecture Behavioral of Datapath is
     signal mem_wb_load_data, mem_wb_data_out : slv(XLEN - 1 downto 0);
 
     --wb
-    signal wb_d_in, wb_PC_d_in : slv(XLEN - 1 downto 0);
+    signal wb_d_in : slv(XLEN - 1 downto 0);
     signal exec : sl;
 
     --control
@@ -79,6 +80,11 @@ architecture Behavioral of Datapath is
 
     --forwarding
     signal ex_mem_a_forward, ex_mem_b_forward, mem_wb_a_forward, mem_wb_b_forward : sl;
+    signal ex_mem_a_forward_next, ex_mem_b_forward_next, mem_wb_a_forward_next, mem_wb_b_forward_next : sl;
+    signal forward_next, forward_q : slv(3 downto 0);
+    signal if_id_a_read, if_id_b_read : sl;
+    signal next_ex_mem_Dsel : slv(4 downto 0);
+    signal next_ex_mem_Dlen, next_ex_mem_is_load : sl;
 
     -- Simulation-only retirement trace. The valid bits mirror the pipeline
     -- register hold/bubble/flush behavior; these declarations are ignored by
@@ -92,23 +98,33 @@ architecture Behavioral of Datapath is
     -- synthesis translate_on
 begin
 
-    branch_correct <= '1' when pc_d = if_id_pc else '0';
+    --The target is already in IF/ID only for a PC-relative jump or branch
+    --with an offset of 4.  Decide that from registered values so the target
+    --adder is not in series with the branch decision.  JALR always flushes.
+    imm_is_4 <= '1' when unsigned(id_ex_cw.IMM) = 4 else '0';
+    branch_correct <= '1' when id_ex_cw.PCAsel = '1' and imm_is_4 = '1' and
+                               unsigned(if_id_pc) = unsigned(id_ex_pc) + 1 else
+                      '0';
     branch_take <= id_ex_cw.PCle or BTU_out;
 
     pc_base <= id_ex_pc & "00" when id_ex_cw.PCAsel = '1' else ex_a_bus(I_BYTES_ADDR_BITS - 1 downto 0);
     pc_sum <= slv(signed(pc_base) + signed(id_ex_cw.IMM(I_BYTES_ADDR_BITS - 1 downto 0))); --unsigned or signed add, doesn't matter. same logic under the hood
     pc_d <= pc_sum(I_BYTES_ADDR_BITS - 1 downto 2);
     pc_latch <= branch_take and (not branch_correct);
-    pc_incr <= (not if_id_stall and not branch_hazard);
 
     --counter
+    --The sequential choice is made without the branch decision, which comes
+    --late from the BTU, so pc_latch is the last select before the IRAM
+    --address.  A taken branch always sets pc_latch, so pc_seq can ignore
+    --branch_hazard.
     pc <= pc_next when rising_edge(clk);
-    pc_ctrl <= reset & pc_latch & pc_incr;
-    with pc_ctrl select pc_next <=
-        pc when "000",
-        slv(unsigned(pc) + 1) when "001",
-        pc_d when "010" | "011",
+    pc_seq_ctrl <= reset & if_id_stall;
+    with pc_seq_ctrl select pc_seq <=
+        slv(unsigned(pc) + 1) when "00",
+        pc when "01",
         "00000000000000" when others; --starting address as x1000 ("00010000000000") for test_2, else set zero
+    pc_next <= pc_d when pc_latch = '1' and reset = '0' else
+               pc_seq;
 
     fetch_address <= pc when I_USE_NEGEDGE else pc_next;
 
@@ -229,7 +245,15 @@ begin
             exec => exec
         );
 
-    data_out <= csr_q when id_ex_cw.is_CSR = '1' else alu_out;
+    --The link address for JAL and JALR is written in EX, so the EX/MEM and
+    --MEM/WB data registers already hold it and no adder sits in the
+    --forwarding paths.
+    ex_PC_d_in <= ((31 downto I_BYTES_ADDR_BITS => '0') & slv(unsigned(id_ex_pc) + 1) & "00");
+    data_sel <= id_ex_cw.PCDsel & id_ex_cw.is_CSR;
+    with data_sel select data_out <=
+        ex_PC_d_in when "10" | "11",
+        csr_q when "01",
+        alu_out when others;
 
     EX_MEM_proc : process(clk) is
     begin
@@ -249,9 +273,7 @@ begin
         end if;
     end process;
 
-    mem_PC_d_in <= ((31 downto I_BYTES_ADDR_BITS => '0') & slv(unsigned(ex_mem_pc) + 1) & "00");
-    mem_d_in <= mem_PC_d_in when ex_mem_cw.PCDsel = '1' else
-                ex_mem_data_out;
+    mem_d_in <= ex_mem_data_out;
 
     load_type <= ex_mem_cw.BRcond_LStype;
 
@@ -275,9 +297,7 @@ begin
         end if;
     end process;
 
-    wb_PC_d_in <= ((31 downto I_BYTES_ADDR_BITS => '0') & slv(unsigned(mem_wb_pc) + 1) & "00");
     wb_d_in <= mem_wb_load_data when mem_wb_cw.LoadDsel = '1' else
-               wb_PC_d_in when mem_wb_cw.PCDsel = '1' else
                mem_wb_data_out;
 
     ----control logic----
@@ -355,32 +375,62 @@ begin
     mem_wb_stall <= '0';
 
     --Forward Logic
+    --The forwarding selects are computed a cycle early, from the instruction
+    --in IF/ID and the instructions that will be in EX/MEM and MEM/WB next
+    --cycle, and registered.  That keeps the register-number compares out of
+    --series with the forwarding muxes.  An instruction that becomes a bubble
+    --in ID/EX may get a stale select, which does no harm because a bubble
+    --does not use its operands.
+    forward_reg : entity work.generic_register
+        generic map(bits => 4)
+        port map(clk => clk, reset => reset, enable => '1', d => forward_next, q => forward_q);
+
+    forward_next <= ex_mem_a_forward_next & ex_mem_b_forward_next & mem_wb_a_forward_next & mem_wb_b_forward_next;
+
+    ex_mem_a_forward <= forward_q(3);
+    ex_mem_b_forward <= forward_q(2);
+    mem_wb_a_forward <= forward_q(1);
+    mem_wb_b_forward <= forward_q(0);
+
+    --EX/MEM holds its instruction while ex_mem_stall is set, and otherwise
+    --takes the one in ID/EX.  MEM/WB takes the one in EX/MEM unless a bubble
+    --is inserted.
+    next_ex_mem_Dsel <= ex_mem_cw.Dsel when ex_mem_stall = '1' else id_ex_cw.Dsel;
+    next_ex_mem_Dlen <= ex_mem_cw.Dlen when ex_mem_stall = '1' else id_ex_cw.Dlen;
+    next_ex_mem_is_load <= ex_mem_cw.is_load when ex_mem_stall = '1' else id_ex_cw.is_load;
+
     -- @formatter:off
-    ex_mem_a_forward <= '1' when (id_ex_cw.Asel_CSRuimm = ex_mem_cw.Dsel and 
-                                  id_ex_cw.Asel_CSRuimm /= "00000" and 
-                                  id_ex_cw.Aused = '1' and 
-                                  ex_mem_cw.Dlen = '1' and 
-                                  ex_mem_cw.is_load = '0') else
-                        '0';
+    if_id_a_read <= '1' when (if_id_cw.Asel_CSRuimm /= "00000" and 
+                              if_id_cw.Aused = '1') else
+                    '0';
 
-    ex_mem_b_forward <= '1' when (id_ex_cw.Bsel = ex_mem_cw.Dsel and 
-                                  id_ex_cw.Bsel /= "00000" and 
-                                  id_ex_cw.Bused = '1' and 
-                                  ex_mem_cw.Dlen = '1' and 
-                                  ex_mem_cw.is_load = '0') else
-                        '0';
+    if_id_b_read <= '1' when (if_id_cw.Bsel /= "00000" and 
+                              if_id_cw.Bused = '1') else
+                    '0';
 
-    mem_wb_a_forward <= '1' when (id_ex_cw.Asel_CSRuimm = mem_wb_cw.Dsel and 
-                                  id_ex_cw.Asel_CSRuimm /= "00000" and 
-                                  id_ex_cw.Aused = '1' and 
-                                  mem_wb_cw.Dlen = '1') else
-                        '0';
+    ex_mem_a_forward_next <= '1' when (if_id_cw.Asel_CSRuimm = next_ex_mem_Dsel and 
+                                       if_id_a_read = '1' and 
+                                       next_ex_mem_Dlen = '1' and 
+                                       next_ex_mem_is_load = '0') else
+                             '0';
 
-    mem_wb_b_forward <= '1' when (id_ex_cw.Bsel = mem_wb_cw.Dsel and 
-                                  id_ex_cw.Bsel /= "00000" and 
-                                  id_ex_cw.Bused = '1' and 
-                                  mem_wb_cw.Dlen = '1') else
-                        '0';
+    ex_mem_b_forward_next <= '1' when (if_id_cw.Bsel = next_ex_mem_Dsel and 
+                                       if_id_b_read = '1' and 
+                                       next_ex_mem_Dlen = '1' and 
+                                       next_ex_mem_is_load = '0') else
+                             '0';
+
+    mem_wb_a_forward_next <= '1' when (if_id_cw.Asel_CSRuimm = ex_mem_cw.Dsel and 
+                                       if_id_a_read = '1' and 
+                                       ex_mem_cw.Dlen = '1' and 
+                                       mem_wb_nop = '0') else
+                             '0';
+
+    mem_wb_b_forward_next <= '1' when (if_id_cw.Bsel = ex_mem_cw.Dsel and 
+                                       if_id_b_read = '1' and 
+                                       ex_mem_cw.Dlen = '1' and 
+                                       mem_wb_nop = '0') else
+                             '0';
 
     WAIT_PARTIAL : if FORWARDING_AMOUNT = PARTIAL generate
     
