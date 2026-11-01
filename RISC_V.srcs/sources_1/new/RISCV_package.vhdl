@@ -192,10 +192,12 @@ end RISCV_package;
 
 package body RISCV_package is
 
-  -- The memory init files live in the project tree.  Use the Windows
-  -- checkout when it exists and the Unix checkout otherwise.
+  -- The memory init files live in the project tree.  Look for RISC_V.xpr
+  -- relative to the tool's working directory: the project directory itself
+  -- (GHDL), two levels down (Vivado synthesis runs in RISC_V.runs/<run>),
+  -- or four levels down (xsim runs in RISC_V.sim/sim_1/behav/xsim).  The
+  -- original Windows checkout is the last resort.
   constant WINDOWS_ROOT : string := "C:/RISC_V_research/RISC_V_pipelined_private";
-  constant UNIX_ROOT : string := "/home/faculty/lpyeatt/research/Tristan-Niewenhuis/rv_build";
 
   -- Function to test whether a file can be opened for reading
   impure function file_exists(name : string) return boolean is
@@ -212,10 +214,14 @@ package body RISCV_package is
   -- Function to select the project root for this platform
   impure function find_project_root return string is
   begin
-    if file_exists(WINDOWS_ROOT & "/RISC_V.xpr") then
-      return WINDOWS_ROOT;
+    if file_exists("RISC_V.xpr") then
+      return ".";
+    elsif file_exists("../../RISC_V.xpr") then
+      return "../..";
+    elsif file_exists("../../../../RISC_V.xpr") then
+      return "../../../..";
     else
-      return UNIX_ROOT;
+      return WINDOWS_ROOT;
     end if;
   end function;
 
