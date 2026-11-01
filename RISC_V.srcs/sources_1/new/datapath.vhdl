@@ -126,6 +126,7 @@ begin
     pc_next <= pc_d when pc_latch = '1' and reset = '0' else
                pc_seq;
 
+    --I_USE_NEGEDGE stays false (see RISCV_package), so pc_next drives the IRAM.
     fetch_address <= pc when I_USE_NEGEDGE else pc_next;
 
     Instruction_Decoder : entity work.Instruction_Decoder(Behavioral)

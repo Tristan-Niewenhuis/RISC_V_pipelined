@@ -27,13 +27,17 @@ package RISCV_package is
   constant I_MEM_SIZE_LOGICAL : integer := 16#10000#;
   constant I_MEM_BYTES_REAL : integer := 16#10000#; --must be power of 2
   constant I_MEM_INIT_FILE : string; --set in the package body
+  --Keep the BRAMs on the rising edge (I_USE_NEGEDGE and D_USE_NEGEDGE false).
+  --The falling-edge option does not change CPI, and its half-cycle path
+  --(BRAM clock-to-out plus decode) caps Fmax near 105 MHz, below every
+  --forwarding variant on the rising edge (Fmax sweep of 2026-11-01).
   constant I_USE_NEGEDGE : boolean := false;
   constant D_MEM_BASE : slv(31 downto 0) := x"00010000";
   constant D_MEM_SIZE_LOGICAL : integer := 16#FFE0#;
   constant D_MEM_BYTES_REAL : integer := 16#10000#; --must be power of 2
   constant D_MEM_INIT_FILE : string; --set in the package body
   constant D_IO_BASE : slv(31 downto 0) := x"C0000000";
-  constant D_USE_NEGEDGE : boolean := false;
+  constant D_USE_NEGEDGE : boolean := false; --keep false, see I_USE_NEGEDGE
 
   -- Function to create a vector from a bit
   function to_boolean(x : sl) return boolean;
