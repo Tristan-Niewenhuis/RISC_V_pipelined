@@ -1,5 +1,6 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
+use work.RISCV_package.all;
 
 entity generic_register is
     generic(bits : integer := 4);
@@ -13,8 +14,9 @@ end generic_register;
 architecture Behavioral of generic_register is
     signal q_i, next_q_i : std_logic_vector(bits - 1 downto 0);
 
+    -- Keep the register output visible to the debugger when DEBUG is set
     attribute mark_debug : string;
-    attribute mark_debug of q_i : signal is "true";
+    attribute mark_debug of q_i : signal is boolean'image(DEBUG);
 
 begin
     q_i <= next_q_i when rising_edge(clk);

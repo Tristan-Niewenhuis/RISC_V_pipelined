@@ -12,15 +12,21 @@ entity btu is
 end btu;
 
 architecture Behavioral of btu is
-    signal pre_out, equal, lt, slt : std_logic;
+    signal pre_out, equal, lt, a_ext, b_ext : std_logic;
+    signal diff : slv(XLEN downto 0);
 begin
     equal <= '1' when a = b else '0';
-    lt <= '1' when unsigned(a) < unsigned(b) else '0';
-    slt <= '1' when signed(a) < signed(b) else '0';
 
-    with cond(2 downto 1) select pre_out <=
-        slt when "10",
-        lt when "11",
+    --One subtraction gives both less-than results.  The extra top bit is the
+    --sign bit for BLT/BGE and zero for BLTU/BGEU, so the sign of the
+    --difference is the comparison either way.
+    a_ext <= a(XLEN - 1) and not cond(1);
+    b_ext <= b(XLEN - 1) and not cond(1);
+    diff <= slv(unsigned(a_ext & a) - unsigned(b_ext & b));
+    lt <= diff(XLEN);
+
+    with cond(2) select pre_out <=
+        lt when '1',
         equal when others;
 
     BTU_out <= (pre_out xor cond(0)) and enable;
