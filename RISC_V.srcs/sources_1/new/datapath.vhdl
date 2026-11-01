@@ -85,7 +85,7 @@ architecture Behavioral of Datapath is
     signal if_id_a_read, if_id_b_read : sl;
     signal next_ex_mem_Dsel : slv(4 downto 0);
     signal next_ex_mem_Dlen, next_ex_mem_is_load : sl;
-    signal next_ex_mem_can_forward, mem_wb_can_forward : sl;
+    signal next_ex_mem_can_forward, mem_wb_can_forward, csr_write : sl;
 
     -- Simulation-only retirement trace. The valid bits mirror the pipeline
     -- register hold/bubble/flush behavior; these declarations are ignored by
@@ -234,12 +234,18 @@ begin
 
     exec <= '0' when (mem_wb_pc = (mem_wb_pc'range => '0')) or mem_wb_stall = '1' else '1';
     csr_d <= ((XLEN - 1 downto 5 => '0') & id_ex_cw.Asel_CSRuimm) when id_ex_cw.ALUFunc_CSRtype(3) = '1' else ex_a_bus;
+    -- CSRRS and CSRRC (and their immediate forms) with rs1 = x0 or uimm = 0
+    -- only read the CSR.  Writing it back would make mcycle and minstret
+    -- skip their increment, so do not write.
+    csr_write <= id_ex_cw.is_CSR when id_ex_cw.ALUFunc_CSRtype(2 downto 1) = "01" or
+                                      id_ex_cw.Asel_CSRuimm /= "00000" else
+                 '0';
     CSR_regs : entity work.CSR_regs
         port map(
             clk => clk,
             reset => reset,
             d_sel => id_ex_cw.CSR_reg,
-            d_len => id_ex_cw.is_CSR,
+            d_len => csr_write,
             d_in => csr_d,
             d_type => id_ex_cw.ALUFunc_CSRtype(2 downto 1),
             q_sel => id_ex_cw.CSR_reg,
