@@ -85,6 +85,7 @@ architecture Behavioral of Datapath is
     signal if_id_a_read, if_id_b_read : sl;
     signal next_ex_mem_Dsel : slv(4 downto 0);
     signal next_ex_mem_Dlen, next_ex_mem_is_load : sl;
+    signal next_ex_mem_can_forward, mem_wb_can_forward : sl;
 
     -- Simulation-only retirement trace. The valid bits mirror the pipeline
     -- register hold/bubble/flush behavior; these declarations are ignored by
@@ -410,28 +411,29 @@ begin
                               if_id_cw.Bused = '1') else
                     '0';
 
-    ex_mem_a_forward_next <= '1' when (if_id_cw.Asel_CSRuimm = next_ex_mem_Dsel and 
-                                       if_id_a_read = '1' and 
-                                       next_ex_mem_Dlen = '1' and 
-                                       next_ex_mem_is_load = '0') else
+    -- The instruction entering EX/MEM can forward when it writes a register
+    -- and is not a load.  The one entering MEM/WB can when it writes one.
+    next_ex_mem_can_forward <= next_ex_mem_Dlen and not next_ex_mem_is_load;
+    mem_wb_can_forward <= ex_mem_cw.Dlen and not mem_wb_nop;
+
+    ex_mem_a_forward_next <= '1' when (if_id_cw.Asel_CSRuimm = next_ex_mem_Dsel and
+                                       if_id_a_read = '1' and
+                                       next_ex_mem_can_forward = '1') else
                              '0';
 
-    ex_mem_b_forward_next <= '1' when (if_id_cw.Bsel = next_ex_mem_Dsel and 
-                                       if_id_b_read = '1' and 
-                                       next_ex_mem_Dlen = '1' and 
-                                       next_ex_mem_is_load = '0') else
+    ex_mem_b_forward_next <= '1' when (if_id_cw.Bsel = next_ex_mem_Dsel and
+                                       if_id_b_read = '1' and
+                                       next_ex_mem_can_forward = '1') else
                              '0';
 
-    mem_wb_a_forward_next <= '1' when (if_id_cw.Asel_CSRuimm = ex_mem_cw.Dsel and 
-                                       if_id_a_read = '1' and 
-                                       ex_mem_cw.Dlen = '1' and 
-                                       mem_wb_nop = '0') else
+    mem_wb_a_forward_next <= '1' when (if_id_cw.Asel_CSRuimm = ex_mem_cw.Dsel and
+                                       if_id_a_read = '1' and
+                                       mem_wb_can_forward = '1') else
                              '0';
 
-    mem_wb_b_forward_next <= '1' when (if_id_cw.Bsel = ex_mem_cw.Dsel and 
-                                       if_id_b_read = '1' and 
-                                       ex_mem_cw.Dlen = '1' and 
-                                       mem_wb_nop = '0') else
+    mem_wb_b_forward_next <= '1' when (if_id_cw.Bsel = ex_mem_cw.Dsel and
+                                       if_id_b_read = '1' and
+                                       mem_wb_can_forward = '1') else
                              '0';
 
     WAIT_PARTIAL : if FORWARDING_AMOUNT = PARTIAL generate
