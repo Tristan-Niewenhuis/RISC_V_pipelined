@@ -3,6 +3,7 @@ use IEEE.std_logic_1164.ALL;
 use ieee.numeric_std.all;
 use ieee.math_real.log2;
 use ieee.math_real.ceil;
+use std.textio.all;
 
 package RISCV_package is
   subtype sl is std_logic;
@@ -25,12 +26,12 @@ package RISCV_package is
   constant I_MEM_BASE : slv(31 downto 0) := x"00000000";
   constant I_MEM_SIZE_LOGICAL : integer := 16#10000#;
   constant I_MEM_BYTES_REAL : integer := 16#10000#; --must be power of 2
-  constant I_MEM_INIT_FILE : string := "C:/RISC_V_research/RISC_V_pipelined_private/embench-iot-files/build/src/wikisort/wikisort_rom.coe"; --sim_test/test_2/build/rom.coe";
+  constant I_MEM_INIT_FILE : string; --set in the package body
   constant I_USE_NEGEDGE : boolean := false;
   constant D_MEM_BASE : slv(31 downto 0) := x"00010000";
   constant D_MEM_SIZE_LOGICAL : integer := 16#FFE0#;
   constant D_MEM_BYTES_REAL : integer := 16#10000#; --must be power of 2
-  constant D_MEM_INIT_FILE : string := "C:/RISC_V_research/RISC_V_pipelined_private/embench-iot-files/build/src/wikisort/wikisort_ram.coe"; --sim_test/test_2/build/ram.coe";
+  constant D_MEM_INIT_FILE : string; --set in the package body
   constant D_IO_BASE : slv(31 downto 0) := x"C0000000";
   constant D_USE_NEGEDGE : boolean := false;
 
@@ -183,6 +184,37 @@ package RISCV_package is
 end RISCV_package;
 
 package body RISCV_package is
+
+  -- The memory init files live in the project tree.  Use the Windows
+  -- checkout when it exists and the Unix checkout otherwise.
+  constant WINDOWS_ROOT : string := "C:/RISC_V_research/RISC_V_pipelined_private";
+  constant UNIX_ROOT : string := "/home/faculty/lpyeatt/research/Tristan-Niewenhuis/rv_build";
+
+  -- Function to test whether a file can be opened for reading
+  impure function file_exists(name : string) return boolean is
+    file f : text;
+    variable status : file_open_status;
+  begin
+    file_open(status, f, name, read_mode);
+    if status = OPEN_OK then
+      file_close(f);
+    end if;
+    return status = OPEN_OK;
+  end function;
+
+  -- Function to select the project root for this platform
+  impure function find_project_root return string is
+  begin
+    if file_exists(WINDOWS_ROOT & "/RISC_V.xpr") then
+      return WINDOWS_ROOT;
+    else
+      return UNIX_ROOT;
+    end if;
+  end function;
+
+  constant PROJECT_ROOT : string := find_project_root;
+  constant I_MEM_INIT_FILE : string := PROJECT_ROOT & "/embench-iot-files/build/src/wikisort/wikisort_rom.coe"; --sim_test/test_2/build/rom.coe";
+  constant D_MEM_INIT_FILE : string := PROJECT_ROOT & "/embench-iot-files/build/src/wikisort/wikisort_ram.coe"; --sim_test/test_2/build/ram.coe";
 
   -- Function to convert sl to boolean
   function to_boolean(x : sl) return boolean is
