@@ -347,9 +347,10 @@ begin
     end generate;
 
     RAW_FULL_FORWARDING : if FORWARDING_AMOUNT = FULL generate
+        --A load in EX/MEM needs no stall.  By the time the consumer reaches EX,
+        --the load is in MEM/WB and its data comes from the MEM/WB forwarding path.
         wait_partial_forward <= '0';
-        raw_hazard <= (id_ex_hazard and id_ex_cw.is_load) or 
-                      (ex_mem_hazard and ex_mem_cw.is_load);
+        raw_hazard <= id_ex_hazard and id_ex_cw.is_load;
     end generate;
     -- @formatter:on
 
