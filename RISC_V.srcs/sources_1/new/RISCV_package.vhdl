@@ -15,7 +15,10 @@ package RISCV_package is
   type forwarding_t is (NONE, PARTIAL, FULL);
   constant FORWARDING_AMOUNT : forwarding_t := FULL;
 
-  constant DEBUG : boolean := TRUE;
+  -- DEBUG true keeps the pipeline registers for an ILA (mark_debug).  It is
+  -- off by default because mark_debug blocks optimization across those
+  -- registers and lowers Fmax.  All timing and CPI measurements use FALSE.
+  constant DEBUG : boolean := FALSE;
   constant XLEN_BITS : integer := 5;
   constant XLEN : integer := 2 ** XLEN_BITS;
   constant REGS_ADDR_BITS : integer := 5;
