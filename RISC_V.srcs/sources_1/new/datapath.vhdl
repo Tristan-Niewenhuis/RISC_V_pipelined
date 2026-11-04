@@ -310,7 +310,6 @@ begin
 
     ----control logic----
     --RAW hazard (just stall)
-    -- @formatter:off
     id_ex_a_hazard <= '1' when (if_id_cw.Asel_CSRuimm = id_ex_cw.Dsel and 
                                 if_id_cw.Asel_CSRuimm /= "00000" and 
                                 if_id_cw.Aused = '1' and 
@@ -360,7 +359,6 @@ begin
         wait_partial_forward <= '0';
         raw_hazard <= id_ex_hazard and id_ex_cw.is_load;
     end generate;
-    -- @formatter:on
 
     --branch hazard
     branch_hazard <= '1' when (branch_take = '1' and branch_correct = '0') else
@@ -408,7 +406,6 @@ begin
     next_ex_mem_Dlen <= ex_mem_cw.Dlen when ex_mem_stall = '1' else id_ex_cw.Dlen;
     next_ex_mem_is_load <= ex_mem_cw.is_load when ex_mem_stall = '1' else id_ex_cw.is_load;
 
-    -- @formatter:off
     if_id_a_read <= '1' when (if_id_cw.Asel_CSRuimm /= "00000" and 
                               if_id_cw.Aused = '1') else
                     '0';
@@ -441,16 +438,6 @@ begin
                                        if_id_b_read = '1' and
                                        mem_wb_can_forward = '1') else
                              '0';
-
-    WAIT_PARTIAL : if FORWARDING_AMOUNT = PARTIAL generate
-    
-    end generate;
-
-    NO_WAIT_PARTIAL : if FORWARDING_AMOUNT /= PARTIAL generate
-    
-    end generate;
-
-    -- @formatter:on
 
     -- Simulation-only trace in Spike commit-log format. Each valid
     -- instruction is emitted once at WB, including instructions that do not

@@ -475,7 +475,7 @@
                 "value_src": "constant"
               },
               "FREQ_HZ": {
-                "value": "85000000",
+                "value": "136000000",
                 "value_src": "ip_prop"
               },
               "PHASE": {
@@ -701,13 +701,13 @@
         "has_run_ip_tcl": "true",
         "parameters": {
           "CLKOUT1_JITTER": {
-            "value": "242.325"
+            "value": "227.014"
           },
           "CLKOUT1_PHASE_ERROR": {
             "value": "300.046"
           },
           "CLKOUT1_REQUESTED_OUT_FREQ": {
-            "value": "85.000"
+            "value": "136"
           },
           "CLKOUT2_JITTER": {
             "value": "284.425"
@@ -725,7 +725,7 @@
             "value": "51.000"
           },
           "MMCM_CLKOUT0_DIVIDE_F": {
-            "value": "12.000"
+            "value": "7.500"
           },
           "MMCM_CLKOUT1_DIVIDE": {
             "value": "34"
@@ -953,7 +953,7 @@
                 "value_src": "constant"
               },
               "FREQ_HZ": {
-                "value": "85000000",
+                "value": "136000000",
                 "value_src": "ip_prop"
               },
               "ID_WIDTH": {
@@ -1166,7 +1166,7 @@
                 "value_src": "constant"
               },
               "FREQ_HZ": {
-                "value": "85000000",
+                "value": "136000000",
                 "value_src": "ip_prop"
               },
               "PHASE": {
@@ -1369,8 +1369,8 @@
           "axi_clock_converter_2/m_axi_aclk",
           "proc_sys_reset_0/slowest_sync_clk",
           "proc_sys_reset_2/slowest_sync_clk",
-          "RISC_V_TCM_0/clk",
-          "test_controller_1/clk"
+          "test_controller_1/clk",
+          "RISC_V_TCM_0/clk"
         ]
       },
       "clk_wiz_0_locked": {

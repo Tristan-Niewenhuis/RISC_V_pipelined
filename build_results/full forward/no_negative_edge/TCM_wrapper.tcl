@@ -168,7 +168,7 @@ set rc [catch {
 OPTRACE "read constraints: opt_design" START { }
 OPTRACE "read constraints: opt_design" END { }
 OPTRACE "opt_design" START { }
-  opt_design 
+  opt_design -directive Explore
 OPTRACE "opt_design" END { }
 OPTRACE "read constraints: opt_design_post" START { }
 OPTRACE "read constraints: opt_design_post" END { }
@@ -205,7 +205,7 @@ OPTRACE "implement_debug_core" END { }
   } 
 OPTRACE "place_design" START { }
   set_param project.isImplRun true
-  place_design 
+  place_design -directive Explore
   set_param project.isImplRun false
 OPTRACE "place_design" END { }
 OPTRACE "read constraints: place_design_post" START { }
@@ -237,7 +237,7 @@ set rc [catch {
 OPTRACE "read constraints: phys_opt_design" START { }
 OPTRACE "read constraints: phys_opt_design" END { }
 OPTRACE "phys_opt_design" START { }
-  phys_opt_design 
+  phys_opt_design -directive Explore
 OPTRACE "phys_opt_design" END { }
 OPTRACE "read constraints: phys_opt_design_post" START { }
 OPTRACE "read constraints: phys_opt_design_post" END { }
@@ -258,6 +258,7 @@ if {$rc} {
 
 OPTRACE "Phase: Physical Opt Design" END { }
 OPTRACE "Phase: Route Design" START { ROLLUP_AUTO }
+  set_msg_config -source 4 -id {Route 35-39} -severity "critical warning" -new_severity warning
 start_step route_design
 set ACTIVE_STEP route_design
 set rc [catch {
@@ -265,13 +266,13 @@ set rc [catch {
 OPTRACE "read constraints: route_design" START { }
 OPTRACE "read constraints: route_design" END { }
 OPTRACE "route_design" START { }
-  route_design 
+  route_design -directive Explore -tns_cleanup
 OPTRACE "route_design" END { }
 OPTRACE "read constraints: route_design_post" START { }
 OPTRACE "read constraints: route_design_post" END { }
 OPTRACE "route_design reports" START { REPORT }
   set_param project.isImplRun true
-  generate_parallel_reports -reports { "report_drc -file TCM_wrapper_drc_routed.rpt -pb TCM_wrapper_drc_routed.pb -rpx TCM_wrapper_drc_routed.rpx" "report_methodology -file TCM_wrapper_methodology_drc_routed.rpt -pb TCM_wrapper_methodology_drc_routed.pb -rpx TCM_wrapper_methodology_drc_routed.rpx" "report_power -file TCM_wrapper_power_routed.rpt -pb TCM_wrapper_power_summary_routed.pb -rpx TCM_wrapper_power_routed.rpx" "report_route_status -file TCM_wrapper_route_status.rpt -pb TCM_wrapper_route_status.pb" "report_timing_summary -max_paths 10 -routable_nets -report_unconstrained -file TCM_wrapper_timing_summary_routed.rpt -pb TCM_wrapper_timing_summary_routed.pb -rpx TCM_wrapper_timing_summary_routed.rpx -warn_on_violation " "report_incremental_reuse -file TCM_wrapper_incremental_reuse_routed.rpt" "report_clock_utilization -file TCM_wrapper_clock_utilization_routed.rpt" "report_bus_skew -warn_on_violation -file TCM_wrapper_bus_skew_routed.rpt -pb TCM_wrapper_bus_skew_routed.pb -rpx TCM_wrapper_bus_skew_routed.rpx"  }
+  generate_parallel_reports -reports { "report_drc -file TCM_wrapper_drc_routed.rpt -pb TCM_wrapper_drc_routed.pb -rpx TCM_wrapper_drc_routed.rpx" "report_methodology -file TCM_wrapper_methodology_drc_routed.rpt -pb TCM_wrapper_methodology_drc_routed.pb -rpx TCM_wrapper_methodology_drc_routed.rpx" "report_power -file TCM_wrapper_power_routed.rpt -pb TCM_wrapper_power_summary_routed.pb -rpx TCM_wrapper_power_routed.rpx" "report_route_status -file TCM_wrapper_route_status.rpt -pb TCM_wrapper_route_status.pb" "report_timing_summary -max_paths 10 -routable_nets -report_unconstrained -file TCM_wrapper_timing_summary_routed.rpt -pb TCM_wrapper_timing_summary_routed.pb -rpx TCM_wrapper_timing_summary_routed.rpx" "report_incremental_reuse -file TCM_wrapper_incremental_reuse_routed.rpt" "report_clock_utilization -file TCM_wrapper_clock_utilization_routed.rpt" "report_bus_skew -warn_on_violation -file TCM_wrapper_bus_skew_routed.rpt -pb TCM_wrapper_bus_skew_routed.pb -rpx TCM_wrapper_bus_skew_routed.rpx"  }
   set_param project.isImplRun false
 OPTRACE "route_design reports" END { }
 OPTRACE "Route Design: write_checkpoint" START { CHECKPOINT }
@@ -293,6 +294,39 @@ OPTRACE "route_design write_checkpoint" END { }
 
 OPTRACE "route_design misc" END { }
 OPTRACE "Phase: Route Design" END { }
+OPTRACE "Phase: Phys-Opt Design" START { ROLLUP_AUTO }
+start_step post_route_phys_opt_design
+set ACTIVE_STEP post_route_phys_opt_design
+set rc [catch {
+  set tool_flow [get_property -quiet TOOL_FLOW [current_project -quiet]]
+  if {$tool_flow eq {SDx}} {send_msg_id {101-1} {status} {Starting optional post-route physical design optimization.} }
+  create_msg_db post_route_phys_opt_design.pb
+OPTRACE "phys_opt_design" START { }
+  phys_opt_design -directive Explore
+OPTRACE "phys_opt_design" END { }
+OPTRACE "phys_opt_design reports" START { REPORT }
+  set_param project.isImplRun true
+  generate_parallel_reports -reports { "report_timing_summary -max_paths 10 -report_unconstrained -warn_on_violation -file TCM_wrapper_timing_summary_postroute_physopted.rpt -pb TCM_wrapper_timing_summary_postroute_physopted.pb -rpx TCM_wrapper_timing_summary_postroute_physopted.rpx" "report_bus_skew -warn_on_violation -file TCM_wrapper_bus_skew_postroute_physopted.rpt -pb TCM_wrapper_bus_skew_postroute_physopted.pb -rpx TCM_wrapper_bus_skew_postroute_physopted.rpx"  }
+  set_param project.isImplRun false
+OPTRACE "phys_opt_design reports" END { }
+OPTRACE "Post-Route Phys Opt Design: write_checkpoint" START { CHECKPOINT }
+  write_checkpoint -force TCM_wrapper_postroute_physopt.dcp
+OPTRACE "Post-Route Phys Opt Design: write_checkpoint" END { }
+OPTRACE "phys_opt_design misc" START { }
+  close_msg_db -file post_route_phys_opt_design.pb
+  set tool_flow [get_property TOOL_FLOW [current_project]]
+  if {$tool_flow eq {SDx}} {send_msg_id {101-1} {status} {Finished optional post-route physical design optimization.} }
+} RESULT]
+if {$rc} {
+  step_failed post_route_phys_opt_design
+  return -code error $RESULT
+} else {
+  end_step post_route_phys_opt_design
+  unset ACTIVE_STEP 
+}
+
+OPTRACE "phys_opt_design misc" END { }
+OPTRACE "Phase: Phys-Opt Design" END { }
 OPTRACE "Phase: Write Bitstream" START { ROLLUP_AUTO }
 OPTRACE "write_bitstream setup" START { }
 start_step write_bitstream

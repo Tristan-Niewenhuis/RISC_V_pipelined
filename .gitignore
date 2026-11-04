@@ -97,3 +97,10 @@ nlviewcommon.logfile
 .clineignore
 .clinerules
 AGENTS.md
+
+cylon_test/**
+tcm_sw/**
+embench_results.csv
+project.sigasi
+publish_to_public.ps1
+saved.tcl
