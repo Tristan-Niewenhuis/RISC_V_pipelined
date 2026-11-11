@@ -62,7 +62,8 @@ Key implementation details:
 - Registered forwarding selections so register comparisons are not in series with EX-stage forwarding multiplexers
 - A package-level `FORWARDING_AMOUNT` constant that selects `NONE`, `PARTIAL`, or `FULL`
 
-![Five-stage pipeline and forwarding paths](docs/images/None_Core_Architecture.png)
+![Five-stage pipeline and forwarding paths](docs/images/Core_Architecture.png)
+Partial forwarding enables the pink forwarding paths, and full forwarding enables both the pink and green forwarding paths.
 
 ### Partial-forwarding edge case
 
