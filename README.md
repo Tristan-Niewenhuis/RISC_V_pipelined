@@ -1,121 +1,173 @@
-# Pipelining an RV32I RISC-V Softcore 
-## (Currently sumbitting primary draft of research paper)
-### A Study of Hazard Resolution, Performance, and FPGA Timing Tradeoffs
+# Pipelining an RV32I RISC-V Soft Core
+
+## A study of hazard resolution, performance, and FPGA timing tradeoffs
 
 **Author:** Tristan Niewenhuis  
-**Project Type:** Independent Study / Computer Architecture Research
-**Advisor:** Dr. Larry Pyeatt, South Dakota Mines  
-**Platform:** Digilent Nexys A7 (Xilinx Artix-7 xc7a100tcsg324-1)  
+**Advisor:** Dr. Larry Pyeatt, South Dakota School of Mines and Technology  
+**Project type:** Undergraduate computer architecture research  
+**RTL:** VHDL  
+**Platform:** Digilent Nexys A7-100T, AMD Artix-7 XC7A100T-1CSG324  
+**Tools:** AMD Vivado 2026.1, GHDL, Python, and the AMD GCC 13.4.0 RISC-V toolchain  
 **Date:** Fall 2026
-
----
 
 ## Overview
 
-This project explores the design and implementation of a classic five-stage pipelined RV32I RISC-V processor on FPGA hardware.
+This repository contains a custom RV32I RISC-V processor that I converted from a non-pipelined design into a classic five-stage FPGA pipeline. The project studies a practical microarchitectural question:
 
-The primary goal is not simply to pipeline a processor, but to experimentally investigate a tradeoff in computer architecture:
+> Does the reduction in cycles per instruction from data forwarding outweigh the reduction in maximum clock frequency caused by the added forwarding logic?
 
-> Does reducing pipeline stalls through forwarding always improve real-world performance?
+Rather than evaluating CPI alone, the study compares execution performance using both measured CPI and post-route maximum clock frequency:
 
-This repository documents the architectural modifications, RTL implementation, benchmarking infrastructure, and experimental evaluation used to answer that question.
+```text
+Performance = Fmax / CPI
+```
 
----
+The repository includes the processor RTL with three selectable hazard-resolution configurations, a single-cycle reference core, FPGA benchmark infrastructure, compiled benchmark images, and implementation outputs.
 
-## Research Question
+## Research Design
 
-This work evaluates three hazard-handling implementations on the same RV32I processor:
+The same five-stage core is evaluated in three configurations. A single enumerated package constant selects the configuration, while the decoder, register file, ALU, branch unit, memories, and pipeline registers remain unchanged.
 
-### 1. Stall-Only Pipeline
-Data hazards are detected and resolved entirely through pipeline stalls.
+### 1. No forwarding
 
-### 2. Partial Forwarding
-Values are forwarded from the EX/MEM stage while other hazards still require stalls.
+Read-after-write (RAW) hazards are resolved entirely with pipeline stalls.
 
-### 3. Full Forwarding
-Forwarding paths exist from both EX/MEM and MEM/WB stages.
+### 2. Partial forwarding
 
----
+Results are forwarded from the EX/MEM pipeline register. Hazards that require a value from MEM/WB still stall.
 
-## Why This Matters
+### 3. Full forwarding
 
-Many processor design projects stop after implementing forwarding and report improved CPI.
+Results are forwarded from both EX/MEM and MEM/WB. Only unavailable values, such as an immediately consumed load result, require a data-hazard stall.
 
-This project goes further by measuring:
-
-- CPI (Cycles Per Instruction)
-- Fmax (Maximum Clock Frequency)
-- LUT utilization
-- Flip-Flop utilization
-
-The final performance metric is:
-
-Performance = IPC × Fmax
-
---
+This controlled structure isolates the timing, area, and CPI effects of the forwarding network from unrelated architectural changes.
 
 ## Processor Architecture
-The processor is based on the RV32I instruction set and is converted from a non-pipelined implementation into a classic five-stage pipeline.
 
-## Repo Structure
-RISC_V.srcs/ is rtl source files. In there, the sources_1/new contains the vhdl code for the core and all supporting vhdl. sources_1/bd contains all the code for the block design that is used as the top level design to tie everything together. 
+The processor implements **RV32I with the Zicsr and Zicntr extensions** using a Harvard architecture and five stages:
 
-In sources_1/new, RISC_V_TCM.vhdl is the main top module of the processor.
+1. **IF - Instruction Fetch:** Selects the next PC, fetches an instruction, performs early decode, and generates the immediate.
+2. **ID - Instruction Decode / Register Read:** Reads the write-first register file, detects RAW hazards, and computes registered forwarding selections.
+3. **EX - Execute:** Contains the forwarding multiplexers, ALU, branch unit, target adder, CSR logic, and load/store address and byte-strobe logic.
+4. **MEM - Memory:** Aligns synchronous data-memory load results.
+5. **WB - Write Back:** Selects and writes the final result to the register file.
 
-The RISCV_package is used to set constants and select desired FORWARDING TYPE: NONE, PARTIAL (only from EX_MEM), and FULL (both from EX_MEM and MEM_WB)
+Key implementation details:
 
-RISC_V_AXI.vhdl is the version of that uses AXI interfaces to fetch and load/store which means it is compatible with external RAM, however there is a large stall penalty waiting for load/store and pre-fetch misses. This is a work in progress.
+- Separate 64 KiB instruction and data memories implemented in block RAM
+- Static not-taken control-flow prediction
+- Branch and jump resolution in EX
+- Two-cycle flush for taken branches/jumps that redirect the pipeline
+- Memory-mapped test-control registers in the highest data-memory words
+- Registered forwarding selections so register comparisons are not in series with EX-stage forwarding multiplexers
+- A package-level `FORWARDING_AMOUNT` constant that selects `NONE`, `PARTIAL`, or `FULL`
 
-embecnh-iot-files/ are the complied tests used to test the core.
+![Five-stage pipeline and forwarding paths](docs/images/None_Core_Architecture.png)
 
-sim_test/test_2/ was used as a rough verifcation/debug test to catch any bugs in the pipeling process.
+### Partial-forwarding edge case
 
-build_results/ contains the contents of the RISC_V.runs/impl_1 for each build type. The main builds are in the no_neg_edge sub-folders
+Partial forwarding needs additional stall control when three adjacent instructions create dependencies on two producers. A stall caused by the older producer can separate the newer producer from its consumer, making a value that was previously forwardable unavailable on the next cycle. The control logic preserves the newer producer in the correct stage, inserts a bubble, and then forwards the value with a one-cycle penalty. Senario
 
+![Partial-forwarding three-instruction case](docs/images/Partial_Forward_Stall.png)
 
-## Core Architecture
-It implements RV32I withthe Zicsr and Zicntr extensions on a harvard architecture. IF decodes the instruction and generates its immediate. With this early decode, ID hasa full cycle to read the write-first register file, detect RAW hazards, and compute the forwarding selects forthe next cycle, which are registered into the ID/EX register. EX holds the forwarding multiplexers, the ALU, the branch unit and target adder, the CSRs,and the load and store address and byte-strobe logic. The data BRAM is driven at the end of EX. EX also forms the link address of JAL and JALR, which the EX/MEM and MEM/WB data registers then carry like any other result. MEM aligns load data, and WB writes the register file. A taken branch resolvesin EX and flushes IF/ID and ID/EX, a penalty of two cycles. The next PC drives the address of the instruction BRAM directly, with the branch decisionas the last select. It uses static not-taken predictionfor every branch and jump. Instructions and datalive in separate 64 KB tightly coupled memories inblock RAM, clocked on the rising edge. The eight most significant words of the data memory are used asmemory-mapped I/O to communicate with the testcontroller. 
+## Experimental Methodology
 
-Prtial forwarding uses only the path from EX/MEM, and full forwarding uses the path from both EX/MEM and MEM/WB. A result used two instructions later costs one cycle unless MEM/WB forwards it, because the write-first register file supplies it a cycle later. A taken branch or jump costs two cycles in every variant. A branch or JAL whose target is the next instruction costs nothing, and a JALR always flushes. A constant of an enumerated type, FORWARDING AMOUNT in RISCV package, selects the variant. Generate statements in the datapath are used to choose the corresponding multiplexers in front of the the ALU and the branch unit, along with selecting the matching RAW-hazard logic. The decoder, register file, ALU, branch unit, memories, and pipeline registers are the same in every variant, so the variants differ only in their forwarding multiplexers and stall conditions.
+The evaluation uses the same benchmark binaries and measurement procedure for all three pipelined configurations and the single-cycle reference design.
 
-Compared with no forwarding, full forwarding adds a three-input multiplexer in front of the ALU and branch unit selecting from the ID/EX, EX/MEM, or MEM/WB registers. Output is selected based on the forwarding detection logic that was previously computed in the IF/ID stage. The RAW hazard detection is also reduced from stalling the IF/ID register on any producer in the ID/EX or EX/MEM registers to only stalling for a load producer in the ID/EX register. Partial forwarding has only a two-input multiplexer from the ID/EX or EX/MEM registers. Par tial forwarding only stalls the IF/ID register under two conditions: a load producer in the ID/EX register or a producer in the EX/MEM register that was not caused by a RAW hazard in the previous clock.
+### Hardware-in-the-loop benchmark harness
 
-### No Forwarding
-TODO: Need to make these diagrams still
-![Core Architecture](docs/images/None_Core_Architecture.png)
-### Partial Forwarding (just from mem stage)
-![Core Architecture](docs/images/Partial_Core_Architecture.png)
-### Full Forwarding
-![Core Architecture](docs/images/Full_Core_Architecture.png)
+The FPGA harness includes:
 
-## Testing Framework
-![Testing Framwork](docs/images/Testing_Framework.png)
+- JTAG-to-AXI for loading programs and controlling tests
+- AXI SmartConnect and AXI BRAM controllers
+- A test controller that releases reset, detects completion, and reports verification status
+- 64-bit `mcycle` and `minstret` counters
+- Start and stop triggers that limit measurement to the benchmark region
+- Python-generated Vivado Tcl for automated benchmark loading and execution
 
-## Partial Forwarding 3 insturction special case
-Partial forwarding must account for the combination of three instructions in which the third instruction consumes results from the first two instructions(Ex. “sub x1, x2, x” then “add x4, x5, x6” then “orx7, x1, x4”). In the scenario shown in the image below, the ‘sub’ in EX/MEM will cause a RAW hazard for the ‘or’ in IF/ID. In the next cycle, this will cause a bubble between the ‘or’ and ‘add’ making it no longer forwardable with only partial forwarding. This also causes another RAW hazard which should be ignored, in favor of stalling the ‘add’ in the EX/MEM stageand ”popping” the bubble in ID/EX. This puts the ‘add’ back in position to be forwarded into the ‘or’ while only incurring a one-cycle penalty for this scenario.
+![Hardware-in-the-loop testing framework](docs/images/Testing_Framework.png)
 
-![example](docs/images/Partial_Forward_Stall.png)
+### Workload
 
-## Results
+- **Suite:** [Embench-IoT](https://github.com/embench/embench-iot), tag `embench-2.0rc2`
+- **Programs:** 19 benchmark binaries
+- **Compiler:** AMD GCC 13.4.0
+- **ISA/ABI:** `rv32i_zicsr_zicntr` / `ilp32`
+- **Optimization:** `-O2`, function/data sections, static linking, and garbage collection of unused sections
+- **Memory layout:** `.text` in instruction memory; read-only and writable data sections in data memory
 
-Paper Draft in progress and being sumbitted. Will be updated once accepted.
+Each of the 19 binaries is run on the three pipeline configurations and the single-cycle reference core, producing **76 FPGA executions** under the same test procedure.
 
+## Verification
+
+The project uses three independent checks:
+
+1. **Benchmark self-checks:** All 76 FPGA runs completed and passed the benchmark-provided verification routine.
+2. **RTL simulation:** GHDL ran the same 76 images and matched the board's cycle and retired-instruction counts for every run.
+3. **Independent ISA and cycle model:** A separate model reproduced the cycle and instruction counts of all **57 pipelined executions** and independently checked stall attribution.
+
+The simulation framework classifies bubbles by source, including ALU RAW hazards, load RAW hazards, conditional-branch flushes, JAL flushes, and JALR flushes. This supports exact stall accounting without exposing the manuscript's unpublished result values.
+
+## Metrics Collected
+
+The study records the following for each configuration:
+
+- Cycle count and retired-instruction count
+- CPI for each benchmark and geometric-mean CPI for the suite
+- Post-route Fmax
+- Execution time and performance (`Fmax / CPI`)
+- LUT, flip-flop, and block-RAM utilization
+- Stall and flush cycles classified by cause
+- Routed critical-path logic and routing delay
+
+**Numerical performance and resource results are intentionally withheld until publication.**
+
+## Repository Structure
+
+```text
+RISC_V.srcs/
+  constrs_1/new/       constrains files for FPGA, JTAG.xdc is primary
+  sources_1/new/       VHDL processor and support logic
+  sources_1/bd/        Vivado block design used as the system top level
+  sim_1/new/           Some rudimentary testbenches for testing AXI intraface with 
+                       JTAG and observing process behavior simulating test programs 
+embench-iot-files/     Compiled benchmark images used by the harness
+sim_test/test_2/       Pipeline verification and debugging testbench
+build_results/         Saved implementation outputs for each configuration
+single_cycle/          rtl for single cycle model as comparison
+RISC_V.xpr             vivado project file
+run_test.py            generate run_embench.tcl to run given embench-iot tests on FPGA
+```
+
+Important RTL files in RISC_V.srcs/sources_1/new/:
+
+- `RISC_V_TCM.vhdl` - main native-BRAM processor top level
+- `RISC_V_AXI.vhdl` - AXI-interface version for external memory integration; this path remains under development
+- `RISCV_package` - shared constants, types, and the forwarding-configuration selection
+
+The principal implementation outputs are stored in the `no_neg_edge` subdirectories under `build_results/`.
+
+## Current Scope and Limitations
+
+- RV32I only; the M extension is not implemented
+- One FPGA family, speed grade, board, compiler, and optimization level
+- Static not-taken prediction rather than a dynamic branch predictor
+- One implementation seed per configuration
+- Performance is evaluated at each design's independently determined Fmax
+- Power and energy are not measured
+- The AXI memory-interface version is a work in progress and is not the primary configuration used for the controlled forwarding comparison
 
 ## Future Work
-- Bimodal and Gshare predictors
-- Partial Forwarding from only the MEM/WB stage?
-- Possible exploration of more/less stages and the forwarding paths that could be explored from that
+
+- Evaluate bimodal and gshare branch predictors
+- Add a branch target buffer and return-address stack
+- Evaluate earlier JAL resolution
+- Compare alternative partial-forwarding networks, including MEM/WB-only forwarding
+- Explore other pipeline depths and forwarding-path placements
+- Complete and evaluate the external-memory AXI configuration
+- Measure power and energy in addition to performance and area
 
 ## Contact
-Tristan Niewenhuis
 
-Tristanniewenhuis@gmail.com
-
-605-251-9304
-
-https://www.linkedin.com/in/tristanniewenhuis/
-
-https://github.com/Tristan-Niewenhuis
-
-
-
+**Tristan Niewenhuis**  
+[Email](mailto:Tristanniewenhuis@gmail.com) | [LinkedIn](https://www.linkedin.com/in/tristanniewenhuis/) | [GitHub](https://github.com/Tristan-Niewenhuis)
